@@ -1,0 +1,38 @@
+plugins {
+    id "java-library"
+    id "com.diffplug.spotless" version "6.23.3"
+    id "me.qoomon.git-versioning" version "6.4.3"
+}
+
+group = "com.stefanbratanov"
+
+version = "develop"
+
+gitVersioning.apply {
+    refs {
+        tag("v(?<version>.*)") {
+            version = '${ref.version}'
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.16.0")
+
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.1")
+    testImplementation("org.assertj:assertj-core:3.24.2")
+}
+
+spotless {
+    java {
+        googleJavaFormat()
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
