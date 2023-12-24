@@ -1,6 +1,7 @@
 package com.stefanbratanov.chatjpt;
 
 import static com.stefanbratanov.chatjpt.Utils.getAuthorizationHeader;
+import static com.stefanbratanov.chatjpt.Utils.validateHttpResponse;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -13,8 +14,9 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
+import java.util.Optional;
 
-public class ChatJPT {
+public final class ChatJPT {
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -23,22 +25,26 @@ public class ChatJPT {
     module
         .addSerializer(ChatRequest.class, new ChatRequestSerializer())
         .addDeserializer(ChatResponse.class, new ChatResponseDeserializer())
-        .addDeserializer(Model.class, new ModelDeserializer());
+        .addDeserializer(Model.class, new ModelDeserializer())
+        .addDeserializer(Error.class, new ErrorDeserializer());
     OBJECT_MAPPER.registerModule(module);
   }
 
   private final URI baseUrl;
   private final String apiKey;
+  private final Optional<String> organization;
   private final HttpClient httpClient;
 
-  private ChatJPT(URI baseUrl, String apiKey, HttpClient httpClient) {
+  private ChatJPT(
+      URI baseUrl, String apiKey, Optional<String> organization, HttpClient httpClient) {
     this.baseUrl = baseUrl;
     this.apiKey = apiKey;
+    this.organization = organization;
     this.httpClient = httpClient;
   }
 
   public ChatClient newChatClient() {
-    return new ChatClient(baseUrl, apiKey, httpClient, OBJECT_MAPPER);
+    return new ChatClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
   }
 
   public List<Model> models() {
@@ -51,6 +57,7 @@ public class ChatJPT {
     try {
       HttpResponse<byte[]> httpResponse =
           httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
+      validateHttpResponse(httpResponse, OBJECT_MAPPER);
       JsonNode models = OBJECT_MAPPER.readTree(httpResponse.body());
       return OBJECT_MAPPER.readValue(models.get("data").toString(), new TypeReference<>() {});
     } catch (IOException ex) {
@@ -70,6 +77,7 @@ public class ChatJPT {
     try {
       HttpResponse<byte[]> httpResponse =
           httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
+      validateHttpResponse(httpResponse, OBJECT_MAPPER);
       return OBJECT_MAPPER.readValue(httpResponse.body(), Model.class);
     } catch (IOException ex) {
       throw new UncheckedIOException(ex);
@@ -87,8 +95,8 @@ public class ChatJPT {
     private static final String DEFAULT_BASE_URL = "https://api.openai.com/v1/";
 
     private String baseUrl = DEFAULT_BASE_URL;
-
     private final String apiKey;
+    private Optional<String> organization = Optional.empty();
 
     public Builder(String apiKey) {
       this.apiKey = apiKey;
@@ -99,12 +107,17 @@ public class ChatJPT {
       return this;
     }
 
+    public Builder organization(String organization) {
+      this.organization = Optional.of(organization);
+      return this;
+    }
+
     public ChatJPT build() {
       if (!baseUrl.endsWith("/")) {
         baseUrl += "/";
       }
       HttpClient httpClient = HttpClient.newBuilder().build();
-      return new ChatJPT(URI.create(baseUrl), apiKey, httpClient);
+      return new ChatJPT(URI.create(baseUrl), apiKey, organization, httpClient);
     }
   }
 }
