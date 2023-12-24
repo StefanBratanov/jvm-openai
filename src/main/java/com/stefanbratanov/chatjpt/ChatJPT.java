@@ -1,7 +1,6 @@
 package com.stefanbratanov.chatjpt;
 
-import static com.stefanbratanov.chatjpt.Utils.getAuthorizationHeader;
-import static com.stefanbratanov.chatjpt.Utils.validateHttpResponse;
+import static com.stefanbratanov.chatjpt.Utils.*;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -50,7 +49,7 @@ public final class ChatJPT {
   public List<Model> models() {
     HttpRequest httpRequest =
         HttpRequest.newBuilder()
-            .headers(getAuthorizationHeader(apiKey))
+            .headers(getAuthenticationHeaders(apiKey, organization))
             .uri(baseUrl.resolve(Endpoint.MODELS.getPath()))
             .GET()
             .build();
@@ -70,7 +69,7 @@ public final class ChatJPT {
   public Model model(String model) {
     HttpRequest httpRequest =
         HttpRequest.newBuilder()
-            .headers(getAuthorizationHeader(apiKey))
+            .headers(getAuthenticationHeaders(apiKey, organization))
             .uri(baseUrl.resolve(Endpoint.MODELS.getPath() + "/" + model))
             .GET()
             .build();

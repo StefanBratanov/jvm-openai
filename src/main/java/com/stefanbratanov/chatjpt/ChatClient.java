@@ -11,7 +11,7 @@ import java.util.concurrent.CompletableFuture;
 /** Based on <a href="https://platform.openai.com/docs/api-reference/chat">Chat</a> */
 public final class ChatClient extends OpenAIClient {
 
-  private final String[] headers;
+  private final URI endpoint;
 
   ChatClient(
       URI baseUrl,
@@ -19,31 +19,27 @@ public final class ChatClient extends OpenAIClient {
       Optional<String> organization,
       HttpClient httpClient,
       ObjectMapper objectMapper) {
-    super(baseUrl.resolve(Endpoint.CHAT.getPath()), apiKey, organization, httpClient, objectMapper);
-    headers =
-        new String[] {
-          "Content-Type", Constants.JSON_MEDIA_TYPE, "Accept", Constants.JSON_MEDIA_TYPE
-        };
-  }
-
-  @Override
-  String[] getHeaders() {
-    return headers;
+    super(apiKey, organization, httpClient, objectMapper);
+    endpoint = baseUrl.resolve(Endpoint.CHAT.getPath());
   }
 
   public ChatResponse sendRequest(ChatRequest request) {
     HttpRequest httpRequest = createPostRequest(request);
     HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
-    return deserializeResponse(httpResponse, ChatResponse.class);
+    return deserializeResponse(httpResponse.body(), ChatResponse.class);
   }
 
   public CompletableFuture<ChatResponse> sendRequestAsync(ChatRequest request) {
     HttpRequest httpRequest = createPostRequest(request);
     return sendHttpRequestAsync(httpRequest)
-        .thenApply(httpResponse -> deserializeResponse(httpResponse, ChatResponse.class));
+        .thenApply(httpResponse -> deserializeResponse(httpResponse.body(), ChatResponse.class));
   }
 
   private HttpRequest createPostRequest(ChatRequest request) {
-    return newHttpRequestBuilder().POST(createBodyPublisher(request)).build();
+    return newHttpRequestBuilder(
+            "Content-Type", Constants.JSON_MEDIA_TYPE, "Accept", Constants.JSON_MEDIA_TYPE)
+        .uri(endpoint)
+        .POST(createBodyPublisher(request))
+        .build();
   }
 }

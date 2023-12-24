@@ -1,13 +1,11 @@
 package com.stefanbratanov.chatjpt;
 
-import static com.stefanbratanov.chatjpt.Utils.getAuthorizationHeader;
-import static com.stefanbratanov.chatjpt.Utils.validateHttpResponse;
+import static com.stefanbratanov.chatjpt.Utils.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -20,7 +18,6 @@ import java.util.concurrent.CompletableFuture;
  */
 abstract class OpenAIClient {
 
-  private final URI endpoint;
   private final String apiKey;
   private final Optional<String> organization;
 
@@ -28,31 +25,23 @@ abstract class OpenAIClient {
   protected final ObjectMapper objectMapper;
 
   OpenAIClient(
-      URI endpoint,
       String apiKey,
       Optional<String> organization,
       HttpClient httpClient,
       ObjectMapper objectMapper) {
-    this.endpoint = endpoint;
     this.apiKey = apiKey;
     this.organization = organization;
     this.httpClient = httpClient;
     this.objectMapper = objectMapper;
   }
 
-  abstract String[] getHeaders();
-
-  protected HttpRequest.Builder newHttpRequestBuilder() {
-    HttpRequest.Builder httpRequestBuilder = HttpRequest.newBuilder().uri(endpoint);
-    // set headers
-    httpRequestBuilder.headers(getAuthorizationHeader(apiKey));
-    organization.ifPresent(org -> httpRequestBuilder.header("OpenAI-Organization", org));
-    httpRequestBuilder.headers(getHeaders());
-
-    return httpRequestBuilder;
+  HttpRequest.Builder newHttpRequestBuilder(String... headers) {
+    return HttpRequest.newBuilder()
+        .headers(getAuthenticationHeaders(apiKey, organization))
+        .headers(headers);
   }
 
-  protected <T> HttpRequest.BodyPublisher createBodyPublisher(T body) {
+  <T> HttpRequest.BodyPublisher createBodyPublisher(T body) {
     try {
       return HttpRequest.BodyPublishers.ofByteArray(objectMapper.writeValueAsBytes(body));
     } catch (JsonProcessingException ex) {
@@ -60,7 +49,7 @@ abstract class OpenAIClient {
     }
   }
 
-  protected HttpResponse<byte[]> sendHttpRequest(HttpRequest httpRequest) {
+  HttpResponse<byte[]> sendHttpRequest(HttpRequest httpRequest) {
     try {
       HttpResponse<byte[]> httpResponse =
           httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
@@ -73,7 +62,7 @@ abstract class OpenAIClient {
     }
   }
 
-  protected CompletableFuture<HttpResponse<byte[]>> sendHttpRequestAsync(HttpRequest httpRequest) {
+  CompletableFuture<HttpResponse<byte[]>> sendHttpRequestAsync(HttpRequest httpRequest) {
     return httpClient
         .sendAsync(httpRequest, HttpResponse.BodyHandlers.ofByteArray())
         .thenApply(
@@ -83,9 +72,9 @@ abstract class OpenAIClient {
             });
   }
 
-  protected <T> T deserializeResponse(HttpResponse<byte[]> httpResponse, Class<T> responseClass) {
+  <T> T deserializeResponse(byte[] response, Class<T> responseClass) {
     try {
-      return objectMapper.readValue(httpResponse.body(), responseClass);
+      return objectMapper.readValue(response, responseClass);
     } catch (IOException ex) {
       throw new UncheckedIOException(ex);
     }
