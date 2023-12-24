@@ -1,7 +1,8 @@
 package com.stefanbratanov.chatjpt;
 
 enum Endpoint {
-  CHAT("chat/completions");
+  CHAT("chat/completions"),
+  MODELS("models");
 
   private final String path;
 

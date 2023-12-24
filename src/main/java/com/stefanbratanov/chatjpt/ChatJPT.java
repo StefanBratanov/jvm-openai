@@ -41,11 +41,11 @@ public class ChatJPT {
     return new ChatClient(baseUrl, apiKey, httpClient, OBJECT_MAPPER);
   }
 
-  public List<Model> getModels() {
+  public List<Model> models() {
     HttpRequest httpRequest =
         HttpRequest.newBuilder()
             .headers(getAuthorizationHeader(apiKey))
-            .uri(baseUrl.resolve("models"))
+            .uri(baseUrl.resolve(Endpoint.MODELS.getPath()))
             .GET()
             .build();
     try {
@@ -53,6 +53,24 @@ public class ChatJPT {
           httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
       JsonNode models = OBJECT_MAPPER.readTree(httpResponse.body());
       return OBJECT_MAPPER.readValue(models.get("data").toString(), new TypeReference<>() {});
+    } catch (IOException ex) {
+      throw new UncheckedIOException(ex);
+    } catch (InterruptedException ex) {
+      throw new RuntimeException(ex);
+    }
+  }
+
+  public Model model(String model) {
+    HttpRequest httpRequest =
+        HttpRequest.newBuilder()
+            .headers(getAuthorizationHeader(apiKey))
+            .uri(baseUrl.resolve(Endpoint.MODELS.getPath() + "/" + model))
+            .GET()
+            .build();
+    try {
+      HttpResponse<byte[]> httpResponse =
+          httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
+      return OBJECT_MAPPER.readValue(httpResponse.body(), Model.class);
     } catch (IOException ex) {
       throw new UncheckedIOException(ex);
     } catch (InterruptedException ex) {

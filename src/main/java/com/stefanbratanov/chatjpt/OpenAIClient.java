@@ -18,7 +18,8 @@ abstract class OpenAIClient<Req, Res> {
 
   private final URI endpoint;
   private final String apiKey;
-  private final HttpClient httpClient;
+
+  protected final HttpClient httpClient;
 
   OpenAIClient(URI endpoint, String apiKey, HttpClient httpClient) {
     this.endpoint = endpoint;
@@ -30,7 +31,7 @@ abstract class OpenAIClient<Req, Res> {
     HttpRequest httpRequest = createHttpRequest(request);
     HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
     validateResponse(httpResponse);
-    return deserializeResponse(httpResponse);
+    return deserializeResponse(request, httpResponse);
   }
 
   public CompletableFuture<Res> sendRequestAsync(Req request) {
@@ -40,7 +41,7 @@ abstract class OpenAIClient<Req, Res> {
         .thenApply(
             httpResponse -> {
               validateResponse(httpResponse);
-              return deserializeResponse(httpResponse);
+              return deserializeResponse(request, httpResponse);
             });
   }
 
@@ -48,15 +49,14 @@ abstract class OpenAIClient<Req, Res> {
 
   abstract HttpRequest.BodyPublisher createBodyPublisher(Req request);
 
-  abstract Res deserializeResponse(HttpResponse<byte[]> httpResponse);
+  abstract Res deserializeResponse(Req request, HttpResponse<byte[]> httpResponse);
+
+  HttpRequest.Builder newHttpRequestBuilder() {
+    return HttpRequest.newBuilder().headers(getAuthorizationHeader(apiKey)).headers(getHeaders());
+  }
 
   private HttpRequest createHttpRequest(Req request) {
-    return HttpRequest.newBuilder()
-        .headers(getAuthorizationHeader(apiKey))
-        .headers(getHeaders())
-        .uri(endpoint)
-        .POST(createBodyPublisher(request))
-        .build();
+    return newHttpRequestBuilder().uri(endpoint).POST(createBodyPublisher(request)).build();
   }
 
   private HttpResponse<byte[]> sendHttpRequest(HttpRequest httpRequest) {

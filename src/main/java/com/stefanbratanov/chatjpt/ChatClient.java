@@ -39,7 +39,7 @@ public class ChatClient extends OpenAIClient<ChatRequest, ChatResponse> {
   }
 
   @Override
-  ChatResponse deserializeResponse(HttpResponse<byte[]> httpResponse) {
+  ChatResponse deserializeResponse(ChatRequest request, HttpResponse<byte[]> httpResponse) {
     try {
       return objectMapper.readValue(httpResponse.body(), ChatResponse.class);
     } catch (IOException ex) {
