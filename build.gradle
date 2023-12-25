@@ -1,5 +1,6 @@
 plugins {
     id "java-library"
+    id "maven-publish"
     id "com.diffplug.spotless" version "6.23.3"
     id "me.qoomon.git-versioning" version "6.4.3"
 }
@@ -20,6 +21,13 @@ repositories {
     mavenCentral()
 }
 
+java {
+    sourceCompatibility = 17
+    targetCompatibility = 17
+    withJavadocJar()
+    withSourcesJar()
+}
+
 def jacksonVersion = "2.16.1"
 
 dependencies {
@@ -28,6 +36,38 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.1")
     testImplementation("org.assertj:assertj-core:3.24.2")
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            pom {
+                name = "ChatJPT"
+                description = "A minimalistic Java client for the OpenAI API"
+                url = "https://github.com/StefanBratanov/chatjpt"
+                licenses {
+                    license {
+                        name = "The Apache License, Version 2.0"
+                        url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                    }
+                }
+                developers {
+                    developer {
+                        id = "StefanBratanov"
+                        name = "Stefan Bratanov"
+                        email = "stefan.bratanov93@gmail.com"
+                    }
+                }
+                scm {
+                    connection = "scm:git:git://github.com/StefanBratanov/chatjpt.git"
+                    developerConnection = "scm:git:ssh://github.com/StefanBratanov/chatjpt.git"
+                    url = "https://github.com/StefanBratanov/chatjpt"
+                }
+            }
+        }
+    }
 }
 
 spotless {
