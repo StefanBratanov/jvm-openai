@@ -35,6 +35,9 @@ public final class ChatJPT {
     return new ModelsClient(baseUrl, apiKey, organization, httpClient, objectMapper);
   }
 
+  /**
+   * @param apiKey the API key used for authentication
+   */
   public static Builder newBuilder(String apiKey) {
     return new Builder(apiKey);
   }
@@ -47,15 +50,22 @@ public final class ChatJPT {
     private final String apiKey;
     private Optional<String> organization = Optional.empty();
 
-    public Builder(String apiKey) {
+    Builder(String apiKey) {
       this.apiKey = apiKey;
     }
 
+    /**
+     * @param baseUrl the url which exposes the OpenAI API
+     */
     public Builder baseUrl(String baseUrl) {
       this.baseUrl = baseUrl;
       return this;
     }
 
+    /**
+     * @param organization for users who belong to multiple organizations specify which organization
+     *     will be used for the API requests
+     */
     public Builder organization(String organization) {
       this.organization = Optional.of(organization);
       return this;
