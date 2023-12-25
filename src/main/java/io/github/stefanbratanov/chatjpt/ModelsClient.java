@@ -1,4 +1,4 @@
-package com.stefanbratanov.chatjpt;
+package io.github.stefanbratanov.chatjpt;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;

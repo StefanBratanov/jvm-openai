@@ -1,6 +1,6 @@
-package com.stefanbratanov.chatjpt;
+package io.github.stefanbratanov.chatjpt;
 
-import static com.stefanbratanov.chatjpt.Utils.*;
+import static io.github.stefanbratanov.chatjpt.Utils.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;

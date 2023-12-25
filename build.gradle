@@ -5,7 +5,7 @@ plugins {
     id "me.qoomon.git-versioning" version "6.4.3"
 }
 
-group = "com.stefanbratanov"
+group = "io.github.stefanbratanov"
 
 version = "develop"
 

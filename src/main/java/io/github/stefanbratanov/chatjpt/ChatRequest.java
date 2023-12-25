@@ -1,4 +1,4 @@
-package com.stefanbratanov.chatjpt;
+package io.github.stefanbratanov.chatjpt;
 
 import java.util.LinkedList;
 import java.util.List;

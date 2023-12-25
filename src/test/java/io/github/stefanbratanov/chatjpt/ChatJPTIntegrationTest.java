@@ -1,4 +1,4 @@
-package com.stefanbratanov.chatjpt;
+package io.github.stefanbratanov.chatjpt;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

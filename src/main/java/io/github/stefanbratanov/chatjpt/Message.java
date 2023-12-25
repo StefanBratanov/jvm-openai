@@ -1,4 +1,4 @@
-package com.stefanbratanov.chatjpt;
+package io.github.stefanbratanov.chatjpt;
 
 public record Message(String role, String content) {
 
