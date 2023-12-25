@@ -19,7 +19,11 @@ class ChatResponseDeserializer extends StdDeserializer<ChatResponse> {
     String id = node.get("id").asText();
     long created = node.get("created").asLong();
     String model = node.get("model").asText();
-    String systemFingerprint = node.get("system_fingerprint").asText();
+    JsonNode systemFingerprintNode = node.get("system_fingerprint");
+    String systemFingerprint = null;
+    if (!systemFingerprintNode.isNull()) {
+      systemFingerprint = systemFingerprintNode.asText();
+    }
 
     // Using the first choice because always using the default value of n (1)
     JsonNode messageNode = node.get("choices").get(0).get("message");
