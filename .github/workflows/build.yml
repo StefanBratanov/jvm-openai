@@ -19,4 +19,4 @@ jobs:
       - name: Build
         run: ./gradlew spotlessCheck build
         env:
-          OPENAI_API_KEY: {{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
