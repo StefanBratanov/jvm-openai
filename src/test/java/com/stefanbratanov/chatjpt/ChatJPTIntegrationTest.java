@@ -27,7 +27,10 @@ public class ChatJPTIntegrationTest {
 
     ChatResponse response = chatClient.sendRequest(request);
 
-    assertThat(response.message().content()).isNotNull();
+    assertThat(response.choices())
+        .hasSize(1)
+        .first()
+        .satisfies(choice -> assertThat(choice.message().content()).isNotNull());
   }
 
   @Test

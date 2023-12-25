@@ -3,6 +3,7 @@ package com.stefanbratanov.chatjpt;
 import static com.stefanbratanov.chatjpt.Utils.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -80,7 +81,8 @@ abstract class OpenAIClient {
         throw new OpenAIException(statusCode, null);
       }
       try {
-        Error error = objectMapper.readValue(httpResponse.body(), Error.class);
+        JsonNode errorNode = objectMapper.readTree(httpResponse.body()).get("error");
+        Error error = objectMapper.readValue(errorNode.toString(), Error.class);
         throw new OpenAIException(statusCode, error.message());
       } catch (IOException ex) {
         throw new UncheckedIOException(ex);
@@ -95,4 +97,6 @@ abstract class OpenAIClient {
       throw new UncheckedIOException(ex);
     }
   }
+
+  private record Error(String message, String type) {}
 }

@@ -3,23 +3,7 @@ package com.stefanbratanov.chatjpt;
 import java.util.LinkedList;
 import java.util.List;
 
-public final class ChatRequest {
-
-  private final String model;
-  private final List<Message> messages;
-
-  private ChatRequest(String model, List<Message> messages) {
-    this.model = model;
-    this.messages = messages;
-  }
-
-  public String model() {
-    return model;
-  }
-
-  public List<Message> messages() {
-    return messages;
-  }
+public record ChatRequest(String model, List<Message> messages) {
 
   public static Builder newBuilder() {
     return new Builder();
