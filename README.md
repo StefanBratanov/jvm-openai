@@ -12,7 +12,7 @@ ChatRequest request = ChatRequest.newBuilder()
         .message(Message.userMessage("Who won the world series in 2020?"))
         .build();
 ChatResponse response = chatClient.sendRequest(request);
-// ChatResponse[id=chatcmpl-123, created=1703405590, model=gpt-3.5-turbo-0613, message=Message[role=assistant, content=The Los Angeles Dodgers won the World Series in 2020.]]
+// ChatResponse[id=chatcmpl-123, created=1703499443, model=gpt-3.5-turbo-0613, systemFingerprint=fp_44709d6fcb, message=Message[role=assistant, content=The Los Angeles Dodgers won the World Series in 2020.], usage=Usage[promptTokens=17, completionTokens=13, totalTokens=30]]
 ```
 
 ## Supported APIs

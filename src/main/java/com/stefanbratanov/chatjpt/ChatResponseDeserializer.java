@@ -19,6 +19,7 @@ class ChatResponseDeserializer extends StdDeserializer<ChatResponse> {
     String id = node.get("id").asText();
     long created = node.get("created").asLong();
     String model = node.get("model").asText();
+    String systemFingerprint = node.get("system_fingerprint").asText();
 
     // Using the first choice because always using the default value of n (1)
     JsonNode messageNode = node.get("choices").get(0).get("message");
@@ -27,6 +28,13 @@ class ChatResponseDeserializer extends StdDeserializer<ChatResponse> {
 
     Message message = new Message(role, content);
 
-    return new ChatResponse(id, created, model, message);
+    JsonNode usageNode = node.get("usage");
+    int promptTokens = usageNode.get("prompt_tokens").asInt();
+    int completionTokens = usageNode.get("completion_tokens").asInt();
+    int totalTokens = usageNode.get("total_tokens").asInt();
+
+    Usage usage = new Usage(promptTokens, completionTokens, totalTokens);
+
+    return new ChatResponse(id, created, model, systemFingerprint, message, usage);
   }
 }
