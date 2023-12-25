@@ -23,12 +23,20 @@ public final class ChatClient extends OpenAIClient {
     endpoint = baseUrl.resolve(Endpoint.CHAT.getPath());
   }
 
+  /**
+   * Creates a model response for the given chat conversation.
+   *
+   * @throws OpenAIException in case of API errors
+   */
   public ChatResponse sendRequest(ChatRequest request) {
     HttpRequest httpRequest = createPostRequest(request);
     HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
     return deserializeResponse(httpResponse.body(), ChatResponse.class);
   }
 
+  /**
+   * Same as {@link #sendRequest(ChatRequest)} but returns a response in a {@link CompletableFuture}
+   */
   public CompletableFuture<ChatResponse> sendRequestAsync(ChatRequest request) {
     HttpRequest httpRequest = createPostRequest(request);
     return sendHttpRequestAsync(httpRequest)

@@ -1,38 +1,22 @@
 package com.stefanbratanov.chatjpt;
 
-import static com.stefanbratanov.chatjpt.Utils.*;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.List;
 import java.util.Optional;
 
+/**
+ * A class which when created using the {@link Builder} can be used to create clients based on the
+ * endpoints defined at <a href="https://platform.openai.com/docs/api-reference">API Reference -
+ * OpenAI API</a>
+ */
 public final class ChatJPT {
-
-  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
-  static {
-    SimpleModule module = new SimpleModule();
-    module
-        .addSerializer(ChatRequest.class, new ChatRequestSerializer())
-        .addDeserializer(ChatResponse.class, new ChatResponseDeserializer())
-        .addDeserializer(Model.class, new ModelDeserializer())
-        .addDeserializer(Error.class, new ErrorDeserializer());
-    OBJECT_MAPPER.registerModule(module);
-  }
 
   private final URI baseUrl;
   private final String apiKey;
   private final Optional<String> organization;
   private final HttpClient httpClient;
+  private final ObjectMapper objectMapper;
 
   private ChatJPT(
       URI baseUrl, String apiKey, Optional<String> organization, HttpClient httpClient) {
@@ -40,49 +24,15 @@ public final class ChatJPT {
     this.apiKey = apiKey;
     this.organization = organization;
     this.httpClient = httpClient;
+    this.objectMapper = ChatJPTObjectMapper.getInstance();
   }
 
   public ChatClient newChatClient() {
-    return new ChatClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
+    return new ChatClient(baseUrl, apiKey, organization, httpClient, objectMapper);
   }
 
-  public List<Model> models() {
-    HttpRequest httpRequest =
-        HttpRequest.newBuilder()
-            .headers(getAuthenticationHeaders(apiKey, organization))
-            .uri(baseUrl.resolve(Endpoint.MODELS.getPath()))
-            .GET()
-            .build();
-    try {
-      HttpResponse<byte[]> httpResponse =
-          httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
-      validateHttpResponse(httpResponse, OBJECT_MAPPER);
-      JsonNode models = OBJECT_MAPPER.readTree(httpResponse.body());
-      return OBJECT_MAPPER.readValue(models.get("data").toString(), new TypeReference<>() {});
-    } catch (IOException ex) {
-      throw new UncheckedIOException(ex);
-    } catch (InterruptedException ex) {
-      throw new RuntimeException(ex);
-    }
-  }
-
-  public Model model(String model) {
-    HttpRequest httpRequest =
-        HttpRequest.newBuilder()
-            .headers(getAuthenticationHeaders(apiKey, organization))
-            .uri(baseUrl.resolve(Endpoint.MODELS.getPath() + "/" + model))
-            .GET()
-            .build();
-    try {
-      HttpResponse<byte[]> httpResponse =
-          httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
-      validateHttpResponse(httpResponse, OBJECT_MAPPER);
-      return OBJECT_MAPPER.readValue(httpResponse.body(), Model.class);
-    } catch (IOException ex) {
-      throw new UncheckedIOException(ex);
-    } catch (InterruptedException ex) {
-      throw new RuntimeException(ex);
-    }
+  public ModelsClient newModelsClient() {
+    return new ModelsClient(baseUrl, apiKey, organization, httpClient, objectMapper);
   }
 
   public static Builder newBuilder(String apiKey) {

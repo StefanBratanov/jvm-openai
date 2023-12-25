@@ -31,12 +31,14 @@ public class ChatJPTIntegrationTest {
   }
 
   @Test
-  public void testModels() {
-    List<Model> models = chatJPT.models();
+  public void testModelsClient() {
+    ModelsClient modelsClient = chatJPT.newModelsClient();
+
+    List<Model> models = modelsClient.getModels();
 
     assertThat(models).isNotEmpty();
 
-    Model model = chatJPT.model("gpt-3.5-turbo-instruct");
+    Model model = modelsClient.getModel("gpt-3.5-turbo-instruct");
 
     assertThat(model).isNotNull();
   }

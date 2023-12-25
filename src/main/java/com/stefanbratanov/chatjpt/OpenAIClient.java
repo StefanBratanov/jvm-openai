@@ -14,12 +14,11 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * Subclasses should be based on one of the endpoints defined at <a
- * href="https://platform.openai.com/docs/api-reference">API Reference</a>
+ * href="https://platform.openai.com/docs/api-reference">API Reference - OpenAI API</a>
  */
 abstract class OpenAIClient {
 
-  private final String apiKey;
-  private final Optional<String> organization;
+  private final String[] authenticationHeaders;
 
   protected final HttpClient httpClient;
   protected final ObjectMapper objectMapper;
@@ -29,16 +28,18 @@ abstract class OpenAIClient {
       Optional<String> organization,
       HttpClient httpClient,
       ObjectMapper objectMapper) {
-    this.apiKey = apiKey;
-    this.organization = organization;
+    this.authenticationHeaders = getAuthenticationHeaders(apiKey, organization);
     this.httpClient = httpClient;
     this.objectMapper = objectMapper;
   }
 
   HttpRequest.Builder newHttpRequestBuilder(String... headers) {
-    return HttpRequest.newBuilder()
-        .headers(getAuthenticationHeaders(apiKey, organization))
-        .headers(headers);
+    HttpRequest.Builder httpRequestBuilder =
+        HttpRequest.newBuilder().headers(authenticationHeaders);
+    if (headers.length > 0) {
+      httpRequestBuilder.headers(headers);
+    }
+    return httpRequestBuilder;
   }
 
   <T> HttpRequest.BodyPublisher createBodyPublisher(T body) {
@@ -53,7 +54,7 @@ abstract class OpenAIClient {
     try {
       HttpResponse<byte[]> httpResponse =
           httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
-      validateHttpResponse(httpResponse, objectMapper);
+      validateHttpResponse(httpResponse);
       return httpResponse;
     } catch (IOException ex) {
       throw new UncheckedIOException(ex);
@@ -67,9 +68,24 @@ abstract class OpenAIClient {
         .sendAsync(httpRequest, HttpResponse.BodyHandlers.ofByteArray())
         .thenApply(
             httpResponse -> {
-              validateHttpResponse(httpResponse, objectMapper);
+              validateHttpResponse(httpResponse);
               return httpResponse;
             });
+  }
+
+  void validateHttpResponse(HttpResponse<byte[]> httpResponse) {
+    int statusCode = httpResponse.statusCode();
+    if (statusCode < 200 || statusCode > 299) {
+      if (httpResponse.body() == null) {
+        throw new OpenAIException(statusCode, null);
+      }
+      try {
+        Error error = objectMapper.readValue(httpResponse.body(), Error.class);
+        throw new OpenAIException(statusCode, error.message());
+      } catch (IOException ex) {
+        throw new UncheckedIOException(ex);
+      }
+    }
   }
 
   <T> T deserializeResponse(byte[] response, Class<T> responseClass) {
