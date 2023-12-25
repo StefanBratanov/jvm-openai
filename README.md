@@ -6,7 +6,7 @@ A minimalistic Java client for the [OpenAI API](https://platform.openai.com/docs
 
 ```java
 ChatJPT chatJPT = ChatJPT.newBuilder("OPENAI_API_KEY").build();
-ChatClient chatClient = chatJPT.newChatClient();
+ChatClient chatClient = chatJPT.chatClient();
 ChatRequest request = ChatRequest.newBuilder()
         .model("gpt-3.5-turbo")
         .message(Message.userMessage("Who won the world series in 2020?"))

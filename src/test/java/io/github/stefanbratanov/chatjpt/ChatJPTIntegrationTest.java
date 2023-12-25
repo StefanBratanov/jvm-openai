@@ -18,7 +18,7 @@ public class ChatJPTIntegrationTest {
 
   @Test
   public void testChatClient() {
-    ChatClient chatClient = chatJPT.newChatClient();
+    ChatClient chatClient = chatJPT.chatClient();
 
     ChatRequest request =
         ChatRequest.newBuilder()
@@ -35,7 +35,7 @@ public class ChatJPTIntegrationTest {
 
   @Test
   public void testModelsClient() {
-    ModelsClient modelsClient = chatJPT.newModelsClient();
+    ModelsClient modelsClient = chatJPT.modelsClient();
 
     List<Model> models = modelsClient.getModels();
 
