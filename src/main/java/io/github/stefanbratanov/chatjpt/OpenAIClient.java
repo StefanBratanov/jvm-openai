@@ -1,7 +1,5 @@
 package io.github.stefanbratanov.chatjpt;
 
-import static io.github.stefanbratanov.chatjpt.Utils.*;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,6 +8,8 @@ import java.io.UncheckedIOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -96,6 +96,18 @@ abstract class OpenAIClient {
     } catch (IOException ex) {
       throw new UncheckedIOException(ex);
     }
+  }
+
+  private String[] getAuthenticationHeaders(String apiKey, Optional<String> organization) {
+    List<String> authenticationHeaders = new ArrayList<>();
+    authenticationHeaders.add("Authorization");
+    authenticationHeaders.add("Bearer " + apiKey);
+    organization.ifPresent(
+        org -> {
+          authenticationHeaders.add("OpenAI-Organization");
+          authenticationHeaders.add(org);
+        });
+    return authenticationHeaders.toArray(new String[] {});
   }
 
   private record Error(String message, String type) {}

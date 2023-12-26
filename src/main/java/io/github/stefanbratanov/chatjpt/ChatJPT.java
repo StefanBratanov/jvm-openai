@@ -1,5 +1,10 @@
 package io.github.stefanbratanov.chatjpt;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.util.Optional;
@@ -11,17 +16,22 @@ import java.util.Optional;
  */
 public final class ChatJPT {
 
+  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+  static {
+    OBJECT_MAPPER.registerModule(new Jdk8Module());
+    OBJECT_MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    OBJECT_MAPPER.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+    OBJECT_MAPPER.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+  }
+
   private final ChatClient chatClient;
   private final ModelsClient modelsClient;
 
   private ChatJPT(
       URI baseUrl, String apiKey, Optional<String> organization, HttpClient httpClient) {
-    this.chatClient =
-        new ChatClient(
-            baseUrl, apiKey, organization, httpClient, ChatJPTObjectMapper.getInstance());
-    this.modelsClient =
-        new ModelsClient(
-            baseUrl, apiKey, organization, httpClient, ChatJPTObjectMapper.getInstance());
+    chatClient = new ChatClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
+    modelsClient = new ModelsClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
   }
 
   public ChatClient chatClient() {

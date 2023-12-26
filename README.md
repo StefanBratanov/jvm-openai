@@ -8,7 +8,7 @@ A minimalistic Java client for the [OpenAI API](https://platform.openai.com/docs
 
 ## Add dependency
 
-Java 17+ is a prerequisite.
+Java 17+ is a prerequisite
 
 #### Gradle
 ```groovy
