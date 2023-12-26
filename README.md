@@ -6,6 +6,24 @@
 
 A minimalistic Java client for the [OpenAI API](https://platform.openai.com/docs/api-reference)
 
+## Add dependency
+
+Java 17+ is a prerequisite.
+
+#### Gradle
+```groovy
+implementation("io.github.stefanbratanov:chatjpt:${version}")
+```
+
+#### Maven
+```xml
+<dependency>
+    <groupId>io.github.stefanbratanov</groupId>
+    <artifactId>chatjpt</artifactId>
+    <version>${version}</version>
+</dependency>
+```
+
 ## Minimal sample
 
 ```java
