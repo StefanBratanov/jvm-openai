@@ -45,7 +45,10 @@ public final class ChatClient extends OpenAIClient {
 
   private HttpRequest createPostRequest(ChatRequest request) {
     return newHttpRequestBuilder(
-            "Content-Type", Constants.JSON_MEDIA_TYPE, "Accept", Constants.JSON_MEDIA_TYPE)
+            Constants.CONTENT_TYPE_HEADER,
+            Constants.JSON_MEDIA_TYPE,
+            Constants.ACCEPT_HEADER,
+            Constants.JSON_MEDIA_TYPE)
         .uri(endpoint)
         .POST(createBodyPublisher(request))
         .build();

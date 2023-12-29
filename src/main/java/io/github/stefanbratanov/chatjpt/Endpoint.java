@@ -2,7 +2,9 @@ package io.github.stefanbratanov.chatjpt;
 
 enum Endpoint {
   CHAT("chat/completions"),
-  MODELS("models");
+  MODELS("models"),
+  SPEECH("audio/speech"),
+  TRANSCRIPTIONS("audio/transcriptions");
 
   private final String path;
 

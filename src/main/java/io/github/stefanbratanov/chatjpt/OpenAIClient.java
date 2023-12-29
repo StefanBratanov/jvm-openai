@@ -52,9 +52,13 @@ abstract class OpenAIClient {
   }
 
   HttpResponse<byte[]> sendHttpRequest(HttpRequest httpRequest) {
+    return sendHttpRequest(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
+  }
+
+  <T> HttpResponse<T> sendHttpRequest(
+      HttpRequest httpRequest, HttpResponse.BodyHandler<T> responseBodyHandler) {
     try {
-      HttpResponse<byte[]> httpResponse =
-          httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
+      HttpResponse<T> httpResponse = httpClient.send(httpRequest, responseBodyHandler);
       validateHttpResponse(httpResponse);
       return httpResponse;
     } catch (IOException ex) {
@@ -65,8 +69,13 @@ abstract class OpenAIClient {
   }
 
   CompletableFuture<HttpResponse<byte[]>> sendHttpRequestAsync(HttpRequest httpRequest) {
+    return sendHttpRequestAsync(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
+  }
+
+  <T> CompletableFuture<HttpResponse<T>> sendHttpRequestAsync(
+      HttpRequest httpRequest, HttpResponse.BodyHandler<T> responseBodyHandler) {
     return httpClient
-        .sendAsync(httpRequest, HttpResponse.BodyHandlers.ofByteArray())
+        .sendAsync(httpRequest, responseBodyHandler)
         .thenApply(
             httpResponse -> {
               validateHttpResponse(httpResponse);
@@ -74,25 +83,33 @@ abstract class OpenAIClient {
             });
   }
 
-  void validateHttpResponse(HttpResponse<byte[]> httpResponse) {
+  void validateHttpResponse(HttpResponse<?> httpResponse) {
     int statusCode = httpResponse.statusCode();
     if (statusCode < 200 || statusCode > 299) {
-      if (httpResponse.body() == null) {
-        throw new OpenAIException(statusCode, null);
+      if (httpResponse.body() instanceof byte[] body) {
+        try {
+          JsonNode errorNode = objectMapper.readTree(body).get("error");
+          Error error = objectMapper.readValue(errorNode.toString(), Error.class);
+          throw new OpenAIException(statusCode, error.message());
+        } catch (IOException ex) {
+          throw new UncheckedIOException(ex);
+        }
       }
-      try {
-        JsonNode errorNode = objectMapper.readTree(httpResponse.body()).get("error");
-        Error error = objectMapper.readValue(errorNode.toString(), Error.class);
-        throw new OpenAIException(statusCode, error.message());
-      } catch (IOException ex) {
-        throw new UncheckedIOException(ex);
-      }
+      throw new OpenAIException(statusCode, null);
     }
   }
 
   <T> T deserializeResponse(byte[] response, Class<T> responseClass) {
     try {
       return objectMapper.readValue(response, responseClass);
+    } catch (IOException ex) {
+      throw new UncheckedIOException(ex);
+    }
+  }
+
+  JsonNode deserializeResponseAsTree(byte[] response) {
+    try {
+      return objectMapper.readTree(response);
     } catch (IOException ex) {
       throw new UncheckedIOException(ex);
     }

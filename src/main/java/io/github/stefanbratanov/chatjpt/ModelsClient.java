@@ -15,7 +15,7 @@ import java.util.Optional;
 /** Based on <a href="https://platform.openai.com/docs/api-reference/models">Models</a> */
 public final class ModelsClient extends OpenAIClient {
 
-  private final URI endpoint;
+  private final URI baseUrl;
 
   ModelsClient(
       URI baseUrl,
@@ -24,7 +24,7 @@ public final class ModelsClient extends OpenAIClient {
       HttpClient httpClient,
       ObjectMapper objectMapper) {
     super(apiKey, organization, httpClient, objectMapper);
-    endpoint = baseUrl.resolve(Endpoint.MODELS.getPath());
+    this.baseUrl = baseUrl;
   }
 
   /**
@@ -34,7 +34,8 @@ public final class ModelsClient extends OpenAIClient {
    * @throws OpenAIException in case of API errors
    */
   public List<Model> getModels() {
-    HttpRequest httpRequest = newHttpRequestBuilder().uri(endpoint).GET().build();
+    HttpRequest httpRequest =
+        newHttpRequestBuilder().uri(baseUrl.resolve(Endpoint.MODELS.getPath())).GET().build();
     HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
     try {
       JsonNode models = objectMapper.readTree(httpResponse.body());
@@ -53,7 +54,10 @@ public final class ModelsClient extends OpenAIClient {
    */
   public Model getModel(String model) {
     HttpRequest httpRequest =
-        newHttpRequestBuilder().uri(URI.create(endpoint.toString() + "/" + model)).GET().build();
+        newHttpRequestBuilder()
+            .uri(baseUrl.resolve(Endpoint.MODELS.getPath() + "/" + model))
+            .GET()
+            .build();
     HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
     return deserializeResponse(httpResponse.body(), Model.class);
   }
@@ -66,7 +70,10 @@ public final class ModelsClient extends OpenAIClient {
    */
   public DeletionStatus deleteModel(String model) {
     HttpRequest httpRequest =
-        newHttpRequestBuilder().uri(URI.create(endpoint.toString() + "/" + model)).DELETE().build();
+        newHttpRequestBuilder()
+            .uri(baseUrl.resolve(Endpoint.MODELS.getPath() + "/" + model))
+            .DELETE()
+            .build();
     HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
     return deserializeResponse(httpResponse.body(), DeletionStatus.class);
   }

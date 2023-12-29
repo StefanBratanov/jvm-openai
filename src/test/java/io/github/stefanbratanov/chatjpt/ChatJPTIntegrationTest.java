@@ -2,9 +2,11 @@ package io.github.stefanbratanov.chatjpt;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.nio.file.Path;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 public class ChatJPTIntegrationTest {
 
@@ -44,5 +46,30 @@ public class ChatJPTIntegrationTest {
     Model model = modelsClient.getModel("gpt-3.5-turbo-instruct");
 
     assertThat(model).isNotNull();
+  }
+
+  @Test
+  public void testAudioClient(@TempDir Path tempDir) {
+    AudioClient audioClient = chatJPT.audioClient();
+
+    SpeechRequest speechRequest =
+        SpeechRequest.newBuilder()
+            .model("tts-1")
+            .input("You're gonna eat lightning, you're gonna crap thunder!")
+            .voice("alloy")
+            .build();
+
+    Path speech = tempDir.resolve("rocky.mp3");
+
+    audioClient.createSpeech(speechRequest, speech);
+
+    assertThat(speech).exists().isNotEmptyFile();
+
+    TranscriptionRequest transcriptionRequest =
+        TranscriptionRequest.newBuilder().file(speech).model("whisper-1").build();
+
+    String transcript = audioClient.createTranscript(transcriptionRequest);
+
+    assertThat(transcript).isNotEmpty();
   }
 }
