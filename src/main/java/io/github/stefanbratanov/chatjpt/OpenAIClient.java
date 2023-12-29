@@ -8,6 +8,8 @@ import java.io.UncheckedIOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -86,16 +88,14 @@ abstract class OpenAIClient {
   void validateHttpResponse(HttpResponse<?> httpResponse) {
     int statusCode = httpResponse.statusCode();
     if (statusCode < 200 || statusCode > 299) {
-      if (httpResponse.body() instanceof byte[] body) {
-        try {
-          JsonNode errorNode = objectMapper.readTree(body).get("error");
-          Error error = objectMapper.readValue(errorNode.toString(), Error.class);
-          throw new OpenAIException(statusCode, error.message());
-        } catch (IOException ex) {
-          throw new UncheckedIOException(ex);
-        }
-      }
-      throw new OpenAIException(statusCode, null);
+      getErrorMessageFromHttpResponse(httpResponse)
+          .ifPresentOrElse(
+              errorMessage -> {
+                throw new OpenAIException(statusCode, errorMessage);
+              },
+              () -> {
+                throw new OpenAIException(statusCode, null);
+              });
     }
   }
 
@@ -127,5 +127,20 @@ abstract class OpenAIClient {
     return authenticationHeaders.toArray(new String[] {});
   }
 
-  private record Error(String message, String type) {}
+  private Optional<String> getErrorMessageFromHttpResponse(HttpResponse<?> httpResponse) {
+    try {
+      byte[] body;
+      if (httpResponse.body() instanceof byte[]) {
+        body = (byte[]) httpResponse.body();
+      } else if (httpResponse.body() instanceof Path path) {
+        body = Files.readAllBytes(path);
+      } else {
+        return Optional.empty();
+      }
+      JsonNode errorNode = objectMapper.readTree(body).get("error");
+      return Optional.of(errorNode.get("message").asText());
+    } catch (IOException ex) {
+      throw new UncheckedIOException(ex);
+    }
+  }
 }
