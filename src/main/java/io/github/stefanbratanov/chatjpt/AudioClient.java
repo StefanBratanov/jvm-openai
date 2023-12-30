@@ -9,7 +9,7 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 /** Based on <a href="https://platform.openai.com/docs/api-reference/audio">Audio</a> */
-public class AudioClient extends OpenAIClient {
+public final class AudioClient extends OpenAIClient {
 
   private final URI baseUrl;
 
@@ -63,6 +63,35 @@ public class AudioClient extends OpenAIClient {
         newHttpRequestBuilder(
                 Constants.CONTENT_TYPE_HEADER, "multipart/form-data; boundary=" + boundary)
             .uri(baseUrl.resolve(Endpoint.TRANSCRIPTIONS.getPath()))
+            .POST(multipartBodyPublisherBuilder.build())
+            .build();
+
+    HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
+
+    return deserializeResponseAsTree(httpResponse.body()).get("text").asText();
+  }
+
+  /**
+   * Translates audio into English.
+   *
+   * @throws OpenAIException in case of API errors
+   */
+  public String createTranslation(TranslationRequest request) {
+    long boundary = System.currentTimeMillis();
+    MultipartBodyPublisher.Builder multipartBodyPublisherBuilder =
+        MultipartBodyPublisher.newBuilder(boundary)
+            .filePart("file", request.file())
+            .textPart("model", request.model());
+    request.prompt().ifPresent(prompt -> multipartBodyPublisherBuilder.textPart("prompt", prompt));
+    request
+        .temperature()
+        .ifPresent(
+            temperature -> multipartBodyPublisherBuilder.textPart("temperature", temperature));
+
+    HttpRequest httpRequest =
+        newHttpRequestBuilder(
+                Constants.CONTENT_TYPE_HEADER, "multipart/form-data; boundary=" + boundary)
+            .uri(baseUrl.resolve(Endpoint.TRANSLATIONS.getPath()))
             .POST(multipartBodyPublisherBuilder.build())
             .build();
 

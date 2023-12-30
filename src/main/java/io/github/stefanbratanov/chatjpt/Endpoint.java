@@ -4,7 +4,8 @@ enum Endpoint {
   CHAT("chat/completions"),
   MODELS("models"),
   SPEECH("audio/speech"),
-  TRANSCRIPTIONS("audio/transcriptions");
+  TRANSCRIPTIONS("audio/transcriptions"),
+  TRANSLATIONS("audio/translations");
 
   private final String path;
 

@@ -3,12 +3,8 @@ package io.github.stefanbratanov.chatjpt;
 import java.nio.file.Path;
 import java.util.Optional;
 
-public record TranscriptionRequest(
-    Path file,
-    String model,
-    Optional<String> language,
-    Optional<String> prompt,
-    Optional<Double> temperature) {
+public record TranslationRequest(
+    Path file, String model, Optional<String> prompt, Optional<Double> temperature) {
 
   public static Builder newBuilder() {
     return new Builder();
@@ -20,13 +16,12 @@ public record TranscriptionRequest(
 
     private Path file;
     private String model = DEFAULT_MODEL;
-    private Optional<String> language = Optional.empty();
     private Optional<String> prompt = Optional.empty();
     private Optional<Double> temperature = Optional.empty();
 
     /**
-     * @param file The audio file object (not file name) to transcribe, in one of these formats:
-     *     flac, mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm.
+     * @param file The audio file object (not file name) translate, in one of these formats: flac,
+     *     mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm.
      */
     public Builder file(Path file) {
       this.file = file;
@@ -38,16 +33,6 @@ public record TranscriptionRequest(
      */
     public Builder model(String model) {
       this.model = model;
-      return this;
-    }
-
-    /**
-     * @param language The language of the input audio. Supplying the input language in <a
-     *     href="https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes">ISO-639-1</a> format
-     *     will improve accuracy and latency.
-     */
-    public Builder language(String language) {
-      this.language = Optional.of(language);
       return this;
     }
 
@@ -78,11 +63,11 @@ public record TranscriptionRequest(
       return this;
     }
 
-    public TranscriptionRequest build() {
+    public TranslationRequest build() {
       if (file == null) {
         throw new IllegalArgumentException("file must be set");
       }
-      return new TranscriptionRequest(file, model, language, prompt, temperature);
+      return new TranslationRequest(file, model, prompt, temperature);
     }
   }
 }

@@ -4,7 +4,6 @@
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.stefanbratanov/chatjpt)](https://central.sonatype.com/artifact/io.github.stefanbratanov/chatjpt)
 [![javadoc](https://javadoc.io/badge2/io.github.stefanbratanov/chatjpt/javadoc.svg)](https://javadoc.io/doc/io.github.stefanbratanov/chatjpt)
 
-
 A minimalistic Java client for the [OpenAI API](https://platform.openai.com/docs/api-reference)
 
 ## Add dependency
@@ -12,12 +11,15 @@ A minimalistic Java client for the [OpenAI API](https://platform.openai.com/docs
 Java 17+ is a prerequisite
 
 #### Gradle
+
 ```groovy
 implementation("io.github.stefanbratanov:chatjpt:${version}")
 ```
 
 #### Maven
+
 ```xml
+
 <dependency>
     <groupId>io.github.stefanbratanov</groupId>
     <artifactId>chatjpt</artifactId>
@@ -42,7 +44,7 @@ ChatResponse response = chatClient.sendRequest(request);
 
 | API                                                                       | Status |
 |---------------------------------------------------------------------------|:------:|
-| [Audio](https://platform.openai.com/docs/api-reference/audio)             |        |
+| [Audio](https://platform.openai.com/docs/api-reference/audio)             |   ✔️   |
 | [Chat](https://platform.openai.com/docs/api-reference/chat)               | ️  ✔️  |
 | [Embeddings](https://platform.openai.com/docs/api-reference/embeddings)   |        |
 | [Fine-tuning](https://platform.openai.com/docs/api-reference/fine-tuning) |        |

@@ -2,8 +2,11 @@ package io.github.stefanbratanov.chatjpt;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.net.URISyntaxException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -49,17 +52,17 @@ public class ChatJPTIntegrationTest {
   }
 
   @Test
-  public void testAudioClient(@TempDir Path tempDir) {
+  public void testAudioClient(@TempDir Path tempDir) throws URISyntaxException {
     AudioClient audioClient = chatJPT.audioClient();
 
     SpeechRequest speechRequest =
         SpeechRequest.newBuilder()
             .model("tts-1")
-            .input("You're gonna eat lightning, you're gonna crap thunder!")
+            .input("The quick brown fox jumped over the lazy dog.")
             .voice("alloy")
             .build();
 
-    Path speech = tempDir.resolve("rocky.mp3");
+    Path speech = tempDir.resolve("speech.mp3");
 
     audioClient.createSpeech(speechRequest, speech);
 
@@ -70,6 +73,19 @@ public class ChatJPTIntegrationTest {
 
     String transcript = audioClient.createTranscript(transcriptionRequest);
 
-    assertThat(transcript).isNotEmpty();
+    assertThat(transcript).isEqualToIgnoringCase("The quick brown fox jumped over the lazy dog.");
+
+    Path greeting =
+        Paths.get(
+            Objects.requireNonNull(
+                    ChatJPTIntegrationTest.class.getResource("/italian-greeting.mp3"))
+                .toURI());
+
+    TranslationRequest translationRequest =
+        TranslationRequest.newBuilder().file(greeting).model("whisper-1").build();
+
+    String translation = audioClient.createTranslation(translationRequest);
+
+    assertThat(translation).isEqualTo("My name is Diego. What's your name?");
   }
 }
