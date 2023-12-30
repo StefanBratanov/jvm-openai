@@ -139,7 +139,7 @@ abstract class OpenAIClient {
       }
       JsonNode errorNode = objectMapper.readTree(body).get("error");
       return Optional.ofNullable(errorNode.get("message"))
-          .filter(node -> !node.isEmpty())
+          .filter(node -> !node.asText().isEmpty())
           .or(() -> Optional.ofNullable(errorNode.get("type")))
           .map(JsonNode::asText);
     } catch (IOException ex) {
