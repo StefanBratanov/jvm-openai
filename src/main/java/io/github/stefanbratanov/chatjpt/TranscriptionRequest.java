@@ -79,6 +79,9 @@ public record TranscriptionRequest(
     }
 
     public TranscriptionRequest build() {
+      if (file == null) {
+        throw new IllegalArgumentException("file must be set");
+      }
       return new TranscriptionRequest(file, model, language, prompt, temperature);
     }
   }

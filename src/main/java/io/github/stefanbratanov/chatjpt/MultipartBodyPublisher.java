@@ -9,11 +9,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Flow;
-import java.util.concurrent.SubmissionPublisher;
 
 class MultipartBodyPublisher implements HttpRequest.BodyPublisher {
 
-  private final SubmissionPublisher<ByteBuffer> publisher = new SubmissionPublisher<>();
   private final List<byte[]> multipartBodyParts;
 
   private MultipartBodyPublisher(List<byte[]> multipartBodyParts) {
@@ -22,7 +20,7 @@ class MultipartBodyPublisher implements HttpRequest.BodyPublisher {
 
   @Override
   public long contentLength() {
-    return multipartBodyParts.stream().mapToLong(bodyPart -> bodyPart.length).sum();
+    return multipartBodyParts.stream().mapToInt(bodyPart -> bodyPart.length).sum();
   }
 
   @Override
@@ -33,8 +31,8 @@ class MultipartBodyPublisher implements HttpRequest.BodyPublisher {
 
           @Override
           public void request(long n) {
-            long remaining = n;
-            while (remaining-- > 0 && index < multipartBodyParts.size()) {
+            long elementsToEmit = Math.min(n, multipartBodyParts.size() - index);
+            for (int i = 0; i < elementsToEmit; i++) {
               subscriber.onNext(ByteBuffer.wrap(multipartBodyParts.get(index++)));
             }
             if (index == multipartBodyParts.size()) {
@@ -53,6 +51,8 @@ class MultipartBodyPublisher implements HttpRequest.BodyPublisher {
 
   static class Builder {
 
+    private static final String CRLF = "\r\n";
+
     private final long boundary;
     private final String separator;
 
@@ -60,21 +60,12 @@ class MultipartBodyPublisher implements HttpRequest.BodyPublisher {
 
     Builder(long boundary) {
       this.boundary = boundary;
-      separator =
-          "--" + boundary + System.lineSeparator() + "Content-Disposition: form-data; name=";
+      separator = "--" + boundary + CRLF + "Content-Disposition: form-data; name=";
     }
 
     Builder textPart(String key, Object value) {
       multipartBodyParts.add(
-          (separator
-                  + "\""
-                  + key
-                  + "\""
-                  + System.lineSeparator()
-                  + System.lineSeparator()
-                  + value
-                  + System.lineSeparator())
-              .getBytes());
+          (separator + "\"" + key + "\"" + CRLF + CRLF + value + CRLF).getBytes());
       return this;
     }
 
@@ -88,14 +79,14 @@ class MultipartBodyPublisher implements HttpRequest.BodyPublisher {
                     + "\"; filename=\""
                     + value.getFileName()
                     + "\""
-                    + System.lineSeparator()
+                    + CRLF
                     + "Content-Type: "
                     + mimeType
-                    + System.lineSeparator()
-                    + System.lineSeparator())
+                    + CRLF
+                    + CRLF)
                 .getBytes());
         multipartBodyParts.add(Files.readAllBytes(value));
-        multipartBodyParts.add(System.lineSeparator().getBytes());
+        multipartBodyParts.add(CRLF.getBytes());
       } catch (IOException ex) {
         throw new UncheckedIOException(ex);
       }

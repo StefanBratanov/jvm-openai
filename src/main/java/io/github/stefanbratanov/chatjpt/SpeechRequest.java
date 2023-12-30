@@ -16,10 +16,11 @@ public record SpeechRequest(
   public static class Builder {
 
     private static final String DEFAULT_MODEL = "tts-1";
+    private static final String DEFAULT_VOICE = "alloy";
 
     private String model = DEFAULT_MODEL;
     private String input;
-    private String voice;
+    private String voice = DEFAULT_VOICE;
     private Optional<String> responseFormat;
     private Optional<Double> speed;
 
@@ -73,6 +74,9 @@ public record SpeechRequest(
     }
 
     public SpeechRequest build() {
+      if (input == null) {
+        throw new IllegalArgumentException("input must be set");
+      }
       return new SpeechRequest(model, input, voice, responseFormat, speed);
     }
   }
