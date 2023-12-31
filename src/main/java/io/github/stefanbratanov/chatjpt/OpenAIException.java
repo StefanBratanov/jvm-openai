@@ -16,11 +16,11 @@ public final class OpenAIException extends RuntimeException {
     this.errorMessage = errorMessage;
   }
 
-  public int getStatusCode() {
+  public int statusCode() {
     return statusCode;
   }
 
-  public String getErrorMessage() {
+  public String errorMessage() {
     return errorMessage;
   }
 }

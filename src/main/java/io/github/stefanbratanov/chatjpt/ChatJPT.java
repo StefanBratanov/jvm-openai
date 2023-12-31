@@ -28,12 +28,14 @@ public final class ChatJPT {
   private final ChatClient chatClient;
   private final ModelsClient modelsClient;
   private final AudioClient audioClient;
+  private final ImagesClient imagesClient;
 
   private ChatJPT(
       URI baseUrl, String apiKey, Optional<String> organization, HttpClient httpClient) {
     chatClient = new ChatClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
     modelsClient = new ModelsClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
     audioClient = new AudioClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
+    imagesClient = new ImagesClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
   }
 
   public ChatClient chatClient() {
@@ -46,6 +48,10 @@ public final class ChatJPT {
 
   public AudioClient audioClient() {
     return audioClient;
+  }
+
+  public ImagesClient imagesClient() {
+    return imagesClient;
   }
 
   /**

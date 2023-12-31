@@ -4,8 +4,11 @@ enum Endpoint {
   CHAT("chat/completions"),
   MODELS("models"),
   SPEECH("audio/speech"),
-  TRANSCRIPTIONS("audio/transcriptions"),
-  TRANSLATIONS("audio/translations");
+  TRANSCRIPTION("audio/transcriptions"),
+  TRANSLATION("audio/translations"),
+  IMAGE_GENERATION("images/generations"),
+  IMAGE_EDIT("images/edits"),
+  IMAGE_VARIATION("images/variations");
 
   private final String path;
 

@@ -62,7 +62,7 @@ public final class AudioClient extends OpenAIClient {
     HttpRequest httpRequest =
         newHttpRequestBuilder(
                 Constants.CONTENT_TYPE_HEADER, "multipart/form-data; boundary=" + boundary)
-            .uri(baseUrl.resolve(Endpoint.TRANSCRIPTIONS.getPath()))
+            .uri(baseUrl.resolve(Endpoint.TRANSCRIPTION.getPath()))
             .POST(multipartBodyPublisherBuilder.build())
             .build();
 
@@ -91,7 +91,7 @@ public final class AudioClient extends OpenAIClient {
     HttpRequest httpRequest =
         newHttpRequestBuilder(
                 Constants.CONTENT_TYPE_HEADER, "multipart/form-data; boundary=" + boundary)
-            .uri(baseUrl.resolve(Endpoint.TRANSLATIONS.getPath()))
+            .uri(baseUrl.resolve(Endpoint.TRANSLATION.getPath()))
             .POST(multipartBodyPublisherBuilder.build())
             .build();
 

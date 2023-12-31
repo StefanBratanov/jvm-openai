@@ -75,7 +75,7 @@ public record SpeechRequest(
 
     public SpeechRequest build() {
       if (input == null) {
-        throw new IllegalArgumentException("input must be set");
+        throw new IllegalStateException("input must be set");
       }
       return new SpeechRequest(model, input, voice, responseFormat, speed);
     }

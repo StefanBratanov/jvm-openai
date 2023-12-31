@@ -52,7 +52,7 @@ public class ChatJPTIntegrationTest {
   }
 
   @Test
-  public void testAudioClient(@TempDir Path tempDir) throws URISyntaxException {
+  public void testAudioClient(@TempDir Path tempDir) {
     AudioClient audioClient = chatJPT.audioClient();
 
     SpeechRequest speechRequest =
@@ -75,11 +75,7 @@ public class ChatJPTIntegrationTest {
 
     assertThat(transcript).isEqualToIgnoringCase("The quick brown fox jumped over the lazy dog.");
 
-    Path greeting =
-        Paths.get(
-            Objects.requireNonNull(
-                    ChatJPTIntegrationTest.class.getResource("/italian-greeting.mp3"))
-                .toURI());
+    Path greeting = getTestResource("/italian-greeting.mp3");
 
     TranslationRequest translationRequest =
         TranslationRequest.newBuilder().file(greeting).model("whisper-1").build();
@@ -87,5 +83,53 @@ public class ChatJPTIntegrationTest {
     String translation = audioClient.createTranslation(translationRequest);
 
     assertThat(translation).isEqualTo("My name is Diego. What's your name?");
+  }
+
+  @Test
+  public void testImagesClient() {
+    ImagesClient imagesClient = chatJPT.imagesClient();
+
+    CreateImageRequest createImageRequest =
+        CreateImageRequest.newBuilder()
+            .prompt("Create a duck dressed up as superman")
+            .responseFormat("b64_json")
+            .build();
+
+    Images createdImage = imagesClient.createImage(createImageRequest);
+
+    assertThat(createdImage.data())
+        .hasSize(1)
+        .allSatisfy(image -> assertThat(image.b64Json()).isNotEmpty());
+
+    Path duck = getTestResource("/duck.png");
+
+    EditImageRequest editImageRequest =
+        EditImageRequest.newBuilder().image(duck).prompt("Make the duck swim in water").build();
+
+    Images editedImage = imagesClient.editImage(editImageRequest);
+
+    assertThat(editedImage.data())
+        .hasSize(1)
+        .allSatisfy(image -> assertThat(image.url()).isNotNull());
+
+    Path duckSuperman = getTestResource("/duck-superman.png");
+
+    CreateImageVariationRequest createImageVariationRequest =
+        CreateImageVariationRequest.newBuilder().image(duckSuperman).n(2).build();
+
+    Images imageVariations = imagesClient.createImageVariation(createImageVariationRequest);
+
+    assertThat(imageVariations.data())
+        .hasSize(2)
+        .allSatisfy(image -> assertThat(image.url()).isNotNull());
+  }
+
+  private Path getTestResource(String resource) {
+    try {
+      return Paths.get(
+          Objects.requireNonNull(ChatJPTIntegrationTest.class.getResource(resource)).toURI());
+    } catch (URISyntaxException ex) {
+      throw new RuntimeException(ex);
+    }
   }
 }
