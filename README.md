@@ -60,7 +60,7 @@ Images images = imagesClient.createImage(createImageRequest);
 | [Files](https://platform.openai.com/docs/api-reference/files)             |        |
 | [Images](https://platform.openai.com/docs/api-reference/images)           |   ✔️   |
 | [Models](https://platform.openai.com/docs/api-reference/models)           |   ✔️   |
-| [Moderations](https://platform.openai.com/docs/api-reference/moderations) |        |
+| [Moderations](https://platform.openai.com/docs/api-reference/moderations) |   ✔️   |
 
 There are no plans to support the Beta APIs.
 

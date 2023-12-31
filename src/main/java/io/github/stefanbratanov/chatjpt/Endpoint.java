@@ -8,7 +8,8 @@ enum Endpoint {
   TRANSLATION("audio/translations"),
   IMAGE_GENERATION("images/generations"),
   IMAGE_EDIT("images/edits"),
-  IMAGE_VARIATION("images/variations");
+  IMAGE_VARIATION("images/variations"),
+  MODERATIONS("moderations");
 
   private final String path;
 

@@ -124,6 +124,20 @@ public class ChatJPTIntegrationTest {
         .allSatisfy(image -> assertThat(image.url()).isNotNull());
   }
 
+  @Test
+  public void testModerationsClient() {
+    ModerationsClient moderationsClient = chatJPT.moderationsClient();
+
+    ModerationRequest request =
+        ModerationRequest.newBuilder().input("I want to kill them.").build();
+
+    Moderation moderation = moderationsClient.createModeration(request);
+
+    assertThat(moderation.results())
+        .hasSize(1)
+        .allSatisfy(result -> assertThat(result.flagged()).isTrue());
+  }
+
   private Path getTestResource(String resource) {
     try {
       return Paths.get(
