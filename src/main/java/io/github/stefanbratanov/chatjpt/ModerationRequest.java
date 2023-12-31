@@ -1,8 +1,10 @@
 package io.github.stefanbratanov.chatjpt;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
-public record ModerationRequest(String input, Optional<String> model) {
+public record ModerationRequest(List<String> input, Optional<String> model) {
 
   public static Builder newBuilder() {
     return new Builder();
@@ -10,14 +12,23 @@ public record ModerationRequest(String input, Optional<String> model) {
 
   public static class Builder {
 
-    private String input;
+    private final List<String> input = new LinkedList<>();
+
     private Optional<String> model = Optional.empty();
 
     /**
-     * @param input The input text to classify
+     * @param input input to append to the list of input texts to classify
      */
     public Builder input(String input) {
-      this.input = input;
+      this.input.add(input);
+      return this;
+    }
+
+    /**
+     * @param inputs inputs to append to the list of input texts to classify
+     */
+    public Builder inputs(List<String> inputs) {
+      input.addAll(inputs);
       return this;
     }
 
@@ -35,10 +46,10 @@ public record ModerationRequest(String input, Optional<String> model) {
     }
 
     public ModerationRequest build() {
-      if (input == null) {
-        throw new IllegalStateException("input must be set");
+      if (input.isEmpty()) {
+        throw new IllegalStateException("at least one input must be set");
       }
-      return new ModerationRequest(input, model);
+      return new ModerationRequest(List.copyOf(input), model);
     }
   }
 }
