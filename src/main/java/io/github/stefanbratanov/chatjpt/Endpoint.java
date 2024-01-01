@@ -9,7 +9,8 @@ enum Endpoint {
   IMAGE_GENERATION("images/generations"),
   IMAGE_EDIT("images/edits"),
   IMAGE_VARIATION("images/variations"),
-  MODERATIONS("moderations");
+  MODERATIONS("moderations"),
+  EMBEDDINCS("embeddings");
 
   private final String path;
 

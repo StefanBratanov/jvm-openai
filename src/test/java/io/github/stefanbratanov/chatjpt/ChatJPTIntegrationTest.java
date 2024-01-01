@@ -138,6 +138,23 @@ public class ChatJPTIntegrationTest {
         .allSatisfy(result -> assertThat(result.flagged()).isTrue());
   }
 
+  @Test
+  public void testEmbeddingsClient() {
+    EmbeddingsClient embeddingsClient = chatJPT.embeddingsClient();
+
+    EmbeddingsRequest request =
+        EmbeddingsRequest.newBuilder()
+            .input("The food was delicious and the waiter...")
+            .model("text-embedding-ada-002")
+            .build();
+
+    Embeddings embeddings = embeddingsClient.createEmbeddings(request);
+
+    assertThat(embeddings.data())
+        .hasSize(1)
+        .allSatisfy(embedding -> assertThat(embedding.embedding()).isNotEmpty());
+  }
+
   private Path getTestResource(String resource) {
     try {
       return Paths.get(

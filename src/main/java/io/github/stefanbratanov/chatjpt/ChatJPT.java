@@ -30,6 +30,7 @@ public final class ChatJPT {
   private final AudioClient audioClient;
   private final ImagesClient imagesClient;
   private final ModerationsClient moderationsClient;
+  private final EmbeddingsClient embeddingsClient;
 
   private ChatJPT(
       URI baseUrl, String apiKey, Optional<String> organization, HttpClient httpClient) {
@@ -39,6 +40,8 @@ public final class ChatJPT {
     imagesClient = new ImagesClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
     moderationsClient =
         new ModerationsClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
+    embeddingsClient =
+        new EmbeddingsClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
   }
 
   public ChatClient chatClient() {
@@ -59,6 +62,10 @@ public final class ChatJPT {
 
   public ModerationsClient moderationsClient() {
     return moderationsClient;
+  }
+
+  public EmbeddingsClient embeddingsClient() {
+    return embeddingsClient;
   }
 
   /**
