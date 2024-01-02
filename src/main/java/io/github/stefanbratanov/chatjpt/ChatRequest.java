@@ -1,9 +1,6 @@
 package io.github.stefanbratanov.chatjpt;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public record ChatRequest(
     String model,
@@ -17,6 +14,7 @@ public record ChatRequest(
     Optional<Double> presencePenalty,
     Optional<ResponseFormat> responseFormat,
     Optional<Integer> seed,
+    Optional<List<String>> stop,
     Optional<Double> temperature,
     Optional<Double> topP,
     Optional<String> user) {
@@ -52,6 +50,7 @@ public record ChatRequest(
     private Optional<Double> presencePenalty = Optional.empty();
     private Optional<ResponseFormat> responseFormat = Optional.empty();
     private Optional<Integer> seed = Optional.empty();
+    private final List<String> stop = new LinkedList<>();
     private Optional<Double> temperature = Optional.empty();
     private Optional<Double> topP = Optional.empty();
     private Optional<String> user = Optional.empty();
@@ -191,6 +190,18 @@ public record ChatRequest(
     }
 
     /**
+     * @param stop Up to 4 sequences where the API will stop generating further tokens.
+     */
+    public Builder stop(String... stop) {
+      if (stop.length > 4) {
+        throw new IllegalArgumentException(
+            "Up to 4 stop sequences could be defined, but it was " + stop.length);
+      }
+      this.stop.addAll(Arrays.asList(stop));
+      return this;
+    }
+
+    /**
      * @param temperature What sampling temperature to use, between 0 and 2. Higher values like 0.8
      *     will make the output more random, while lower values like 0.2 will make it more focused
      *     and deterministic.
@@ -236,6 +247,7 @@ public record ChatRequest(
           presencePenalty,
           responseFormat,
           seed,
+          stop.isEmpty() ? Optional.empty() : Optional.of(List.copyOf(stop)),
           temperature,
           topP,
           user);
