@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -86,6 +87,7 @@ public class ChatJPTIntegrationTest {
   }
 
   @Test
+  @Disabled("Image models are costly")
   public void testImagesClient() {
     ImagesClient imagesClient = chatJPT.imagesClient();
 
