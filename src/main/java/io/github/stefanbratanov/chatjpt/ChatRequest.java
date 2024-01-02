@@ -2,6 +2,9 @@ package io.github.stefanbratanov.chatjpt;
 
 import java.util.*;
 
+/**
+ * @param toolChoice {@link String} or {@link Tool}
+ */
 public record ChatRequest(
     String model,
     List<Message> messages,
@@ -17,6 +20,8 @@ public record ChatRequest(
     Optional<List<String>> stop,
     Optional<Double> temperature,
     Optional<Double> topP,
+    Optional<List<Tool>> tools,
+    Optional<Object> toolChoice,
     Optional<String> user) {
 
   public record ResponseFormat(String type) {
@@ -53,6 +58,8 @@ public record ChatRequest(
     private final List<String> stop = new LinkedList<>();
     private Optional<Double> temperature = Optional.empty();
     private Optional<Double> topP = Optional.empty();
+    private final List<Tool> tools = new LinkedList<>();
+    private Optional<Object> toolChoice = Optional.empty();
     private Optional<String> user = Optional.empty();
 
     /**
@@ -226,6 +233,54 @@ public record ChatRequest(
     }
 
     /**
+     * @param tool tool to append to the list of tools the model may call. Currently, only functions
+     *     are supported as a tool. Use this to provide a list of functions the model may generate
+     *     JSON inputs for.
+     */
+    public Builder tool(Tool tool) {
+      tools.add(tool);
+      return this;
+    }
+
+    /**
+     * @param tools tools to append to the list of tools the model may call. Currently, only
+     *     functions are supported as a tool. Use this to provide a list of functions the model may
+     *     generate JSON inputs for.
+     */
+    public Builder tools(List<Tool> tools) {
+      this.tools.addAll(tools);
+      return this;
+    }
+
+    /**
+     * @param toolChoice Controls which (if any) function is called by the model. none means the
+     *     model will not call a function and instead generates a message. auto means the model can
+     *     pick between generating a message or calling a function. Specifying a particular function
+     *     via {"type": "function", "function": {"name": "my_function"}} forces the model to call
+     *     that function.
+     *     <p>none is the default when no functions are present. auto is the default if functions
+     *     are present.
+     */
+    public Builder toolChoice(String toolChoice) {
+      this.toolChoice = Optional.of(toolChoice);
+      return this;
+    }
+
+    /**
+     * @param toolChoice Controls which (if any) function is called by the model. none means the
+     *     model will not call a function and instead generates a message. auto means the model can
+     *     pick between generating a message or calling a function. Specifying a particular function
+     *     via {"type": "function", "function": {"name": "my_function"}} forces the model to call
+     *     that function.
+     *     <p>none is the default when no functions are present. auto is the default if functions
+     *     are present.
+     */
+    public Builder toolChoice(Tool toolChoice) {
+      this.toolChoice = Optional.of(toolChoice);
+      return this;
+    }
+
+    /**
      * @param user A unique identifier representing your end-user, which can help OpenAI to monitor
      *     and detect abuse.
      */
@@ -250,6 +305,8 @@ public record ChatRequest(
           stop.isEmpty() ? Optional.empty() : Optional.of(List.copyOf(stop)),
           temperature,
           topP,
+          tools.isEmpty() ? Optional.empty() : Optional.of(List.copyOf(tools)),
+          toolChoice,
           user);
     }
   }
