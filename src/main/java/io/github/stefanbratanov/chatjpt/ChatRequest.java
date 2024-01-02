@@ -10,6 +10,8 @@ public record ChatRequest(
     List<Message> messages,
     Optional<Double> frequencyPenalty,
     Optional<Map<Integer, Integer>> logitBias,
+    Optional<Boolean> logprobs,
+    Optional<Integer> topLogprobs,
     Optional<Integer> maxTokens,
     Optional<Integer> n,
     Optional<Double> presencePenalty,
@@ -43,6 +45,8 @@ public record ChatRequest(
 
     private Optional<Double> frequencyPenalty = Optional.empty();
     private Optional<Map<Integer, Integer>> logitBias = Optional.empty();
+    private Optional<Boolean> logprobs = Optional.empty();
+    private Optional<Integer> topLogprobs = Optional.empty();
     private Optional<Integer> maxTokens = Optional.empty();
     private Optional<Integer> n = Optional.empty();
     private Optional<Double> presencePenalty = Optional.empty();
@@ -84,7 +88,7 @@ public record ChatRequest(
     public Builder frequencyPenalty(double frequencyPenalty) {
       if (frequencyPenalty < -2 || frequencyPenalty > 2) {
         throw new IllegalArgumentException(
-            "frequencyPenalty should be between -2.0 and 2.0 but it was " + frequencyPenalty);
+            "frequencyPenalty must be between -2.0 and 2.0 but it was " + frequencyPenalty);
       }
       this.frequencyPenalty = Optional.of(frequencyPenalty);
       return this;
@@ -103,12 +107,35 @@ public record ChatRequest(
     }
 
     /**
+     * @param logprobs Whether to return log probabilities of the output tokens or not. If true,
+     *     returns the log probabilities of each output token returned in the content of message.
+     */
+    public Builder logprobs(boolean logprobs) {
+      this.logprobs = Optional.of(logprobs);
+      return this;
+    }
+
+    /**
+     * @param topLogprobs An integer between 0 and 5 specifying the number of most likely tokens to
+     *     return at each token position, each with an associated log probability. logprobs must be
+     *     set to true if this parameter is used.
+     */
+    public Builder topLogprobs(int topLogprobs) {
+      if (topLogprobs < 0 || topLogprobs > 5) {
+        throw new IllegalArgumentException(
+            "topLogprobs must be between 0 and 5 but it was " + topLogprobs);
+      }
+      this.topLogprobs = Optional.of(topLogprobs);
+      return this;
+    }
+
+    /**
      * @param maxTokens The total length of input tokens and generated tokens is limited by the
      *     model's context length
      */
     public Builder maxTokens(int maxTokens) {
       if (maxTokens < 1) {
-        throw new IllegalArgumentException("maxTokens should be a positive number");
+        throw new IllegalArgumentException("maxTokens must be a positive number");
       }
       this.maxTokens = Optional.of(maxTokens);
       return this;
@@ -121,7 +148,7 @@ public record ChatRequest(
      */
     public Builder n(int n) {
       if (n < 1) {
-        throw new IllegalArgumentException("n should be a positive number");
+        throw new IllegalArgumentException("n must be a positive number");
       }
       this.n = Optional.of(n);
       return this;
@@ -135,7 +162,7 @@ public record ChatRequest(
     public Builder presencePenalty(double presencePenalty) {
       if (presencePenalty < -2 || presencePenalty > 2) {
         throw new IllegalArgumentException(
-            "presencePenalty should be between -2.0 and 2.0 but it was " + presencePenalty);
+            "presencePenalty must be between -2.0 and 2.0 but it was " + presencePenalty);
       }
       this.presencePenalty = Optional.of(presencePenalty);
       return this;
@@ -171,7 +198,7 @@ public record ChatRequest(
     public Builder temperature(double temperature) {
       if (temperature < 0 || temperature > 2) {
         throw new IllegalArgumentException(
-            "temperature should be between 0 and 2 but it was " + temperature);
+            "temperature must be between 0 and 2 but it was " + temperature);
       }
       this.temperature = Optional.of(temperature);
       return this;
@@ -202,6 +229,8 @@ public record ChatRequest(
           List.copyOf(messages),
           frequencyPenalty,
           logitBias,
+          logprobs,
+          topLogprobs,
           maxTokens,
           n,
           presencePenalty,
