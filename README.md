@@ -4,7 +4,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.stefanbratanov/chatjpt)](https://central.sonatype.com/artifact/io.github.stefanbratanov/chatjpt)
 [![javadoc](https://javadoc.io/badge2/io.github.stefanbratanov/chatjpt/javadoc.svg)](https://javadoc.io/doc/io.github.stefanbratanov/chatjpt)
 
-A minimalistic Java client for the [OpenAI API](https://platform.openai.com/docs/api-reference)
+A minimalistic unofficial Java client for the [OpenAI API](https://platform.openai.com/docs/api-reference)
 
 ## Add dependency
 
