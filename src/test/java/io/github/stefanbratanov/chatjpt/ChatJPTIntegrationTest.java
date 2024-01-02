@@ -174,11 +174,16 @@ public class ChatJPTIntegrationTest {
 
     assertThat(retrievedFile).isEqualTo(uploadedFile);
 
-    // Cleanup
+    // Cleanup of previous uploads
     uploadedFiles.forEach(
         file -> {
-          DeletionStatus deletionStatus = filesClient.deleteFile(file.id());
-          assertThat(deletionStatus.deleted()).isTrue();
+          try {
+            DeletionStatus deletionStatus = filesClient.deleteFile(file.id());
+            assertThat(deletionStatus.deleted()).isTrue();
+          } catch (OpenAIException ex) {
+            assertThat(ex.statusCode()).isEqualTo(409);
+            assertThat(ex.errorMessage()).isEqualTo("File is still processing. Check back later.");
+          }
         });
   }
 
