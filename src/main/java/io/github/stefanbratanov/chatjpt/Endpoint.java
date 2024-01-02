@@ -11,7 +11,8 @@ enum Endpoint {
   IMAGE_VARIATION("images/variations"),
   MODERATIONS("moderations"),
   EMBEDDINCS("embeddings"),
-  FILES("files");
+  FILES("files"),
+  FINE_TUNING("fine_tuning/jobs");
 
   private final String path;
 

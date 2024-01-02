@@ -32,6 +32,7 @@ public final class ChatJPT {
   private final ModerationsClient moderationsClient;
   private final EmbeddingsClient embeddingsClient;
   private final FilesClient filesClient;
+  private final FineTuningClient fineTuningClient;
 
   private ChatJPT(
       URI baseUrl, String apiKey, Optional<String> organization, HttpClient httpClient) {
@@ -44,6 +45,8 @@ public final class ChatJPT {
     embeddingsClient =
         new EmbeddingsClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
     filesClient = new FilesClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
+    fineTuningClient =
+        new FineTuningClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
   }
 
   public ChatClient chatClient() {
@@ -72,6 +75,10 @@ public final class ChatJPT {
 
   public FilesClient filesClient() {
     return filesClient;
+  }
+
+  public FineTuningClient fineTuningClient() {
+    return fineTuningClient;
   }
 
   /**

@@ -2,11 +2,14 @@ package io.github.stefanbratanov.chatjpt;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.github.stefanbratanov.chatjpt.FineTuningClient.PaginatedFineTuningEvents;
+import io.github.stefanbratanov.chatjpt.FineTuningClient.PaginatedFineTuningJobs;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -187,6 +190,54 @@ public class ChatJPTIntegrationTest {
             assertThat(ex.errorMessage()).isEqualTo("File is still processing. Check back later.");
           }
         });
+  }
+
+  @Test
+  @Disabled("Fine-tuning models are costly")
+  public void testFineTuningClient() {
+    FilesClient filesClient = chatJPT.filesClient();
+    FineTuningClient fineTuningClient = chatJPT.fineTuningClient();
+
+    Path trainingFile = getTestResource("/mydata.jsonl");
+    UploadFileRequest uploadFileRequest =
+        UploadFileRequest.newBuilder().file(trainingFile).purpose("fine-tune").build();
+    File uploadedTrainingFile = filesClient.uploadFile(uploadFileRequest);
+
+    CreateFineTuningJobRequest createFineTuningJobRequest =
+        CreateFineTuningJobRequest.newBuilder()
+            .trainingFile(uploadedTrainingFile.id())
+            .model("gpt-3.5-turbo")
+            .build();
+
+    FineTuningJob createdFineTuningJob =
+        fineTuningClient.createFineTuningJob(createFineTuningJobRequest);
+
+    assertThat(createdFineTuningJob).isNotNull();
+
+    PaginatedFineTuningJobs fineTuningJobs =
+        fineTuningClient.listFineTuningJobs(Optional.empty(), Optional.empty());
+
+    assertThat(fineTuningJobs.hasMore()).isFalse();
+    assertThat(fineTuningJobs.data())
+        .anySatisfy(
+            fineTuningJob -> assertThat(fineTuningJob.id()).isEqualTo(createdFineTuningJob.id()));
+
+    PaginatedFineTuningEvents fineTuningJobEvents =
+        fineTuningClient.listFineTuningJobEvents(
+            createdFineTuningJob.id(), Optional.empty(), Optional.empty());
+
+    assertThat(fineTuningJobEvents.hasMore()).isFalse();
+    assertThat(fineTuningJobEvents.data()).isNotEmpty();
+
+    FineTuningJob retrievedFineTuningJob =
+        fineTuningClient.retrieveFineTuningJob(createdFineTuningJob.id());
+
+    assertThat(retrievedFineTuningJob).isNotNull();
+
+    FineTuningJob cancelledFineTuningJob =
+        fineTuningClient.cancelFineTuningJob(createdFineTuningJob.id());
+
+    assertThat(cancelledFineTuningJob).isNotNull();
   }
 
   private Path getTestResource(String resource) {
