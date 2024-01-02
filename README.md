@@ -57,7 +57,7 @@ Images images = imagesClient.createImage(createImageRequest);
 | [Chat](https://platform.openai.com/docs/api-reference/chat)               | ️  ✔️  |
 | [Embeddings](https://platform.openai.com/docs/api-reference/embeddings)   |   ✔️   |
 | [Fine-tuning](https://platform.openai.com/docs/api-reference/fine-tuning) |        |
-| [Files](https://platform.openai.com/docs/api-reference/files)             |        |
+| [Files](https://platform.openai.com/docs/api-reference/files)             |   ✔️   |
 | [Images](https://platform.openai.com/docs/api-reference/images)           |   ✔️   |
 | [Models](https://platform.openai.com/docs/api-reference/models)           |   ✔️   |
 | [Moderations](https://platform.openai.com/docs/api-reference/moderations) |   ✔️   |

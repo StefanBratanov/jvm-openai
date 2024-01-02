@@ -42,11 +42,11 @@ public class ChatJPTIntegrationTest {
   public void testModelsClient() {
     ModelsClient modelsClient = chatJPT.modelsClient();
 
-    List<Model> models = modelsClient.getModels();
+    List<Model> models = modelsClient.listModels();
 
     assertThat(models).isNotEmpty();
 
-    Model model = modelsClient.getModel("gpt-3.5-turbo-instruct");
+    Model model = modelsClient.retrieveModel("gpt-3.5-turbo-instruct");
 
     assertThat(model).isNotNull();
   }
@@ -153,6 +153,33 @@ public class ChatJPTIntegrationTest {
     assertThat(embeddings.data())
         .hasSize(1)
         .allSatisfy(embedding -> assertThat(embedding.embedding()).isNotEmpty());
+  }
+
+  @Test
+  public void testFilesClient() {
+    FilesClient filesClient = chatJPT.filesClient();
+
+    Path jsonlFile = getTestResource("/mydata.jsonl");
+
+    UploadFileRequest uploadFileRequest =
+        UploadFileRequest.newBuilder().file(jsonlFile).purpose("fine-tune").build();
+
+    File uploadedFile = filesClient.uploadFile(uploadFileRequest);
+
+    List<File> uploadedFiles = filesClient.listFiles();
+
+    assertThat(uploadedFiles).contains(uploadedFile);
+
+    File retrievedFile = filesClient.retrieveFile(uploadedFile.id());
+
+    assertThat(retrievedFile).isEqualTo(uploadedFile);
+
+    // Cleanup
+    uploadedFiles.forEach(
+        file -> {
+          DeletionStatus deletionStatus = filesClient.deleteFile(file.id());
+          assertThat(deletionStatus.deleted()).isTrue();
+        });
   }
 
   private Path getTestResource(String resource) {

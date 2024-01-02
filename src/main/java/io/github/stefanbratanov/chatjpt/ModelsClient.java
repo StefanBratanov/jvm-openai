@@ -33,7 +33,7 @@ public final class ModelsClient extends OpenAIClient {
    *
    * @throws OpenAIException in case of API errors
    */
-  public List<Model> getModels() {
+  public List<Model> listModels() {
     HttpRequest httpRequest =
         newHttpRequestBuilder().uri(baseUrl.resolve(Endpoint.MODELS.getPath())).GET().build();
     HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
@@ -52,7 +52,7 @@ public final class ModelsClient extends OpenAIClient {
    * @param model The ID of the model to use for this request
    * @throws OpenAIException in case of API errors
    */
-  public Model getModel(String model) {
+  public Model retrieveModel(String model) {
     HttpRequest httpRequest =
         newHttpRequestBuilder()
             .uri(baseUrl.resolve(Endpoint.MODELS.getPath() + "/" + model))
