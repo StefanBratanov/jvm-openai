@@ -7,7 +7,7 @@ import java.util.*;
  */
 public record ChatRequest(
     String model,
-    List<Message> messages,
+    List<ChatMessage> messages,
     Optional<Double> frequencyPenalty,
     Optional<Map<Integer, Integer>> logitBias,
     Optional<Boolean> logprobs,
@@ -45,7 +45,7 @@ public record ChatRequest(
 
     private String model = DEFAULT_MODEL;
 
-    private final List<Message> messages = new LinkedList<>();
+    private final List<ChatMessage> messages = new LinkedList<>();
 
     private Optional<Double> frequencyPenalty = Optional.empty();
     private Optional<Map<Integer, Integer>> logitBias = Optional.empty();
@@ -75,7 +75,7 @@ public record ChatRequest(
     /**
      * @param message message to append to the list of messages comprising the conversation so far
      */
-    public Builder message(Message message) {
+    public Builder message(ChatMessage message) {
       messages.add(message);
       return this;
     }
@@ -83,7 +83,7 @@ public record ChatRequest(
     /**
      * @param messages messages to append to the list of messages comprising the conversation so far
      */
-    public Builder messages(List<Message> messages) {
+    public Builder messages(List<ChatMessage> messages) {
       this.messages.addAll(messages);
       return this;
     }

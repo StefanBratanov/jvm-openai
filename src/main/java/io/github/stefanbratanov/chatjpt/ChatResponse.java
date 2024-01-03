@@ -10,7 +10,7 @@ public record ChatResponse(
     List<Choice> choices,
     Usage usage) {
 
-  public record Choice(int index, Message message, Logprobs logprobs, String finishReason) {}
+  public record Choice(int index, ChatMessage message, Logprobs logprobs, String finishReason) {}
 
   public record Usage(int promptTokens, int completionTokens, int totalTokens) {}
 }

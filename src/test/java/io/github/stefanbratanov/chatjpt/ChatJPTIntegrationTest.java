@@ -32,7 +32,7 @@ public class ChatJPTIntegrationTest {
 
     ChatRequest request =
         ChatRequest.newBuilder()
-            .message(Message.userMessage("Who won the world series in 2020?"))
+            .message(ChatMessage.userMessage("Who won the world series in 2020?"))
             .build();
 
     ChatResponse response = chatClient.sendRequest(request);
@@ -44,7 +44,7 @@ public class ChatJPTIntegrationTest {
 
     // test streaming
     ChatRequest streamRequest =
-        ChatRequest.newBuilder().message(Message.userMessage("Say this is a test")).stream(true)
+        ChatRequest.newBuilder().message(ChatMessage.userMessage("Say this is a test")).stream(true)
             .build();
 
     String joinedResponse =
