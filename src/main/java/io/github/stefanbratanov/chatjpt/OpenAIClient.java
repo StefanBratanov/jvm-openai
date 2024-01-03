@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Subclasses should be based on one of the endpoints defined at <a
@@ -134,6 +136,8 @@ abstract class OpenAIClient {
         body = (byte[]) httpResponse.body();
       } else if (httpResponse.body() instanceof Path path) {
         body = Files.readAllBytes(path);
+      } else if (httpResponse.body() instanceof Stream<?> stream) {
+        body = stream.map(elem -> (String) elem).collect(Collectors.joining()).getBytes();
       } else {
         return Optional.empty();
       }
