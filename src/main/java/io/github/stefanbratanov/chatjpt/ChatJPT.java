@@ -49,34 +49,66 @@ public final class ChatJPT {
         new FineTuningClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
   }
 
+  /**
+   * @return a client based on <a
+   *     href="https://platform.openai.com/docs/api-reference/chat">Chat</a>
+   */
   public ChatClient chatClient() {
     return chatClient;
   }
 
+  /**
+   * @return a client based on <a
+   *     href="https://platform.openai.com/docs/api-reference/models">Models</a>
+   */
   public ModelsClient modelsClient() {
     return modelsClient;
   }
 
+  /**
+   * @return a client based on <a
+   *     href="https://platform.openai.com/docs/api-reference/audio">Audio</a>
+   */
   public AudioClient audioClient() {
     return audioClient;
   }
 
+  /**
+   * @return a client based on <a
+   *     href="https://platform.openai.com/docs/api-reference/images">Images</a>
+   */
   public ImagesClient imagesClient() {
     return imagesClient;
   }
 
+  /**
+   * @return a client based on <a
+   *     href="https://platform.openai.com/docs/api-reference/moderations">Moderations</a>
+   */
   public ModerationsClient moderationsClient() {
     return moderationsClient;
   }
 
+  /**
+   * @return a client based on <a
+   *     href="https://platform.openai.com/docs/api-reference/embeddings">Embeddings</a>
+   */
   public EmbeddingsClient embeddingsClient() {
     return embeddingsClient;
   }
 
+  /**
+   * @return a client based on <a
+   *     href="https://platform.openai.com/docs/api-reference/files">Files</a>
+   */
   public FilesClient filesClient() {
     return filesClient;
   }
 
+  /**
+   * @return a client based on <a
+   *     href="https://platform.openai.com/docs/api-reference/fine-tuning">Fine-tuning</a>
+   */
   public FineTuningClient fineTuningClient() {
     return fineTuningClient;
   }

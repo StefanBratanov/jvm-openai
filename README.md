@@ -38,7 +38,7 @@ ChatRequest chatRequest = ChatRequest.newBuilder()
         .message(Message.userMessage("Who won the world series in 2020?"))
         .build();
 ChatResponse response = chatClient.sendRequest(chatRequest);
-// ChatResponse[id=chatcmpl-123, created=1703506594, model=gpt-3.5-turbo-0613, systemFingerprint=fp_44709d6fcb, choices=[Choice[index=0, message=Message[role=assistant, content=The Los Angeles Dodgers won the World Series in 2020.], finishReason=stop]], usage=Usage[promptTokens=0, completionTokens=0, totalTokens=0]]
+// ChatResponse[id=chatcmpl-123, created=1703506594, model=gpt-3.5-turbo-0613, systemFingerprint=fp_44709d6fcb, choices=[Choice[index=0, message=AssistantMessage[content=The Los Angeles Dodgers won the World Series in 2020.], logProbs=null, finishReason=stop]], usage=Usage[promptTokens=17, completionTokens=13, totalTokens=30]]
 
 ImagesClient imagesClient = chatJPT.imagesClient();
 CreateImageRequest createImageRequest = CreateImageRequest.newBuilder()
