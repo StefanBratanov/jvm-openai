@@ -1,10 +1,14 @@
 package io.github.stefanbratanov.chatjpt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 
@@ -30,6 +34,14 @@ public final class AudioClient extends OpenAIClient {
    * @throws OpenAIException in case of API errors
    */
   public void createSpeech(SpeechRequest request, Path output) {
+    try {
+      Path outputParent = output.getParent();
+      if (outputParent != null) {
+        Files.createDirectories(outputParent);
+      }
+    } catch (IOException ex) {
+      throw new UncheckedIOException(ex);
+    }
     HttpRequest httpRequest =
         newHttpRequestBuilder(Constants.CONTENT_TYPE_HEADER, Constants.JSON_MEDIA_TYPE)
             .uri(baseUrl.resolve(Endpoint.SPEECH.getPath()))

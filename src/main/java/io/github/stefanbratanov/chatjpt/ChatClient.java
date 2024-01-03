@@ -51,6 +51,7 @@ public final class ChatClient extends OpenAIClient {
    *
    * @param request the request should be configured with {@link
    *     ChatRequest.Builder#stream(boolean)} set to true
+   * @throws OpenAIException in case of API errors
    */
   public Stream<ChatChunkResponse> sendStreamRequest(ChatRequest request) {
     if (!request.stream().orElse(false)) {
