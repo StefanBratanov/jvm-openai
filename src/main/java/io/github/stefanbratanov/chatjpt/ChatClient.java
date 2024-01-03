@@ -7,9 +7,12 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
 /** Based on <a href="https://platform.openai.com/docs/api-reference/chat">Chat</a> */
 public final class ChatClient extends OpenAIClient {
+
+  private static final String STREAM_TERMINATION = "data: [DONE]";
 
   private final URI endpoint;
 
@@ -41,6 +44,28 @@ public final class ChatClient extends OpenAIClient {
     HttpRequest httpRequest = createPostRequest(request);
     return sendHttpRequestAsync(httpRequest)
         .thenApply(httpResponse -> deserializeResponse(httpResponse.body(), ChatResponse.class));
+  }
+
+  /**
+   * Stream model responses back in order to allow partial results for certain requests.
+   *
+   * @param request the request should be configured with {@link
+   *     ChatRequest.Builder#stream(boolean)} set to true
+   */
+  public Stream<ChatChunkResponse> sendStreamRequest(ChatRequest request) {
+    if (!request.stream().orElse(false)) {
+      throw new IllegalArgumentException("stream must be set to true when requesting a stream");
+    }
+    HttpRequest httpRequest = createPostRequest(request);
+    return sendHttpRequest(httpRequest, HttpResponse.BodyHandlers.ofLines())
+        .body()
+        .filter(sseEvent -> !sseEvent.isBlank())
+        .takeWhile(sseEvent -> !sseEvent.equals(STREAM_TERMINATION))
+        .map(
+            sseEvent -> {
+              String chatChunkResponse = sseEvent.substring(sseEvent.indexOf("{"));
+              return deserializeResponse(chatChunkResponse.getBytes(), ChatChunkResponse.class);
+            });
   }
 
   private HttpRequest createPostRequest(ChatRequest request) {

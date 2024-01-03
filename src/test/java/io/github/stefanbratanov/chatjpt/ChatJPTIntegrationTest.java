@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -40,6 +41,25 @@ public class ChatJPTIntegrationTest {
         .hasSize(1)
         .first()
         .satisfies(choice -> assertThat(choice.message().content()).isNotNull());
+
+    // test streaming
+    ChatRequest streamRequest =
+        ChatRequest.newBuilder().message(Message.userMessage("Say this is a test")).stream(true)
+            .build();
+
+    String joinedResponse =
+        chatClient
+            .sendStreamRequest(streamRequest)
+            .map(ChatChunkResponse::choices)
+            .map(
+                choices -> {
+                  assertThat(choices).hasSize(1);
+                  return choices.get(0).delta().content();
+                })
+            .filter(Objects::nonNull)
+            .collect(Collectors.joining());
+
+    assertThat(joinedResponse).isEqualTo("This is a test.");
   }
 
   @Test

@@ -46,10 +46,6 @@ public sealed interface Message
     public String role() {
       return Constants.ASSISTANT_MESSAGE_ROLE;
     }
-
-    public record ToolCall(String id, String type, Function function) {
-      public record Function(String name, String arguments) {}
-    }
   }
 
   record ToolMessage(String content, String toolCallId) implements Message {

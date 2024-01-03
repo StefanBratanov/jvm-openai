@@ -18,6 +18,7 @@ public record ChatRequest(
     Optional<ResponseFormat> responseFormat,
     Optional<Integer> seed,
     Optional<List<String>> stop,
+    Optional<Boolean> stream,
     Optional<Double> temperature,
     Optional<Double> topP,
     Optional<List<Tool>> tools,
@@ -56,6 +57,7 @@ public record ChatRequest(
     private Optional<ResponseFormat> responseFormat = Optional.empty();
     private Optional<Integer> seed = Optional.empty();
     private final List<String> stop = new LinkedList<>();
+    private Optional<Boolean> stream = Optional.empty();
     private Optional<Double> temperature = Optional.empty();
     private Optional<Double> topP = Optional.empty();
     private final List<Tool> tools = new LinkedList<>();
@@ -209,6 +211,15 @@ public record ChatRequest(
     }
 
     /**
+     * @param stream If set, partial message deltas will be sent, like in ChatGPT. Tokens will be
+     *     sent as data-only server-sent events as they become available.
+     */
+    public Builder stream(boolean stream) {
+      this.stream = Optional.of(stream);
+      return this;
+    }
+
+    /**
      * @param temperature What sampling temperature to use, between 0 and 2. Higher values like 0.8
      *     will make the output more random, while lower values like 0.2 will make it more focused
      *     and deterministic.
@@ -303,6 +314,7 @@ public record ChatRequest(
           responseFormat,
           seed,
           stop.isEmpty() ? Optional.empty() : Optional.of(List.copyOf(stop)),
+          stream,
           temperature,
           topP,
           tools.isEmpty() ? Optional.empty() : Optional.of(List.copyOf(tools)),

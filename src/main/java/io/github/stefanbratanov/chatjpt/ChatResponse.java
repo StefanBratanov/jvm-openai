@@ -10,16 +10,7 @@ public record ChatResponse(
     List<Choice> choices,
     Usage usage) {
 
-  public record Choice(int index, Message message, Logprobs logprobs, String finishReason) {
-
-    public record Logprobs(List<Content> content) {
-
-      public record Content(
-          String token, double logprob, List<Byte> bytes, List<TopLogprob> topLogprobs) {}
-
-      public record TopLogprob(String token, double logprob, List<Byte> bytes) {}
-    }
-  }
+  public record Choice(int index, Message message, Logprobs logprobs, String finishReason) {}
 
   public record Usage(int promptTokens, int completionTokens, int totalTokens) {}
 }
