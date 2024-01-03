@@ -47,7 +47,7 @@ public final class ChatClient extends OpenAIClient {
   }
 
   /**
-   * Stream model responses back in order to allow partial results for certain requests.
+   * Stream model responses back in order to allow partial results for the given request.
    *
    * @param request the request should be configured with {@link
    *     ChatRequest.Builder#stream(boolean)} set to true
