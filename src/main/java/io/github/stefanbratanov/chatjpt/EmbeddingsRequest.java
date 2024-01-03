@@ -1,11 +1,10 @@
 package io.github.stefanbratanov.chatjpt;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
 public record EmbeddingsRequest(
-    List<String> input, String model, Optional<String> encodingFormat, Optional<String> user) {
+    List<Object> input, String model, Optional<String> encodingFormat, Optional<String> user) {
 
   public static Builder newBuilder() {
     return new Builder();
@@ -13,25 +12,32 @@ public record EmbeddingsRequest(
 
   public static class Builder {
 
-    private final List<String> input = new LinkedList<>();
-
+    private List<Object> input;
     private String model;
     private Optional<String> encodingFormat = Optional.empty();
     private Optional<String> user = Optional.empty();
 
     /**
-     * @param input input to append to the list of input texts to embed, encoded as a string
+     * @param input The string(s) that will be turned into an embedding.
      */
-    public Builder input(String input) {
-      this.input.add(input);
+    public Builder input(String... input) {
+      this.input = List.of(input);
       return this;
     }
 
     /**
-     * @param inputs inputs to append to the list of input texts to embed, encoded as a string
+     * @param input The array of integers that will be turned into an embedding.
      */
-    public Builder inputs(List<String> inputs) {
-      input.addAll(inputs);
+    public Builder input(int[] input) {
+      this.input = List.of(input);
+      return this;
+    }
+
+    /**
+     * @param input The array of arrays containing integers that will be turned into an embedding.
+     */
+    public Builder input(List<int[]> input) {
+      this.input = List.copyOf(input);
       return this;
     }
 
@@ -61,8 +67,8 @@ public record EmbeddingsRequest(
     }
 
     public EmbeddingsRequest build() {
-      if (input.isEmpty()) {
-        throw new IllegalStateException("at least one input must be set");
+      if (input == null) {
+        throw new IllegalStateException("input must be set");
       }
       if (model == null) {
         throw new IllegalStateException("model must be set");

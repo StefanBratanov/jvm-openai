@@ -57,9 +57,4 @@ public record Tool(String type, Function function) {
   public static Tool functionTool(Function function) {
     return new Tool("function", function);
   }
-
-  public static Tool toolChoice(String name) {
-    Function function = Function.newBuilder().name(name).build();
-    return new Tool("function", function);
-  }
 }

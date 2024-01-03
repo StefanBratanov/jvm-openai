@@ -3,7 +3,7 @@ package io.github.stefanbratanov.chatjpt;
 import java.util.*;
 
 /**
- * @param toolChoice {@link String} or {@link Tool}
+ * @param toolChoice {@link String} or {@link ToolChoice}
  */
 public record ChatRequest(
     String model,
@@ -275,7 +275,7 @@ public record ChatRequest(
      *     <p>none is the default when no functions are present. auto is the default if functions
      *     are present.
      */
-    public Builder toolChoice(Tool toolChoice) {
+    public Builder toolChoice(ToolChoice toolChoice) {
       this.toolChoice = Optional.of(toolChoice);
       return this;
     }

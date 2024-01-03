@@ -57,6 +57,10 @@ public sealed interface Message
     }
   }
 
+  static Message systemMessage(String content) {
+    return new SystemMessage(content, Optional.empty());
+  }
+
   static Message userMessage(String content) {
     return new UserMessage(content, Optional.empty());
   }
