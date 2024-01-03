@@ -8,10 +8,12 @@ import java.util.Optional;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "role")
 @JsonSubTypes({
-  @JsonSubTypes.Type(value = Message.SystemMessage.class, name = "system"),
-  @JsonSubTypes.Type(value = Message.UserMessage.class, name = "user"),
-  @JsonSubTypes.Type(value = Message.AssistantMessage.class, name = "assistant"),
-  @JsonSubTypes.Type(value = Message.ToolMessage.class, name = "tool")
+  @JsonSubTypes.Type(value = Message.SystemMessage.class, name = Constants.SYSTEM_MESSAGE_ROLE),
+  @JsonSubTypes.Type(value = Message.UserMessage.class, name = Constants.USER_MESSAGE_ROLE),
+  @JsonSubTypes.Type(
+      value = Message.AssistantMessage.class,
+      name = Constants.ASSISTANT_MESSAGE_ROLE),
+  @JsonSubTypes.Type(value = Message.ToolMessage.class, name = Constants.TOOL_MESSAGE_ROLE)
 })
 public sealed interface Message
     permits Message.SystemMessage,
@@ -27,14 +29,14 @@ public sealed interface Message
   record SystemMessage(String content, Optional<String> name) implements Message {
     @Override
     public String role() {
-      return "system";
+      return Constants.SYSTEM_MESSAGE_ROLE;
     }
   }
 
   record UserMessage(String content, Optional<String> name) implements Message {
     @Override
     public String role() {
-      return "user";
+      return Constants.USER_MESSAGE_ROLE;
     }
   }
 
@@ -42,7 +44,7 @@ public sealed interface Message
       implements Message {
     @Override
     public String role() {
-      return "assistant";
+      return Constants.ASSISTANT_MESSAGE_ROLE;
     }
 
     public record ToolCall(String id, String type, Function function) {
@@ -53,15 +55,15 @@ public sealed interface Message
   record ToolMessage(String content, String toolCallId) implements Message {
     @Override
     public String role() {
-      return "tool";
+      return Constants.TOOL_MESSAGE_ROLE;
     }
   }
 
-  static Message systemMessage(String content) {
+  static SystemMessage systemMessage(String content) {
     return new SystemMessage(content, Optional.empty());
   }
 
-  static Message userMessage(String content) {
+  static UserMessage userMessage(String content) {
     return new UserMessage(content, Optional.empty());
   }
 }

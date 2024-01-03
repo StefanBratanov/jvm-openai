@@ -1,5 +1,6 @@
 package io.github.stefanbratanov.chatjpt;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +22,7 @@ public record EmbeddingsRequest(
      * @param input The string(s) that will be turned into an embedding.
      */
     public Builder input(String... input) {
-      this.input = List.of(input);
+      this.input = Arrays.asList(input);
       return this;
     }
 
