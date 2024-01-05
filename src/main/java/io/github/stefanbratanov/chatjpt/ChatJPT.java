@@ -25,44 +25,28 @@ public final class ChatJPT {
     OBJECT_MAPPER.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
   }
 
-  private final ChatClient chatClient;
-  private final ModelsClient modelsClient;
   private final AudioClient audioClient;
-  private final ImagesClient imagesClient;
-  private final ModerationsClient moderationsClient;
+  private final ChatClient chatClient;
   private final EmbeddingsClient embeddingsClient;
-  private final FilesClient filesClient;
   private final FineTuningClient fineTuningClient;
+  private final FilesClient filesClient;
+  private final ImagesClient imagesClient;
+  private final ModelsClient modelsClient;
+  private final ModerationsClient moderationsClient;
 
   private ChatJPT(
       URI baseUrl, String apiKey, Optional<String> organization, HttpClient httpClient) {
-    chatClient = new ChatClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
-    modelsClient = new ModelsClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
     audioClient = new AudioClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
-    imagesClient = new ImagesClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
-    moderationsClient =
-        new ModerationsClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
+    chatClient = new ChatClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
     embeddingsClient =
         new EmbeddingsClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
-    filesClient = new FilesClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
     fineTuningClient =
         new FineTuningClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
-  }
-
-  /**
-   * @return a client based on <a
-   *     href="https://platform.openai.com/docs/api-reference/chat">Chat</a>
-   */
-  public ChatClient chatClient() {
-    return chatClient;
-  }
-
-  /**
-   * @return a client based on <a
-   *     href="https://platform.openai.com/docs/api-reference/models">Models</a>
-   */
-  public ModelsClient modelsClient() {
-    return modelsClient;
+    filesClient = new FilesClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
+    imagesClient = new ImagesClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
+    modelsClient = new ModelsClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
+    moderationsClient =
+        new ModerationsClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
   }
 
   /**
@@ -75,18 +59,10 @@ public final class ChatJPT {
 
   /**
    * @return a client based on <a
-   *     href="https://platform.openai.com/docs/api-reference/images">Images</a>
+   *     href="https://platform.openai.com/docs/api-reference/chat">Chat</a>
    */
-  public ImagesClient imagesClient() {
-    return imagesClient;
-  }
-
-  /**
-   * @return a client based on <a
-   *     href="https://platform.openai.com/docs/api-reference/moderations">Moderations</a>
-   */
-  public ModerationsClient moderationsClient() {
-    return moderationsClient;
+  public ChatClient chatClient() {
+    return chatClient;
   }
 
   /**
@@ -99,6 +75,14 @@ public final class ChatJPT {
 
   /**
    * @return a client based on <a
+   *     href="https://platform.openai.com/docs/api-reference/fine-tuning">Fine-tuning</a>
+   */
+  public FineTuningClient fineTuningClient() {
+    return fineTuningClient;
+  }
+
+  /**
+   * @return a client based on <a
    *     href="https://platform.openai.com/docs/api-reference/files">Files</a>
    */
   public FilesClient filesClient() {
@@ -107,10 +91,26 @@ public final class ChatJPT {
 
   /**
    * @return a client based on <a
-   *     href="https://platform.openai.com/docs/api-reference/fine-tuning">Fine-tuning</a>
+   *     href="https://platform.openai.com/docs/api-reference/images">Images</a>
    */
-  public FineTuningClient fineTuningClient() {
-    return fineTuningClient;
+  public ImagesClient imagesClient() {
+    return imagesClient;
+  }
+
+  /**
+   * @return a client based on <a
+   *     href="https://platform.openai.com/docs/api-reference/models">Models</a>
+   */
+  public ModelsClient modelsClient() {
+    return modelsClient;
+  }
+
+  /**
+   * @return a client based on <a
+   *     href="https://platform.openai.com/docs/api-reference/moderations">Moderations</a>
+   */
+  public ModerationsClient moderationsClient() {
+    return moderationsClient;
   }
 
   /**

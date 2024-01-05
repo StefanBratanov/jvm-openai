@@ -1,7 +1,7 @@
 package io.github.stefanbratanov.chatjpt;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.github.stefanbratanov.chatjpt.FineTuningClient.PaginatedFineTuningEvents;
 import io.github.stefanbratanov.chatjpt.FineTuningClient.PaginatedFineTuningJobs;
@@ -31,15 +31,11 @@ public class ChatJPTIntegrationTest {
   public void testUnauthorizedRequest() {
     ChatJPT unauthorizedChatJPT = ChatJPT.newBuilder("foobar").build();
 
-    assertThatThrownBy(() -> unauthorizedChatJPT.modelsClient().listModels())
-        .satisfies(
-            exception -> {
-              assertThat(exception).isInstanceOf(OpenAIException.class);
-              OpenAIException openAIException = (OpenAIException) exception;
-              assertThat(openAIException.statusCode()).isEqualTo(401);
-              assertThat(openAIException.errorMessage())
-                  .startsWith("Incorrect API key provided: foobar");
-            });
+    OpenAIException exception =
+        assertThrows(OpenAIException.class, () -> unauthorizedChatJPT.modelsClient().listModels());
+
+    assertThat(exception.statusCode()).isEqualTo(401);
+    assertThat(exception.errorMessage()).startsWith("Incorrect API key provided: foobar");
   }
 
   @Test
