@@ -146,9 +146,10 @@ abstract class OpenAIClient {
           .flatMap(
               errorNode ->
                   Optional.ofNullable(errorNode.get("message"))
+                      .filter(node -> !node.asText().isBlank())
+                      // fallback to "type" if no "message"
                       .or(() -> Optional.ofNullable(errorNode.get("type"))))
-          .map(JsonNode::asText)
-          .filter(nodeText -> !nodeText.isBlank());
+          .map(JsonNode::asText);
     } catch (IOException ex) {
       throw new UncheckedIOException(ex);
     }
