@@ -2,6 +2,9 @@ package io.github.stefanbratanov.chatjpt;
 
 import java.util.List;
 
+/**
+ * The fine_tuning.job object represents a fine-tuning job that has been created through the API.
+ */
 public record FineTuningJob(
     String id,
     long createdAt,

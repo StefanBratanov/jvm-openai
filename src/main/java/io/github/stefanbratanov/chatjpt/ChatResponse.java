@@ -2,6 +2,7 @@ package io.github.stefanbratanov.chatjpt;
 
 import java.util.List;
 
+/** Represents a chat completion response returned by model, based on the provided input. */
 public record ChatResponse(
     String id,
     long created,

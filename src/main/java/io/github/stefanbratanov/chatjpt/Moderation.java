@@ -3,6 +3,9 @@ package io.github.stefanbratanov.chatjpt;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
+/**
+ * Represents policy compliance report by OpenAI's content moderation model against a given input.
+ */
 public record Moderation(String id, String model, List<Result> results) {
 
   public record Result(boolean flagged, Categories categories, CategoryScores categoryScores) {
