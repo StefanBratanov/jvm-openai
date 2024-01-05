@@ -68,6 +68,7 @@ abstract class OpenAIClient {
     } catch (IOException ex) {
       throw new UncheckedIOException(ex);
     } catch (InterruptedException ex) {
+      Thread.currentThread().interrupt();
       throw new RuntimeException("Operation was interrupted", ex);
     }
   }
