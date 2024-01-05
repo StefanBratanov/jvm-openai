@@ -31,7 +31,7 @@ class MultipartBodyPublisher implements HttpRequest.BodyPublisher {
 
           @Override
           public void request(long n) {
-            long elementsToEmit = Math.min(n, multipartBodyParts.size() - index);
+            long elementsToEmit = Math.min(n, (long) multipartBodyParts.size() - index);
             for (int i = 0; i < elementsToEmit; i++) {
               subscriber.onNext(ByteBuffer.wrap(multipartBodyParts.get(index++)));
             }
@@ -41,7 +41,10 @@ class MultipartBodyPublisher implements HttpRequest.BodyPublisher {
           }
 
           @Override
-          public void cancel() {}
+          public void cancel() {
+            // No action needed on cancel in this implementation as resources are automatically
+            // managed and released when no longer needed.
+          }
         });
   }
 

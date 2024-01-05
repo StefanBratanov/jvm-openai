@@ -3,6 +3,7 @@
 [![build](https://github.com/StefanBratanov/chatjpt/actions/workflows/build.yml/badge.svg)](https://github.com/StefanBratanov/chatjpt/actions/workflows/build.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.stefanbratanov/chatjpt)](https://central.sonatype.com/artifact/io.github.stefanbratanov/chatjpt)
 [![javadoc](https://javadoc.io/badge2/io.github.stefanbratanov/chatjpt/javadoc.svg)](https://javadoc.io/doc/io.github.stefanbratanov/chatjpt)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=StefanBratanov_chatjpt&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=StefanBratanov_chatjpt)
 
 A minimalistic unofficial Java client for the [OpenAI API](https://platform.openai.com/docs/api-reference)
 
