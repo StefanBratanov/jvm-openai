@@ -69,7 +69,7 @@ abstract class OpenAIClient {
       throw new UncheckedIOException(ex);
     } catch (InterruptedException ex) {
       Thread.currentThread().interrupt();
-      throw new RuntimeException("Thread was interrupted", ex);
+      throw new IllegalStateException("Thread was interrupted", ex);
     }
   }
 
@@ -130,15 +130,15 @@ abstract class OpenAIClient {
   }
 
   private String[] getAuthenticationHeaders(String apiKey, Optional<String> organization) {
-    List<String> authenticationHeaders = new ArrayList<>();
-    authenticationHeaders.add("Authorization");
-    authenticationHeaders.add("Bearer " + apiKey);
+    List<String> authHeaders = new ArrayList<>();
+    authHeaders.add("Authorization");
+    authHeaders.add("Bearer " + apiKey);
     organization.ifPresent(
         org -> {
-          authenticationHeaders.add("OpenAI-Organization");
-          authenticationHeaders.add(org);
+          authHeaders.add("OpenAI-Organization");
+          authHeaders.add(org);
         });
-    return authenticationHeaders.toArray(new String[] {});
+    return authHeaders.toArray(new String[] {});
   }
 
   private Optional<String> getErrorMessageFromHttpResponse(HttpResponse<?> httpResponse) {
