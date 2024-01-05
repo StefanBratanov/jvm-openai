@@ -1,10 +1,6 @@
 package io.github.stefanbratanov.chatjpt;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -37,12 +33,7 @@ public final class ModelsClient extends OpenAIClient {
     HttpRequest httpRequest =
         newHttpRequestBuilder().uri(baseUrl.resolve(Endpoint.MODELS.getPath())).GET().build();
     HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
-    try {
-      JsonNode models = objectMapper.readTree(httpResponse.body());
-      return objectMapper.readValue(models.get("data").toString(), new TypeReference<>() {});
-    } catch (IOException ex) {
-      throw new UncheckedIOException(ex);
-    }
+    return deserializeDataInResponseAsList(httpResponse.body(), Model.class);
   }
 
   /**

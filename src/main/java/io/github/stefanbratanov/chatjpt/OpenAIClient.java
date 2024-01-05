@@ -110,6 +110,17 @@ abstract class OpenAIClient {
     }
   }
 
+  <T> List<T> deserializeDataInResponseAsList(byte[] response, Class<T> elementType) {
+    try {
+      JsonNode responseNode = objectMapper.readTree(response);
+      return objectMapper.readValue(
+          responseNode.get("data").traverse(),
+          objectMapper.getTypeFactory().constructCollectionType(List.class, elementType));
+    } catch (IOException ex) {
+      throw new UncheckedIOException(ex);
+    }
+  }
+
   JsonNode deserializeResponseAsTree(byte[] response) {
     try {
       return objectMapper.readTree(response);
