@@ -68,7 +68,8 @@ abstract class OpenAIClient {
     } catch (IOException ex) {
       throw new UncheckedIOException(ex);
     } catch (InterruptedException ex) {
-      throw new RuntimeException(ex);
+      Thread.currentThread().interrupt();
+      throw new RuntimeException("Thread was interrupted", ex);
     }
   }
 
@@ -141,11 +142,13 @@ abstract class OpenAIClient {
       } else {
         return Optional.empty();
       }
-      JsonNode errorNode = objectMapper.readTree(body).get("error");
-      return Optional.ofNullable(errorNode.get("message"))
-          .filter(node -> !node.asText().isEmpty())
-          .or(() -> Optional.ofNullable(errorNode.get("type")))
-          .map(JsonNode::asText);
+      return Optional.ofNullable(objectMapper.readTree(body).get("error"))
+          .flatMap(
+              errorNode ->
+                  Optional.ofNullable(errorNode.get("message"))
+                      .or(() -> Optional.ofNullable(errorNode.get("type"))))
+          .map(JsonNode::asText)
+          .filter(nodeText -> !nodeText.isBlank());
     } catch (IOException ex) {
       throw new UncheckedIOException(ex);
     }
