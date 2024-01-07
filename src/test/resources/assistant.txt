@@ -1,0 +1,5 @@
+The information below describes the house that the user is currently looking to buy:
+The house size is 2000 square feet.
+The house address is 5453 Ellenvale Ave. Wooodland Hills, CA 91367
+The house exterior color is green.
+There are 3 bedrooms and 2 bathrooms in the house.

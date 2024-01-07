@@ -33,6 +33,7 @@ public final class ChatJPT {
   private final ImagesClient imagesClient;
   private final ModelsClient modelsClient;
   private final ModerationsClient moderationsClient;
+  private final AssistantsClient assistantsClient;
   private final ThreadsClient threadsClient;
   private final MessagesClient messagesClient;
 
@@ -49,6 +50,8 @@ public final class ChatJPT {
     modelsClient = new ModelsClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
     moderationsClient =
         new ModerationsClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
+    assistantsClient =
+        new AssistantsClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
     threadsClient = new ThreadsClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
     messagesClient = new MessagesClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
   }
@@ -115,6 +118,14 @@ public final class ChatJPT {
    */
   public ModerationsClient moderationsClient() {
     return moderationsClient;
+  }
+
+  /**
+   * @return a client based on <a
+   *     href="https://platform.openai.com/docs/api-reference/assistants">Assistants</a>
+   */
+  public AssistantsClient assistantsClient() {
+    return assistantsClient;
   }
 
   /**

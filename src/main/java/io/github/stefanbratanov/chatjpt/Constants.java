@@ -18,4 +18,8 @@ class Constants {
 
   static final String FILE_CITATION_ANNOTATION_TYPE = "file_citation";
   static final String FILE_PATH_ANNOTATION_TYPE = "file_path";
+
+  static final String CODE_INTERPRETER_TOOL_TYPE = "code_interpreter";
+  static final String RETRIEVAL_TOOL_TYPE = "retrieval";
+  static final String FUNCTION_TOOL_TYPE = "function";
 }

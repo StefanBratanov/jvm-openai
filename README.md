@@ -67,7 +67,7 @@ Images images = imagesClient.createImage(createImageRequest);
 
 | API                                                                     | Status |
 |-------------------------------------------------------------------------|:------:|
-| [Assistants](https://platform.openai.com/docs/api-reference/assistants) |        |
+| [Assistants](https://platform.openai.com/docs/api-reference/assistants) |   ✔️   |
 | [Threads](https://platform.openai.com/docs/api-reference/threads)       | ️  ✔️  |
 | [Messages](https://platform.openai.com/docs/api-reference/messages)     |   ✔️   |
 | [Runs](https://platform.openai.com/docs/api-reference/runs)             |        |

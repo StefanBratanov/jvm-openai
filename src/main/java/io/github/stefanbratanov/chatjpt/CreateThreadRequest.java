@@ -102,7 +102,7 @@ public record CreateThreadRequest(
 
     public CreateThreadRequest build() {
       return new CreateThreadRequest(
-          messages.isEmpty() ? Optional.empty() : Optional.of(messages), metadata);
+          messages.isEmpty() ? Optional.empty() : Optional.of(List.copyOf(messages)), metadata);
     }
   }
 }

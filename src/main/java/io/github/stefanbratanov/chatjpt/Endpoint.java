@@ -14,7 +14,8 @@ enum Endpoint {
   FILES("files"),
   FINE_TUNING("fine_tuning/jobs"),
   // Beta
-  THREADS("threads");
+  THREADS("threads"),
+  ASSISTANTS("assistants");
 
   private final String path;
 

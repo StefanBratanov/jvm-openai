@@ -58,4 +58,8 @@ public sealed interface ChatMessage extends Message
   static UserMessage userMessage(String content) {
     return new UserMessage(content, Optional.empty());
   }
+
+  static AssistantMessage assistantMessage(String content) {
+    return new AssistantMessage(content, Optional.empty(), Optional.empty());
+  }
 }

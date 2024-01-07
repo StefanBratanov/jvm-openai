@@ -21,7 +21,7 @@ public class ChatJPTIntegrationTestBase {
 
   @AfterAll
   public static void cleanUp() {
-    // Cleanup of file(s) uploads
+    // Cleanup of files uploads
     FilesClient filesClient = chatJPT.filesClient();
     filesClient
         .listFiles()
@@ -38,7 +38,7 @@ public class ChatJPTIntegrationTestBase {
             });
   }
 
-  protected Path getTestResource(String resource) {
+  protected static Path getTestResource(String resource) {
     try {
       return Paths.get(
           Objects.requireNonNull(ChatJPTIntegrationTest.class.getResource(resource)).toURI());

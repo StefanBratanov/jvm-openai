@@ -46,19 +46,10 @@ abstract class OpenAIClient {
   }
 
   String createQueryParameters(Map<String, Optional<?>> queryParameters) {
-    StringBuilder queryParams = new StringBuilder();
-    queryParameters.entrySet().stream()
+    return queryParameters.entrySet().stream()
         .filter(entry -> entry.getValue().isPresent())
-        .forEach(
-            entry -> {
-              if (queryParams.isEmpty()) {
-                queryParams.append("?");
-              } else {
-                queryParams.append("&");
-              }
-              queryParams.append(entry.getKey()).append("=").append(entry.getValue().get());
-            });
-    return queryParams.toString();
+        .map(entry -> entry.getKey() + "=" + entry.getValue().get())
+        .collect(Collectors.joining("&", "?", ""));
   }
 
   <T> HttpRequest.BodyPublisher createBodyPublisher(T body) {
