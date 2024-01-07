@@ -6,6 +6,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /** Based on <a href="https://platform.openai.com/docs/api-reference/fine-tuning">Fine-tuning</a> */
@@ -50,17 +51,7 @@ public final class FineTuningClient extends OpenAIClient {
    */
   public PaginatedFineTuningJobs listFineTuningJobs(
       Optional<Integer> limit, Optional<String> after) {
-    StringBuilder queryParameters = new StringBuilder();
-    limit.ifPresent(limitParam -> queryParameters.append("?limit=").append(limitParam));
-    after.ifPresent(
-        afterParam -> {
-          if (queryParameters.isEmpty()) {
-            queryParameters.append("?");
-          } else {
-            queryParameters.append("&");
-          }
-          queryParameters.append("after=").append(afterParam);
-        });
+    String queryParameters = createQueryParameters(Map.of("limit", limit, "after", after));
     HttpRequest httpRequest =
         newHttpRequestBuilder()
             .uri(baseUrl.resolve(Endpoint.FINE_TUNING.getPath() + queryParameters))
@@ -86,17 +77,7 @@ public final class FineTuningClient extends OpenAIClient {
    */
   public PaginatedFineTuningEvents listFineTuningJobEvents(
       String fineTuningJobId, Optional<Integer> limit, Optional<String> after) {
-    StringBuilder queryParameters = new StringBuilder();
-    limit.ifPresent(limitParam -> queryParameters.append("?limit=").append(limitParam));
-    after.ifPresent(
-        afterParam -> {
-          if (queryParameters.isEmpty()) {
-            queryParameters.append("?");
-          } else {
-            queryParameters.append("&");
-          }
-          queryParameters.append("after=").append(afterParam);
-        });
+    String queryParameters = createQueryParameters(Map.of("limit", limit, "after", after));
     HttpRequest httpRequest =
         newHttpRequestBuilder()
             .uri(

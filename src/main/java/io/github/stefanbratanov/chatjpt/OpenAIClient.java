@@ -10,9 +10,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -45,6 +43,22 @@ abstract class OpenAIClient {
       httpRequestBuilder.headers(headers);
     }
     return httpRequestBuilder;
+  }
+
+  String createQueryParameters(Map<String, Optional<?>> queryParameters) {
+    StringBuilder queryParams = new StringBuilder();
+    queryParameters.entrySet().stream()
+        .filter(entry -> entry.getValue().isPresent())
+        .forEach(
+            entry -> {
+              if (queryParams.isEmpty()) {
+                queryParams.append("?");
+              } else {
+                queryParams.append("&");
+              }
+              queryParams.append(entry.getKey()).append("=").append(entry.getValue().get());
+            });
+    return queryParams.toString();
   }
 
   <T> HttpRequest.BodyPublisher createBodyPublisher(T body) {

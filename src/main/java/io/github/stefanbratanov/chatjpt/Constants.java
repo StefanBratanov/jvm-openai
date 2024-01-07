@@ -12,4 +12,10 @@ class Constants {
   static final String USER_MESSAGE_ROLE = "user";
   static final String ASSISTANT_MESSAGE_ROLE = "assistant";
   static final String TOOL_MESSAGE_ROLE = "tool";
+
+  static final String IMAGE_FILE_MESSAGE_CONTENT_TYPE = "image_file";
+  static final String TEXT_MESSAGE_CONTENT_TYPE = "text";
+
+  static final String FILE_CITATION_ANNOTATION_TYPE = "file_citation";
+  static final String FILE_PATH_ANNOTATION_TYPE = "file_path";
 }

@@ -8,7 +8,7 @@ import java.net.http.HttpResponse;
 import java.util.Optional;
 
 /** Based on <a href="https://platform.openai.com/docs/api-reference/threads">Threads</a> */
-public class ThreadsClient extends OpenAIAssistantsClient {
+public final class ThreadsClient extends OpenAIAssistantsClient {
 
   private final URI baseUrl;
 

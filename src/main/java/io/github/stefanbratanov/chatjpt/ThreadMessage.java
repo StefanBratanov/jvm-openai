@@ -1,60 +1,95 @@
 package io.github.stefanbratanov.chatjpt;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
+/** Represents a message within a thread. */
 public record ThreadMessage(
-    String content, Optional<List<String>> fileIds, Optional<Map<String, String>> metadata)
-    implements Message {
-  @Override
-  public String role() {
-    return Constants.USER_MESSAGE_ROLE;
-  }
+    String id,
+    long createdAt,
+    String threadId,
+    String role,
+    List<Content> content,
+    String assistantId,
+    String runId,
+    List<String> fileIds,
+    Map<String, String> metadata) {
 
-  public static Builder newBuilder() {
-    return new Builder();
-  }
+  @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+  @JsonSubTypes({
+    @JsonSubTypes.Type(
+        value = Content.ImageFileContent.class,
+        name = Constants.IMAGE_FILE_MESSAGE_CONTENT_TYPE),
+    @JsonSubTypes.Type(
+        value = Content.TextContent.class,
+        name = Constants.TEXT_MESSAGE_CONTENT_TYPE),
+  })
+  public sealed interface Content permits Content.ImageFileContent, Content.TextContent {
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    String type();
 
-  public static class Builder {
-
-    private String content;
-    private Optional<List<String>> fileIds = Optional.empty();
-    private Optional<Map<String, String>> metadata = Optional.empty();
-
-    /**
-     * @param content The content of the message.
-     */
-    public Builder content(String content) {
-      this.content = content;
-      return this;
-    }
-
-    /**
-     * @param fileIds A list of File IDs that the message should use. There can be a maximum of 10
-     *     files attached to a message. Useful for tools like retrieval and code_interpreter that
-     *     can access and use files.
-     */
-    public Builder fileIds(List<String> fileIds) {
-      this.fileIds = Optional.of(fileIds);
-      return this;
-    }
-
-    /**
-     * @param metadata Set of 16 key-value pairs that can be attached to an object. This can be
-     *     useful for storing additional information about the object in a structured format. Keys
-     *     can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
-     */
-    public Builder metadata(Map<String, String> metadata) {
-      this.metadata = Optional.of(metadata);
-      return this;
-    }
-
-    public ThreadMessage build() {
-      if (content == null) {
-        throw new IllegalStateException("content must be set");
+    record ImageFileContent(ImageFile imageFile) implements Content {
+      @Override
+      public String type() {
+        return Constants.IMAGE_FILE_MESSAGE_CONTENT_TYPE;
       }
-      return new ThreadMessage(content, fileIds, metadata);
+
+      public record ImageFile(String fileId) {}
+    }
+
+    record TextContent(Text text) implements Content {
+      @Override
+      public String type() {
+        return Constants.TEXT_MESSAGE_CONTENT_TYPE;
+      }
+
+      public record Text(String value, List<Annotation> annotations) {
+
+        @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+        @JsonSubTypes({
+          @JsonSubTypes.Type(
+              value = Annotation.FileCitationAnnotation.class,
+              name = Constants.FILE_CITATION_ANNOTATION_TYPE),
+          @JsonSubTypes.Type(
+              value = Annotation.FilePathAnnotation.class,
+              name = Constants.FILE_PATH_ANNOTATION_TYPE),
+        })
+        public sealed interface Annotation
+            permits Annotation.FileCitationAnnotation, Annotation.FilePathAnnotation {
+          @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+          String type();
+
+          String text();
+
+          int startIndex();
+
+          int endIndex();
+
+          record FileCitationAnnotation(
+              String text, FileCitation fileCitation, int startIndex, int endIndex)
+              implements Annotation {
+            @Override
+            public String type() {
+              return Constants.FILE_CITATION_ANNOTATION_TYPE;
+            }
+
+            public record FileCitation(String fileId, String quote) {}
+          }
+
+          record FilePathAnnotation(String text, FilePath filePath, int startIndex, int endIndex)
+              implements Annotation {
+            @Override
+            public String type() {
+              return Constants.FILE_PATH_ANNOTATION_TYPE;
+            }
+
+            public record FilePath(String fileId) {}
+          }
+        }
+      }
     }
   }
 }

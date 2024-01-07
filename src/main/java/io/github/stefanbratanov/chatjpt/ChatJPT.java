@@ -34,6 +34,7 @@ public final class ChatJPT {
   private final ModelsClient modelsClient;
   private final ModerationsClient moderationsClient;
   private final ThreadsClient threadsClient;
+  private final MessagesClient messagesClient;
 
   private ChatJPT(
       URI baseUrl, String apiKey, Optional<String> organization, HttpClient httpClient) {
@@ -49,6 +50,7 @@ public final class ChatJPT {
     moderationsClient =
         new ModerationsClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
     threadsClient = new ThreadsClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
+    messagesClient = new MessagesClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
   }
 
   /**
@@ -121,6 +123,14 @@ public final class ChatJPT {
    */
   public ThreadsClient threadsClient() {
     return threadsClient;
+  }
+
+  /**
+   * @return a client based on <a
+   *     href="https://platform.openai.com/docs/api-reference/messages">Messages</a>
+   */
+  public MessagesClient messagesClient() {
+    return messagesClient;
   }
 
   /**

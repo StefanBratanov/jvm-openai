@@ -5,9 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.github.stefanbratanov.chatjpt.FineTuningClient.PaginatedFineTuningEvents;
 import io.github.stefanbratanov.chatjpt.FineTuningClient.PaginatedFineTuningJobs;
-import java.net.URISyntaxException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -201,18 +199,6 @@ public class ChatJPTIntegrationTest extends ChatJPTIntegrationTestBase {
     File retrievedFile = filesClient.retrieveFile(uploadedFile.id());
 
     assertThat(retrievedFile).isEqualTo(uploadedFile);
-
-    // Cleanup of previous uploads
-    uploadedFiles.forEach(
-        file -> {
-          try {
-            DeletionStatus deletionStatus = filesClient.deleteFile(file.id());
-            assertThat(deletionStatus.deleted()).isTrue();
-          } catch (OpenAIException ex) {
-            assertThat(ex.statusCode()).isEqualTo(409);
-            assertThat(ex.errorMessage()).isEqualTo("File is still processing. Check back later.");
-          }
-        });
   }
 
   @Test
@@ -261,14 +247,5 @@ public class ChatJPTIntegrationTest extends ChatJPTIntegrationTestBase {
         fineTuningClient.cancelFineTuningJob(createdFineTuningJob.id());
 
     assertThat(cancelledFineTuningJob).isNotNull();
-  }
-
-  private Path getTestResource(String resource) {
-    try {
-      return Paths.get(
-          Objects.requireNonNull(ChatJPTIntegrationTest.class.getResource(resource)).toURI());
-    } catch (URISyntaxException ex) {
-      throw new RuntimeException(ex);
-    }
   }
 }
