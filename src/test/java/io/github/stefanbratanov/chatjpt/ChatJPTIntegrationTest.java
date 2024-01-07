@@ -12,20 +12,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-public class ChatJPTIntegrationTest {
-
-  private ChatJPT chatJPT;
-
-  @BeforeEach
-  public void setUp() {
-    String apiKey = System.getenv("OPENAI_API_KEY");
-    chatJPT = ChatJPT.newBuilder(apiKey).build();
-  }
+public class ChatJPTIntegrationTest extends ChatJPTIntegrationTestBase {
 
   @Test
   public void testUnauthorizedRequest() {

@@ -1,6 +1,5 @@
 package io.github.stefanbratanov.chatjpt;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import java.util.List;
@@ -15,14 +14,11 @@ import java.util.Optional;
       name = Constants.ASSISTANT_MESSAGE_ROLE),
   @JsonSubTypes.Type(value = ChatMessage.ToolMessage.class, name = Constants.TOOL_MESSAGE_ROLE)
 })
-public sealed interface ChatMessage
+public sealed interface ChatMessage extends Message
     permits ChatMessage.SystemMessage,
         ChatMessage.UserMessage,
         ChatMessage.AssistantMessage,
         ChatMessage.ToolMessage {
-
-  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-  String role();
 
   String content();
 

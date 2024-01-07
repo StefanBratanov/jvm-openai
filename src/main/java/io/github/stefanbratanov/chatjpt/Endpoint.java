@@ -12,7 +12,9 @@ enum Endpoint {
   MODERATIONS("moderations"),
   EMBEDDINCS("embeddings"),
   FILES("files"),
-  FINE_TUNING("fine_tuning/jobs");
+  FINE_TUNING("fine_tuning/jobs"),
+  // Beta
+  THREADS("threads");
 
   private final String path;
 

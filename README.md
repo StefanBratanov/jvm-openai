@@ -63,6 +63,13 @@ Images images = imagesClient.createImage(createImageRequest);
 | [Models](https://platform.openai.com/docs/api-reference/models)           |   ✔️   |
 | [Moderations](https://platform.openai.com/docs/api-reference/moderations) |   ✔️   |
 
-Beta APIs are currently not supported
+#### Beta APIs
+
+| API                                                                     | Status |
+|-------------------------------------------------------------------------|:------:|
+| [Assistants](https://platform.openai.com/docs/api-reference/assistants) |        |
+| [Threads](https://platform.openai.com/docs/api-reference/threads)       | ️  ✔️  |
+| [Messages](https://platform.openai.com/docs/api-reference/messages)     |        |
+| [Runs](https://platform.openai.com/docs/api-reference/runs)             |        |
 
 
