@@ -23,6 +23,7 @@ public record ThreadRunStep(
     Long completedAt,
     Map<String, String> metadata) {
 
+  /** The details of the run step. */
   @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
   @JsonSubTypes({
     @JsonSubTypes.Type(
@@ -54,5 +55,6 @@ public record ThreadRunStep(
     }
   }
 
+  /** The last error associated with this run step. */
   public record LastError(String code, String message) {}
 }

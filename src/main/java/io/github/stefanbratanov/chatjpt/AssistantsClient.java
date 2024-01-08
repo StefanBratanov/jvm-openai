@@ -8,7 +8,11 @@ import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Optional;
 
-/** Based on <a href="https://platform.openai.com/docs/api-reference/assistants">Assistants</a> */
+/**
+ * Build assistants that can call models and use tools to perform tasks.
+ *
+ * <p>Based on <a href="https://platform.openai.com/docs/api-reference/assistants">Assistants</a>
+ */
 public final class AssistantsClient extends OpenAIAssistantsClient {
 
   private static final String FILES_SEGMENT = "/files";

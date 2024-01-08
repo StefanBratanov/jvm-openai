@@ -9,7 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-/** Based on <a href="https://platform.openai.com/docs/api-reference/fine-tuning">Fine-tuning</a> */
+/**
+ * Manage fine-tuning jobs to tailor a model to your specific training data.
+ *
+ * <p>Based on <a href="https://platform.openai.com/docs/api-reference/fine-tuning">Fine-tuning</a>
+ */
 public final class FineTuningClient extends OpenAIClient {
 
   private final URI baseUrl;

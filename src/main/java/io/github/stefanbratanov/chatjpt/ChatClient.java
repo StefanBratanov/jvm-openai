@@ -9,7 +9,11 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
-/** Based on <a href="https://platform.openai.com/docs/api-reference/chat">Chat</a> */
+/**
+ * Given a list of messages comprising a conversation, the model will return a response.
+ *
+ * <p>Based on <a href="https://platform.openai.com/docs/api-reference/chat">Chat</a>
+ */
 public final class ChatClient extends OpenAIClient {
 
   private static final String STREAM_TERMINATION = "data: [DONE]";

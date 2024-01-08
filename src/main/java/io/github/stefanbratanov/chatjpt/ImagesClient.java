@@ -7,7 +7,11 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Optional;
 
-/** Based on <a href="https://platform.openai.com/docs/api-reference/images">Images</a> */
+/**
+ * Given a prompt and/or an input image, the model will generate a new image.
+ *
+ * <p>Based on <a href="https://platform.openai.com/docs/api-reference/images">Images</a>
+ */
 public final class ImagesClient extends OpenAIClient {
 
   private final URI baseUrl;

@@ -8,7 +8,11 @@ import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Optional;
 
-/** Based on <a href="https://platform.openai.com/docs/api-reference/messages">Messages</a> */
+/**
+ * Create messages within threads
+ *
+ * <p>Based on <a href="https://platform.openai.com/docs/api-reference/messages">Messages</a>
+ */
 public final class MessagesClient extends OpenAIAssistantsClient {
 
   private static final String MESSAGES_SEGMENT = "/messages";

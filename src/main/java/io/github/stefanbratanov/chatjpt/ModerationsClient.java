@@ -7,7 +7,11 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Optional;
 
-/** Based on <a href="https://platform.openai.com/docs/api-reference/moderations">Moderations</a> */
+/**
+ * Given a input text, outputs if the model classifies it as violating OpenAI's content policy.
+ *
+ * <p>Based on <a href="https://platform.openai.com/docs/api-reference/moderations">Moderations</a>
+ */
 public final class ModerationsClient extends OpenAIClient {
 
   private final URI endpoint;

@@ -8,7 +8,12 @@ import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Optional;
 
-/** Based on <a href="https://platform.openai.com/docs/api-reference/models">Models</a> */
+/**
+ * List and describe the various models available in the API. You can refer to the Models
+ * documentation to understand what models are available and the differences between them.
+ *
+ * <p>Based on <a href="https://platform.openai.com/docs/api-reference/models">Models</a>
+ */
 public final class ModelsClient extends OpenAIClient {
 
   private final URI baseUrl;

@@ -7,7 +7,12 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Optional;
 
-/** Based on <a href="https://platform.openai.com/docs/api-reference/embeddings">Embeddings</a> */
+/**
+ * Get a vector representation of a given input that can be easily consumed by machine learning
+ * models and algorithms.
+ *
+ * <p>Based on <a href="https://platform.openai.com/docs/api-reference/embeddings">Embeddings</a>
+ */
 public final class EmbeddingsClient extends OpenAIClient {
 
   private final URI endpoint;

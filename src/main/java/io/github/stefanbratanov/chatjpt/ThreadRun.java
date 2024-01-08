@@ -23,9 +23,11 @@ public record ThreadRun(
     List<String> fileIds,
     Map<String, String> metadata) {
 
+  /** Details on the action required to continue the run. */
   public record RequiredAction(String type, SubmitToolOutputs submitToolOutputs) {
     public record SubmitToolOutputs(List<ToolCall> toolCalls) {}
   }
 
+  /** The last error associated with this run. */
   public record LastError(String code, String message) {}
 }

@@ -7,7 +7,11 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Optional;
 
-/** Based on <a href="https://platform.openai.com/docs/api-reference/threads">Threads</a> */
+/**
+ * Create threads that assistants can interact with.
+ *
+ * <p>Based on <a href="https://platform.openai.com/docs/api-reference/threads">Threads</a>
+ */
 public final class ThreadsClient extends OpenAIAssistantsClient {
 
   private final URI baseUrl;

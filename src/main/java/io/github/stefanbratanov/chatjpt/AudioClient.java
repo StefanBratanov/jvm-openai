@@ -11,7 +11,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 
-/** Based on <a href="https://platform.openai.com/docs/api-reference/audio">Audio</a> */
+/**
+ * Turn audio into text or text into audio.
+ *
+ * <p>Based on <a href="https://platform.openai.com/docs/api-reference/audio">Audio</a>
+ */
 public final class AudioClient extends OpenAIClient {
 
   private final URI baseUrl;

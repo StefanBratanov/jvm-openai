@@ -8,7 +8,12 @@ import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Optional;
 
-/** Based on <a href="https://platform.openai.com/docs/api-reference/files">Files</a> */
+/**
+ * Files are used to upload documents that can be used with features like Assistants and
+ * Fine-tuning.
+ *
+ * <p>Based on <a href="https://platform.openai.com/docs/api-reference/files">Files</a>
+ */
 public final class FilesClient extends OpenAIClient {
 
   private final URI baseUrl;

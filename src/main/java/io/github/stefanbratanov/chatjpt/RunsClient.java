@@ -8,7 +8,11 @@ import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Optional;
 
-/** Based on <a href="https://platform.openai.com/docs/api-reference/runs">Runs</a> */
+/**
+ * Represents an execution run on a thread.
+ *
+ * <p>Based on <a href="https://platform.openai.com/docs/api-reference/runs">Runs</a>
+ */
 public final class RunsClient extends OpenAIAssistantsClient {
 
   private static final String RUNS_SEGMENT = "/runs";
