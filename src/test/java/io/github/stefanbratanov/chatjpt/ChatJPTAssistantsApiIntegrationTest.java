@@ -1,7 +1,6 @@
 package io.github.stefanbratanov.chatjpt;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.github.stefanbratanov.chatjpt.SubmitToolOutputsRequest.ToolOutput;
@@ -259,16 +258,13 @@ public class ChatJPTAssistantsApiIntegrationTest extends ChatJPTIntegrationTestB
         .isEqualTo(run);
 
     // wait for the run to complete, fail or expire
-    await()
-        .pollInterval(Duration.ofSeconds(5))
-        .atMost(Duration.ofMinutes(1))
-        .until(
-            () -> {
-              String status = runsClient.retrieveRun(thread.id(), run.id()).status();
-              return status.equals("completed")
-                  || status.equals("failed")
-                  || status.equals("expired");
-            });
+    awaitCondition(
+        () -> {
+          String status = runsClient.retrieveRun(thread.id(), run.id()).status();
+          return status.equals("completed") || status.equals("failed") || status.equals("expired");
+        },
+        Duration.ofSeconds(5),
+        Duration.ofMinutes(1));
 
     // retrieve run steps
     List<ThreadRunStep> runSteps =
