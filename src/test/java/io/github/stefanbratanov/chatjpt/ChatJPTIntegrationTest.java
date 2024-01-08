@@ -3,6 +3,7 @@ package io.github.stefanbratanov.chatjpt;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import io.github.stefanbratanov.chatjpt.ChatMessage.UserMessage.UserMessageWithContentParts.ContentPart.TextContentPart;
 import io.github.stefanbratanov.chatjpt.FineTuningClient.PaginatedFineTuningEvents;
 import io.github.stefanbratanov.chatjpt.FineTuningClient.PaginatedFineTuningJobs;
 import java.nio.file.Path;
@@ -45,7 +46,10 @@ public class ChatJPTIntegrationTest extends ChatJPTIntegrationTestBase {
 
     // test streaming
     ChatRequest streamRequest =
-        ChatRequest.newBuilder().message(ChatMessage.userMessage("Say this is a test")).stream(true)
+        ChatRequest.newBuilder()
+            // test sending content part
+            .message(ChatMessage.userMessage(new TextContentPart("Say this is a test")))
+            .stream(true)
             .build();
 
     String joinedResponse =

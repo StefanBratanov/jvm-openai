@@ -1,26 +1,18 @@
 package io.github.stefanbratanov.chatjpt;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.github.stefanbratanov.chatjpt.ChatMessage.UserMessage.UserMessageWithContentParts;
+import io.github.stefanbratanov.chatjpt.ChatMessage.UserMessage.UserMessageWithContentParts.ContentPart;
+import io.github.stefanbratanov.chatjpt.ChatMessage.UserMessage.UserMessageWithTextContent;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "role")
-@JsonSubTypes({
-  @JsonSubTypes.Type(value = ChatMessage.SystemMessage.class, name = Constants.SYSTEM_MESSAGE_ROLE),
-  @JsonSubTypes.Type(value = ChatMessage.UserMessage.class, name = Constants.USER_MESSAGE_ROLE),
-  @JsonSubTypes.Type(
-      value = ChatMessage.AssistantMessage.class,
-      name = Constants.ASSISTANT_MESSAGE_ROLE),
-  @JsonSubTypes.Type(value = ChatMessage.ToolMessage.class, name = Constants.TOOL_MESSAGE_ROLE)
-})
 public sealed interface ChatMessage extends Message
     permits ChatMessage.SystemMessage,
         ChatMessage.UserMessage,
         ChatMessage.AssistantMessage,
         ChatMessage.ToolMessage {
-
-  String content();
 
   record SystemMessage(String content, Optional<String> name) implements ChatMessage {
     @Override
@@ -29,10 +21,42 @@ public sealed interface ChatMessage extends Message
     }
   }
 
-  record UserMessage(String content, Optional<String> name) implements ChatMessage {
+  sealed interface UserMessage<T> extends ChatMessage
+      permits UserMessageWithTextContent, UserMessageWithContentParts {
     @Override
-    public String role() {
+    default String role() {
       return Constants.USER_MESSAGE_ROLE;
+    }
+
+    T content();
+
+    record UserMessageWithTextContent(String content, Optional<String> name)
+        implements UserMessage<String> {}
+
+    record UserMessageWithContentParts(List<ContentPart> content, Optional<String> name)
+        implements UserMessage<List<ContentPart>> {
+
+      public sealed interface ContentPart
+          permits ContentPart.TextContentPart, ContentPart.ImageContentPart {
+        @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+        String type();
+
+        record TextContentPart(String text) implements ContentPart {
+          @Override
+          public String type() {
+            return Constants.TEXT_CONTENT_PART_TYPE;
+          }
+        }
+
+        record ImageContentPart(ImageUrl imageUrl) implements ContentPart {
+          @Override
+          public String type() {
+            return Constants.IMAGE_CONTENT_PART_TYPE;
+          }
+
+          public record ImageUrl(String url, Optional<String> detail) {}
+        }
+      }
     }
   }
 
@@ -55,11 +79,23 @@ public sealed interface ChatMessage extends Message
     return new SystemMessage(content, Optional.empty());
   }
 
-  static UserMessage userMessage(String content) {
-    return new UserMessage(content, Optional.empty());
+  static UserMessageWithTextContent userMessage(String content) {
+    return new UserMessageWithTextContent(content, Optional.empty());
+  }
+
+  static UserMessageWithContentParts userMessage(ContentPart... content) {
+    return new UserMessageWithContentParts(Arrays.asList(content), Optional.empty());
   }
 
   static AssistantMessage assistantMessage(String content) {
     return new AssistantMessage(content, Optional.empty(), Optional.empty());
+  }
+
+  static AssistantMessage assistantMessage(String content, List<ToolCall> toolCalls) {
+    return new AssistantMessage(content, Optional.empty(), Optional.of(toolCalls));
+  }
+
+  static ToolMessage toolMessage(String content, String toolCallId) {
+    return new ToolMessage(content, toolCallId);
   }
 }

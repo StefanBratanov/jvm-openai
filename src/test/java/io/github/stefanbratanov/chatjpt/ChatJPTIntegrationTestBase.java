@@ -42,7 +42,7 @@ public class ChatJPTIntegrationTestBase {
             });
   }
 
-  protected static Path getTestResource(String resource) {
+  protected Path getTestResource(String resource) {
     try {
       return Paths.get(
           Objects.requireNonNull(ChatJPTIntegrationTest.class.getResource(resource)).toURI());
@@ -55,8 +55,7 @@ public class ChatJPTIntegrationTestBase {
       Supplier<Boolean> condition, Duration pollingInterval, Duration timeout) {
 
     boolean isDone = false;
-    long startTime = System.currentTimeMillis();
-    long endTime = startTime + timeout.toMillis();
+    long endTime = System.currentTimeMillis() + timeout.toMillis();
 
     while (System.currentTimeMillis() < endTime && !isDone) {
       isDone = condition.get();

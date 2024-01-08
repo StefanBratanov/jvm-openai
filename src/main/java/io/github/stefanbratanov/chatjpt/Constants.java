@@ -32,4 +32,7 @@ class Constants {
 
   static final String CODE_INTERPRETER_LOG_OUTPUT_TYPE = "logs";
   static final String CODE_INTERPRETER_IMAGE_OUTPUT_TYPE = "image";
+
+  static final String TEXT_CONTENT_PART_TYPE = "text";
+  static final String IMAGE_CONTENT_PART_TYPE = "image_url";
 }
