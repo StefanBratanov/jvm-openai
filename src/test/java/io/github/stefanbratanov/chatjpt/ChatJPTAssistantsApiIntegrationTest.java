@@ -260,6 +260,7 @@ public class ChatJPTAssistantsApiIntegrationTest extends ChatJPTIntegrationTestB
 
     // wait for the run to complete, fail or expire
     await()
+        .pollInterval(Duration.ofSeconds(5))
         .atMost(Duration.ofMinutes(1))
         .until(
             () -> {
