@@ -170,6 +170,7 @@ public final class ChatJPT {
     private String baseUrl = DEFAULT_BASE_URL;
 
     private Optional<String> organization = Optional.empty();
+    private Optional<HttpClient> httpClient = Optional.empty();
 
     Builder(String apiKey) {
       this.apiKey = apiKey;
@@ -192,12 +193,23 @@ public final class ChatJPT {
       return this;
     }
 
+    /**
+     * @param httpClient a custom {@link HttpClient} which will be used for the API requests
+     */
+    public Builder httpClient(HttpClient httpClient) {
+      this.httpClient = Optional.of(httpClient);
+      return this;
+    }
+
     public ChatJPT build() {
       if (!baseUrl.endsWith("/")) {
         baseUrl += "/";
       }
-      HttpClient httpClient = HttpClient.newBuilder().build();
-      return new ChatJPT(URI.create(baseUrl), apiKey, organization, httpClient);
+      return new ChatJPT(
+          URI.create(baseUrl),
+          apiKey,
+          organization,
+          httpClient.orElseGet(HttpClient::newHttpClient));
     }
   }
 }
