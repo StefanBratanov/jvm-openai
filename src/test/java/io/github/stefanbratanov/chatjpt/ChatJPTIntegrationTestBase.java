@@ -54,22 +54,19 @@ public class ChatJPTIntegrationTestBase {
   protected void awaitCondition(
       Supplier<Boolean> condition, Duration pollingInterval, Duration timeout) {
 
-    boolean isDone = false;
     long endTime = System.currentTimeMillis() + timeout.toMillis();
 
-    while (System.currentTimeMillis() < endTime && !isDone) {
-      isDone = condition.get();
-      if (!isDone) {
-        try {
-          TimeUnit.MILLISECONDS.sleep(pollingInterval.toMillis());
-        } catch (InterruptedException ex) {
-          Assertions.fail(ex);
-        }
+    while (System.currentTimeMillis() < endTime) {
+      if (condition.get()) {
+        return;
+      }
+      try {
+        TimeUnit.MILLISECONDS.sleep(pollingInterval.toMillis());
+      } catch (InterruptedException ex) {
+        Assertions.fail(ex);
       }
     }
 
-    if (!isDone) {
-      Assertions.fail("The condition was not satisfied within the time limit.");
-    }
+    Assertions.fail("The condition was not satisfied within the time limit.");
   }
 }
