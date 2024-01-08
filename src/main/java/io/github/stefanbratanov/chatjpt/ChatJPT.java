@@ -36,6 +36,7 @@ public final class ChatJPT {
   private final AssistantsClient assistantsClient;
   private final ThreadsClient threadsClient;
   private final MessagesClient messagesClient;
+  private final RunsClient runsClient;
 
   private ChatJPT(
       URI baseUrl, String apiKey, Optional<String> organization, HttpClient httpClient) {
@@ -54,6 +55,7 @@ public final class ChatJPT {
         new AssistantsClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
     threadsClient = new ThreadsClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
     messagesClient = new MessagesClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
+    runsClient = new RunsClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
   }
 
   /**
@@ -142,6 +144,14 @@ public final class ChatJPT {
    */
   public MessagesClient messagesClient() {
     return messagesClient;
+  }
+
+  /**
+   * @return a client based on <a
+   *     href="https://platform.openai.com/docs/api-reference/runs">Runs</a>
+   */
+  public RunsClient runsClient() {
+    return runsClient;
   }
 
   /**

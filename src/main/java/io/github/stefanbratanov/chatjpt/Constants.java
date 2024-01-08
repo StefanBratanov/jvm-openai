@@ -22,4 +22,14 @@ class Constants {
   static final String CODE_INTERPRETER_TOOL_TYPE = "code_interpreter";
   static final String RETRIEVAL_TOOL_TYPE = "retrieval";
   static final String FUNCTION_TOOL_TYPE = "function";
+
+  static final String MESSAGE_CREATION_STEP_DETAILS_TYPE = "message_creation";
+  static final String TOOL_CALLS_STEP_DETAILS_TYPE = "tool_calls";
+
+  static final String CODE_INTERPRETER_TOOL_CALL_TYPE = "code_interpreter";
+  static final String RETRIEVAL_TOOL_CALL_TYPE = "retrieval";
+  static final String FUNCTION_TOOL_CALL_TYPE = "function";
+
+  static final String CODE_INTERPRETER_LOG_OUTPUT_TYPE = "logs";
+  static final String CODE_INTERPRETER_IMAGE_OUTPUT_TYPE = "image";
 }
