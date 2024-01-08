@@ -9,12 +9,10 @@ public record CreateThreadRequest(
     Optional<List<Message>> messages, Optional<Map<String, String>> metadata) {
 
   public record Message(
-      String content, Optional<List<String>> fileIds, Optional<Map<String, String>> metadata)
-      implements io.github.stefanbratanov.chatjpt.Message {
-    @Override
-    public String role() {
-      return Constants.USER_MESSAGE_ROLE;
-    }
+      String role,
+      String content,
+      Optional<List<String>> fileIds,
+      Optional<Map<String, String>> metadata) {
 
     public static Builder newBuilder() {
       return new Builder();
@@ -22,9 +20,20 @@ public record CreateThreadRequest(
 
     public static class Builder {
 
+      private String role = Constants.USER_MESSAGE_ROLE;
+
       private String content;
       private Optional<List<String>> fileIds = Optional.empty();
       private Optional<Map<String, String>> metadata = Optional.empty();
+
+      /**
+       * @param role The role of the entity that is creating the message. Currently only user is
+       *     supported.
+       */
+      public Builder role(String role) {
+        this.role = role;
+        return this;
+      }
 
       /**
        * @param content The content of the message.
@@ -59,7 +68,7 @@ public record CreateThreadRequest(
         if (content == null) {
           throw new IllegalStateException("content must be set");
         }
-        return new Message(content, fileIds, metadata);
+        return new Message(role, content, fileIds, metadata);
       }
     }
   }

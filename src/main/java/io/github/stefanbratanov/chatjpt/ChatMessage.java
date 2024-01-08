@@ -8,11 +8,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public sealed interface ChatMessage extends Message
+public sealed interface ChatMessage
     permits ChatMessage.SystemMessage,
         ChatMessage.UserMessage,
         ChatMessage.AssistantMessage,
         ChatMessage.ToolMessage {
+
+  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+  String role();
 
   record SystemMessage(String content, Optional<String> name) implements ChatMessage {
     @Override
