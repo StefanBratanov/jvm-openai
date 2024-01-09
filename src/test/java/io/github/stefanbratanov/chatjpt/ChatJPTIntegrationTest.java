@@ -95,7 +95,9 @@ public class ChatJPTIntegrationTest extends ChatJPTIntegrationTestBase {
 
     Path speech = tempDir.resolve("speech.mp3");
 
-    audioClient.createSpeech(speechRequest, speech);
+    // test async
+    assertThat(audioClient.createSpeechAsync(speechRequest, speech))
+        .succeedsWithin(Duration.ofMinutes(1));
 
     assertThat(speech).exists().isNotEmptyFile();
 
