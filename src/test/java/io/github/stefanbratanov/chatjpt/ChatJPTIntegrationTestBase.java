@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -53,20 +53,27 @@ public class ChatJPTIntegrationTestBase {
 
   protected void awaitCondition(
       Supplier<Boolean> condition, Duration pollingInterval, Duration timeout) {
+    ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
-    long endTime = System.currentTimeMillis() + timeout.toMillis();
+    CountDownLatch conditionMetLatch = new CountDownLatch(1);
+    executor.scheduleAtFixedRate(
+        () -> {
+          if (condition.get()) {
+            conditionMetLatch.countDown();
+          }
+        },
+        0,
+        pollingInterval.toMillis(),
+        TimeUnit.MILLISECONDS);
 
-    while (System.currentTimeMillis() < endTime) {
-      if (condition.get()) {
-        return;
+    try {
+      if (!conditionMetLatch.await(timeout.toMillis(), TimeUnit.MILLISECONDS)) {
+        Assertions.fail("The condition was not satisfied within the time limit.");
       }
-      try {
-        TimeUnit.MILLISECONDS.sleep(pollingInterval.toMillis());
-      } catch (InterruptedException ex) {
-        Assertions.fail(ex);
-      }
+    } catch (InterruptedException ex) {
+      Assertions.fail(ex);
+    } finally {
+      executor.shutdown();
     }
-
-    Assertions.fail("The condition was not satisfied within the time limit.");
   }
 }
