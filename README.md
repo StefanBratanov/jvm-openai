@@ -31,7 +31,7 @@ implementation("io.github.stefanbratanov:chatjpt:${version}")
 ## Minimal sample
 
 ```java
-ChatJPT chatJPT = ChatJPT.newBuilder("OPENAI_API_KEY").build();
+ChatJPT chatJPT = ChatJPT.newBuilder(System.getenv("OPENAI_API_KEY")).build();
 
 ChatClient chatClient = chatJPT.chatClient();
 ChatRequest chatRequest = ChatRequest.newBuilder()

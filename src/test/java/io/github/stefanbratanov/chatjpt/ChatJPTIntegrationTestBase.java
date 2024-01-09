@@ -45,7 +45,7 @@ public class ChatJPTIntegrationTestBase {
   protected Path getTestResource(String resource) {
     try {
       return Paths.get(
-          Objects.requireNonNull(ChatJPTIntegrationTest.class.getResource(resource)).toURI());
+          Objects.requireNonNull(ChatJPTIntegrationTestBase.class.getResource(resource)).toURI());
     } catch (URISyntaxException ex) {
       throw new RuntimeException(ex);
     }
