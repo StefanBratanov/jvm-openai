@@ -7,9 +7,11 @@ import io.github.stefanbratanov.chatjpt.ChatMessage.UserMessage.UserMessageWithC
 import io.github.stefanbratanov.chatjpt.FineTuningClient.PaginatedFineTuningEvents;
 import io.github.stefanbratanov.chatjpt.FineTuningClient.PaginatedFineTuningJobs;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -147,11 +149,18 @@ public class ChatJPTIntegrationTest extends ChatJPTIntegrationTestBase {
     CreateImageVariationRequest createImageVariationRequest =
         CreateImageVariationRequest.newBuilder().image(duckSuperman).n(2).build();
 
-    Images imageVariations = imagesClient.createImageVariation(createImageVariationRequest);
+    // test async
+    CompletableFuture<Images> imageVariationsFuture =
+        imagesClient.createImageVariationAsync(createImageVariationRequest);
 
-    assertThat(imageVariations.data())
-        .hasSize(2)
-        .allSatisfy(image -> assertThat(image.url()).isNotNull());
+    assertThat(imageVariationsFuture)
+        .succeedsWithin(Duration.ofMinutes(1))
+        .satisfies(
+            imageVariations -> {
+              assertThat(imageVariations.data())
+                  .hasSize(2)
+                  .allSatisfy(image -> assertThat(image.url()).isNotNull());
+            });
   }
 
   @Test

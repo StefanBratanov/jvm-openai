@@ -6,6 +6,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Given a prompt and/or an input image, the model will generate a new image.
@@ -32,15 +33,21 @@ public final class ImagesClient extends OpenAIClient {
    * @throws OpenAIException in case of API errors
    */
   public Images createImage(CreateImageRequest request) {
-    HttpRequest httpRequest =
-        newHttpRequestBuilder(Constants.CONTENT_TYPE_HEADER, Constants.JSON_MEDIA_TYPE)
-            .uri(baseUrl.resolve(Endpoint.IMAGE_GENERATION.getPath()))
-            .POST(createBodyPublisher(request))
-            .build();
+    HttpRequest httpRequest = createImagePostRequest(request);
 
     HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
-
     return deserializeResponse(httpResponse.body(), Images.class);
+  }
+
+  /**
+   * Same as {@link #createImage(CreateImageRequest)} but returns a response in a {@link
+   * CompletableFuture}
+   */
+  public CompletableFuture<Images> createImageAsync(CreateImageRequest request) {
+    HttpRequest httpRequest = createImagePostRequest(request);
+
+    return sendHttpRequestAsync(httpRequest)
+        .thenApply(httpResponse -> deserializeResponse(httpResponse.body(), Images.class));
   }
 
   /**
@@ -49,6 +56,54 @@ public final class ImagesClient extends OpenAIClient {
    * @throws OpenAIException in case of API errors
    */
   public Images editImage(EditImageRequest request) {
+    HttpRequest httpRequest = editImagePostRequest(request);
+
+    HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
+    return deserializeResponse(httpResponse.body(), Images.class);
+  }
+
+  /**
+   * Same as {@link #editImage(EditImageRequest)} but returns a response in a {@link
+   * CompletableFuture}
+   */
+  public CompletableFuture<Images> editImageAsync(EditImageRequest request) {
+    HttpRequest httpRequest = editImagePostRequest(request);
+
+    return sendHttpRequestAsync(httpRequest)
+        .thenApply(httpResponse -> deserializeResponse(httpResponse.body(), Images.class));
+  }
+
+  /**
+   * Creates a variation of a given image.
+   *
+   * @throws OpenAIException in case of API errors
+   */
+  public Images createImageVariation(CreateImageVariationRequest request) {
+    HttpRequest httpRequest = createImageVariationPostRequest(request);
+
+    HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
+    return deserializeResponse(httpResponse.body(), Images.class);
+  }
+
+  /**
+   * Same as {@link #createImageVariation(CreateImageVariationRequest)} but returns a response in a
+   * {@link CompletableFuture}
+   */
+  public CompletableFuture<Images> createImageVariationAsync(CreateImageVariationRequest request) {
+    HttpRequest httpRequest = createImageVariationPostRequest(request);
+
+    return sendHttpRequestAsync(httpRequest)
+        .thenApply(httpResponse -> deserializeResponse(httpResponse.body(), Images.class));
+  }
+
+  private HttpRequest createImagePostRequest(CreateImageRequest request) {
+    return newHttpRequestBuilder(Constants.CONTENT_TYPE_HEADER, Constants.JSON_MEDIA_TYPE)
+        .uri(baseUrl.resolve(Endpoint.IMAGE_GENERATION.getPath()))
+        .POST(createBodyPublisher(request))
+        .build();
+  }
+
+  private HttpRequest editImagePostRequest(EditImageRequest request) {
     long boundary = System.currentTimeMillis();
     MultipartBodyPublisher.Builder multipartBodyPublisherBuilder =
         MultipartBodyPublisher.newBuilder(boundary)
@@ -65,24 +120,14 @@ public final class ImagesClient extends OpenAIClient {
                 multipartBodyPublisherBuilder.textPart("response_format", responseFormat));
     request.user().ifPresent(user -> multipartBodyPublisherBuilder.textPart("user", user));
 
-    HttpRequest httpRequest =
-        newHttpRequestBuilder(
-                Constants.CONTENT_TYPE_HEADER, "multipart/form-data; boundary=" + boundary)
-            .uri(baseUrl.resolve(Endpoint.IMAGE_EDIT.getPath()))
-            .POST(multipartBodyPublisherBuilder.build())
-            .build();
-
-    HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
-
-    return deserializeResponse(httpResponse.body(), Images.class);
+    return newHttpRequestBuilder(
+            Constants.CONTENT_TYPE_HEADER, "multipart/form-data; boundary=" + boundary)
+        .uri(baseUrl.resolve(Endpoint.IMAGE_EDIT.getPath()))
+        .POST(multipartBodyPublisherBuilder.build())
+        .build();
   }
 
-  /**
-   * Creates a variation of a given image.
-   *
-   * @throws OpenAIException in case of API errors
-   */
-  public Images createImageVariation(CreateImageVariationRequest request) {
+  private HttpRequest createImageVariationPostRequest(CreateImageVariationRequest request) {
     long boundary = System.currentTimeMillis();
     MultipartBodyPublisher.Builder multipartBodyPublisherBuilder =
         MultipartBodyPublisher.newBuilder(boundary).filePart("image", request.image());
@@ -96,15 +141,10 @@ public final class ImagesClient extends OpenAIClient {
     request.size().ifPresent(size -> multipartBodyPublisherBuilder.textPart("size", size));
     request.user().ifPresent(user -> multipartBodyPublisherBuilder.textPart("user", user));
 
-    HttpRequest httpRequest =
-        newHttpRequestBuilder(
-                Constants.CONTENT_TYPE_HEADER, "multipart/form-data; boundary=" + boundary)
-            .uri(baseUrl.resolve(Endpoint.IMAGE_VARIATION.getPath()))
-            .POST(multipartBodyPublisherBuilder.build())
-            .build();
-
-    HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
-
-    return deserializeResponse(httpResponse.body(), Images.class);
+    return newHttpRequestBuilder(
+            Constants.CONTENT_TYPE_HEADER, "multipart/form-data; boundary=" + boundary)
+        .uri(baseUrl.resolve(Endpoint.IMAGE_VARIATION.getPath()))
+        .POST(multipartBodyPublisherBuilder.build())
+        .build();
   }
 }
