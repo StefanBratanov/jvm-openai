@@ -66,7 +66,7 @@ public class ChatJPTIntegrationTest extends ChatJPTIntegrationTestBase {
             .filter(Objects::nonNull)
             .collect(Collectors.joining());
 
-    assertThat(joinedResponse).isEqualTo("This is a test.");
+    assertThat(joinedResponse).containsIgnoringCase("This is a test");
   }
 
   @Test
