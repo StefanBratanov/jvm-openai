@@ -172,7 +172,7 @@ public final class ChatJPT {
     private Optional<String> organization = Optional.empty();
     private Optional<HttpClient> httpClient = Optional.empty();
 
-    Builder(String apiKey) {
+    public Builder(String apiKey) {
       this.apiKey = apiKey;
     }
 
