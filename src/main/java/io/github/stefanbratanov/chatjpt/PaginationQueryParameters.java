@@ -8,6 +8,10 @@ public record PaginationQueryParameters(
     Optional<String> after,
     Optional<String> before) {
 
+  public static PaginationQueryParameters none() {
+    return new Builder().build();
+  }
+
   public static Builder newBuilder() {
     return new Builder();
   }

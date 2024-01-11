@@ -11,9 +11,6 @@ import org.junit.jupiter.api.Test;
 
 public class ChatJPTAssistantsApiIntegrationTest extends ChatJPTIntegrationTestBase {
 
-  private static final PaginationQueryParameters EMPTY_QUERY_PARAMETERS =
-      PaginationQueryParameters.newBuilder().build();
-
   private static final Map<String, String> METADATA = Map.of("modified", "true", "user", "abc123");
 
   @Test
@@ -76,7 +73,7 @@ public class ChatJPTAssistantsApiIntegrationTest extends ChatJPTIntegrationTestB
     assertThat(retrievedMessage).isEqualTo(createdMessage);
 
     MessagesClient.PaginatedThreadMessages paginatedMessages =
-        messagesClient.listMessages(thread.id(), EMPTY_QUERY_PARAMETERS);
+        messagesClient.listMessages(thread.id(), PaginationQueryParameters.none());
 
     assertThat(paginatedMessages.hasMore()).isFalse();
     assertThat(paginatedMessages.firstId()).isEqualTo(createdMessage.id());
@@ -90,7 +87,8 @@ public class ChatJPTAssistantsApiIntegrationTest extends ChatJPTIntegrationTestB
         .satisfies(message -> assertThat(message).isEqualTo(createdMessage));
 
     MessagesClient.PaginatedThreadMessageFiles paginatedMessageFiles =
-        messagesClient.listMessageFiles(thread.id(), createdMessage.id(), EMPTY_QUERY_PARAMETERS);
+        messagesClient.listMessageFiles(
+            thread.id(), createdMessage.id(), PaginationQueryParameters.none());
 
     assertThat(paginatedMessageFiles.hasMore()).isFalse();
 
@@ -151,12 +149,13 @@ public class ChatJPTAssistantsApiIntegrationTest extends ChatJPTIntegrationTestB
         .isEqualTo(createdAssistant);
 
     AssistantsClient.PaginatedAssistants assistants =
-        assistantsClient.listAssistants(EMPTY_QUERY_PARAMETERS);
+        assistantsClient.listAssistants(PaginationQueryParameters.none());
 
     assertThat(assistants.data()).contains(retrievedAssistant);
 
     AssistantsClient.PaginatedAssistantFiles assistantFiles =
-        assistantsClient.listAssistantFiles(createdAssistant.id(), EMPTY_QUERY_PARAMETERS);
+        assistantsClient.listAssistantFiles(
+            createdAssistant.id(), PaginationQueryParameters.none());
 
     assertThat(assistantFiles.data()).contains(retrievedAssistantFile);
 
@@ -248,7 +247,8 @@ public class ChatJPTAssistantsApiIntegrationTest extends ChatJPTIntegrationTestB
     assertThat(runWithThread.threadId()).isNotNull();
 
     // retrieve runs
-    List<ThreadRun> runs = runsClient.listRuns(thread.id(), EMPTY_QUERY_PARAMETERS).data();
+    List<ThreadRun> runs =
+        runsClient.listRuns(thread.id(), PaginationQueryParameters.none()).data();
 
     assertThat(runs)
         .hasSize(1)
@@ -268,7 +268,7 @@ public class ChatJPTAssistantsApiIntegrationTest extends ChatJPTIntegrationTestB
 
     // retrieve run steps
     List<ThreadRunStep> runSteps =
-        runsClient.listRunSteps(thread.id(), run.id(), EMPTY_QUERY_PARAMETERS).data();
+        runsClient.listRunSteps(thread.id(), run.id(), PaginationQueryParameters.none()).data();
 
     assertThat(runSteps).isNotEmpty();
 
