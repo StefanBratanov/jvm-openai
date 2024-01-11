@@ -96,10 +96,10 @@ abstract class OpenAIClient {
   void validateHttpResponse(HttpResponse<?> httpResponse) {
     int statusCode = httpResponse.statusCode();
     if (statusCode < 200 || statusCode > 299) {
-      getErrorMessageFromHttpResponse(httpResponse)
+      getErrorFromHttpResponse(httpResponse)
           .ifPresentOrElse(
-              errorMessage -> {
-                throw new OpenAIException(statusCode, errorMessage);
+              error -> {
+                throw new OpenAIException(statusCode, error);
               },
               () -> {
                 throw new OpenAIException(statusCode, null);
@@ -146,7 +146,7 @@ abstract class OpenAIClient {
     return authHeaders.toArray(new String[] {});
   }
 
-  private Optional<String> getErrorMessageFromHttpResponse(HttpResponse<?> httpResponse) {
+  private Optional<OpenAIException.Error> getErrorFromHttpResponse(HttpResponse<?> httpResponse) {
     try {
       byte[] body;
       if (httpResponse.body() instanceof byte[]) {
@@ -158,14 +158,11 @@ abstract class OpenAIClient {
       } else {
         return Optional.empty();
       }
-      return Optional.ofNullable(objectMapper.readTree(body).get("error"))
-          .flatMap(
-              errorNode ->
-                  Optional.ofNullable(errorNode.get("message"))
-                      .filter(node -> !node.asText().isBlank())
-                      // fallback to "type" if no "message"
-                      .or(() -> Optional.ofNullable(errorNode.get("type"))))
-          .map(JsonNode::asText);
+      JsonNode errorNode = objectMapper.readTree(body).get("error");
+      if (errorNode == null) {
+        return Optional.empty();
+      }
+      return Optional.of(objectMapper.treeToValue(errorNode, OpenAIException.Error.class));
     } catch (IOException ex) {
       throw new UncheckedIOException(ex);
     }

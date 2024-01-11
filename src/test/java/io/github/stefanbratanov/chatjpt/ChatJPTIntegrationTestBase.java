@@ -55,11 +55,11 @@ public class ChatJPTIntegrationTestBase {
       Supplier<Boolean> condition, Duration pollingInterval, Duration timeout) {
     ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
-    CountDownLatch conditionMetLatch = new CountDownLatch(1);
+    CountDownLatch conditionSatisfiedLatch = new CountDownLatch(1);
     executor.scheduleAtFixedRate(
         () -> {
           if (condition.get()) {
-            conditionMetLatch.countDown();
+            conditionSatisfiedLatch.countDown();
           }
         },
         0,
@@ -67,7 +67,7 @@ public class ChatJPTIntegrationTestBase {
         TimeUnit.MILLISECONDS);
 
     try {
-      if (!conditionMetLatch.await(timeout.toMillis(), TimeUnit.MILLISECONDS)) {
+      if (!conditionSatisfiedLatch.await(timeout.toMillis(), TimeUnit.MILLISECONDS)) {
         Assertions.fail("The condition was not satisfied within the time limit.");
       }
     } catch (InterruptedException ex) {

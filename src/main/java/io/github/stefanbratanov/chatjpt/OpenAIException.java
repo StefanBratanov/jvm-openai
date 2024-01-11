@@ -8,12 +8,20 @@ package io.github.stefanbratanov.chatjpt;
 public final class OpenAIException extends RuntimeException {
 
   private final int statusCode;
-  private final String errorMessage;
+  private final Error error;
 
-  OpenAIException(int statusCode, String errorMessage) {
-    super(String.format("%d - %s", statusCode, errorMessage));
+  OpenAIException(int statusCode, Error error) {
+    super(String.format("%d - %s", statusCode, error));
     this.statusCode = statusCode;
-    this.errorMessage = errorMessage;
+    this.error = error;
+  }
+
+  public record Error(String message, String type, String param, String code) {
+    @Override
+    public String toString() {
+      return String.format(
+          "message: %s, type: %s, param: %s, code: %s", message, type, param, code);
+    }
   }
 
   public int statusCode() {
@@ -21,6 +29,10 @@ public final class OpenAIException extends RuntimeException {
   }
 
   public String errorMessage() {
-    return errorMessage;
+    return error.message();
+  }
+
+  public Error error() {
+    return error;
   }
 }
