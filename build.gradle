@@ -37,6 +37,7 @@ def junitVersion = "5.10.1"
 dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:${jacksonVersion}")
+    api("com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}")
 
     testImplementation("org.junit.jupiter:junit-jupiter:${junitVersion}")
     testImplementation("org.junit.jupiter:junit-jupiter-params:${junitVersion}")
