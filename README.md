@@ -18,7 +18,7 @@ implementation("io.github.stefanbratanov:jvm-openai:${version}")
 ```
 
 #### Maven
-F
+
 ```xml
 
 <dependency>
