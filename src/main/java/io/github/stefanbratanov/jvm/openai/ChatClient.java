@@ -58,19 +58,21 @@ public final class ChatClient extends OpenAIClient {
    * @throws OpenAIException in case of API errors
    */
   public Stream<ChatChunkResponse> sendStreamRequest(ChatRequest request) {
-    if (!request.stream().orElse(false)) {
-      throw new IllegalArgumentException("stream must be set to true when requesting a stream");
-    }
-    HttpRequest httpRequest = createPostRequest(request);
-    return sendHttpRequest(httpRequest, HttpResponse.BodyHandlers.ofLines())
-        .body()
-        .filter(sseEvent -> !sseEvent.isBlank())
-        .takeWhile(sseEvent -> !sseEvent.equals(STREAM_TERMINATION))
-        .map(
-            sseEvent -> {
-              String chatChunkResponse = sseEvent.substring(sseEvent.indexOf("{"));
-              return deserializeResponse(chatChunkResponse.getBytes(), ChatChunkResponse.class);
-            });
+    validateStreamRequest(request);
+    HttpRequest httpStreamRequest = createPostRequest(request);
+    return getStreamedResponses(httpStreamRequest);
+  }
+
+  /**
+   * Same as {@link #sendStreamRequest(ChatRequest)} but can pass a {@link
+   * ChatStreamResponseSubscriber} implementation instead of using a {@link
+   * Stream<ChatChunkResponse>}
+   */
+  public void sendStreamRequest(ChatRequest request, ChatStreamResponseSubscriber subscriber) {
+    validateStreamRequest(request);
+    HttpRequest httpStreamRequest = createPostRequest(request);
+    getStreamedResponses(httpStreamRequest).forEach(subscriber::onResponse);
+    subscriber.onComplete();
   }
 
   private HttpRequest createPostRequest(ChatRequest request) {
@@ -82,5 +84,23 @@ public final class ChatClient extends OpenAIClient {
         .uri(endpoint)
         .POST(createBodyPublisher(request))
         .build();
+  }
+
+  private void validateStreamRequest(ChatRequest request) {
+    if (!request.stream().orElse(false)) {
+      throw new IllegalArgumentException("stream must be set to true when requesting a stream");
+    }
+  }
+
+  private Stream<ChatChunkResponse> getStreamedResponses(HttpRequest streamHttpRequest) {
+    return sendHttpRequest(streamHttpRequest, HttpResponse.BodyHandlers.ofLines())
+        .body()
+        .filter(sseEvent -> !sseEvent.isBlank())
+        .takeWhile(sseEvent -> !sseEvent.equals(STREAM_TERMINATION))
+        .map(
+            sseEvent -> {
+              String chatChunkResponse = sseEvent.substring(sseEvent.indexOf("{"));
+              return deserializeResponse(chatChunkResponse.getBytes(), ChatChunkResponse.class);
+            });
   }
 }

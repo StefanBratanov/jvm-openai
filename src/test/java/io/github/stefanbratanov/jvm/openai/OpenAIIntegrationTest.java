@@ -30,7 +30,7 @@ public class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
   }
 
   @Test
-  public void testChatClient() {
+  public void testChatClient() throws InterruptedException {
     ChatClient chatClient = openAI.chatClient();
 
     ChatRequest request =
@@ -65,7 +65,35 @@ public class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
             .filter(Objects::nonNull)
             .collect(Collectors.joining());
 
-    assertThat(joinedResponse).containsIgnoringCase("This is a test");
+    assertThat(joinedResponse).containsPattern("(?i)this is (a|the) test");
+
+    // test streaming with a subscriber
+    CompletableFuture<String> joinedResponseFuture = new CompletableFuture<>();
+    chatClient.sendStreamRequest(
+        streamRequest,
+        new ChatStreamResponseSubscriber() {
+          private final StringBuilder joinedResponse = new StringBuilder();
+
+          @Override
+          public void onResponse(ChatChunkResponse response) {
+            List<ChatChunkResponse.Choice> choices = response.choices();
+            assertThat(choices).hasSize(1);
+            String content = choices.get(0).delta().content();
+            if (content != null) {
+              joinedResponse.append(content);
+            }
+          }
+
+          @Override
+          public void onComplete() {
+            joinedResponseFuture.complete(joinedResponse.toString());
+          }
+        });
+
+    assertThat(joinedResponseFuture)
+        .succeedsWithin(Duration.ofSeconds(30))
+        .asString()
+        .containsPattern("(?i)this is (a|the) test");
   }
 
   @Test
