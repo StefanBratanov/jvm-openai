@@ -1,11 +1,11 @@
-# ChatJPT
+# jvm-openai
 
-[![build](https://github.com/StefanBratanov/chatjpt/actions/workflows/build.yml/badge.svg)](https://github.com/StefanBratanov/chatjpt/actions/workflows/build.yml)
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.stefanbratanov/chatjpt)](https://central.sonatype.com/artifact/io.github.stefanbratanov/chatjpt)
-[![javadoc](https://javadoc.io/badge2/io.github.stefanbratanov/chatjpt/javadoc.svg)](https://javadoc.io/doc/io.github.stefanbratanov/chatjpt)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=StefanBratanov_chatjpt&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=StefanBratanov_chatjpt)
+[![build](https://github.com/StefanBratanov/jvm-openai/actions/workflows/build.yml/badge.svg)](https://github.com/StefanBratanov/jvm-openai/actions/workflows/build.yml)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.stefanbratanov/jvm-openai)](https://central.sonatype.com/artifact/io.github.stefanbratanov/jvm-openai)
+[![javadoc](https://javadoc.io/badge2/io.github.stefanbratanov/jvm-openai/javadoc.svg)](https://javadoc.io/doc/io.github.stefanbratanov/jvm-openai)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=StefanBratanov_jvm-openai&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=StefanBratanov_jvm-openai)
 
-A minimalistic unofficial Java client for the [OpenAI API](https://platform.openai.com/docs/api-reference)
+A minimalistic unofficial JVM client for the [OpenAI API](https://platform.openai.com/docs/api-reference) written in Java
 
 ## Add dependency
 
@@ -14,16 +14,16 @@ Java 17+ is a prerequisite
 #### Gradle
 
 ```groovy
-implementation("io.github.stefanbratanov:chatjpt:${version}")
+implementation("io.github.stefanbratanov:jvm-openai:${version}")
 ```
 
 #### Maven
-
+F
 ```xml
 
 <dependency>
     <groupId>io.github.stefanbratanov</groupId>
-    <artifactId>chatjpt</artifactId>
+    <artifactId>jvm-openai</artifactId>
     <version>${version}</version>
 </dependency>
 ```
@@ -31,9 +31,9 @@ implementation("io.github.stefanbratanov:chatjpt:${version}")
 ## Minimal sample
 
 ```java
-ChatJPT chatJPT = ChatJPT.newBuilder(System.getenv("OPENAI_API_KEY")).build();
+OpenAI openAI = OpenAI.newBuilder(System.getenv("OPENAI_API_KEY")).build();
 
-ChatClient chatClient = chatJPT.chatClient();
+ChatClient chatClient = openAI.chatClient();
 ChatRequest chatRequest = ChatRequest.newBuilder()
         .model("gpt-3.5-turbo")
         .message(ChatMessage.userMessage("Who won the world series in 2020?"))
@@ -41,7 +41,7 @@ ChatRequest chatRequest = ChatRequest.newBuilder()
 ChatResponse response = chatClient.sendRequest(chatRequest);
 // ChatResponse[id=chatcmpl-123, created=1703506594, model=gpt-3.5-turbo-0613, systemFingerprint=fp_44709d6fcb, choices=[Choice[index=0, message=Message[content=The Los Angeles Dodgers won the World Series in 2020., toolCalls=null, role=assistant], logProbs=null, finishReason=stop]], usage=Usage[promptTokens=17, completionTokens=13, totalTokens=30]]
 
-ImagesClient imagesClient = chatJPT.imagesClient();
+ImagesClient imagesClient = openAI.imagesClient();
 CreateImageRequest createImageRequest = CreateImageRequest.newBuilder()
         .model("dall-e-3")
         .prompt("A cute baby sea otter")

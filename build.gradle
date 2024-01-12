@@ -49,9 +49,9 @@ publishing {
             from components.java
 
             pom {
-                name = "ChatJPT"
-                description = "A minimalistic Java client for the OpenAI API"
-                url = "https://github.com/StefanBratanov/chatjpt"
+                name = "jvm-openai"
+                description = "A minimalistic JVM client for the OpenAI API written in Java"
+                url = "https://github.com/StefanBratanov/jvm-openai"
                 licenses {
                     license {
                         name = "The Apache License, Version 2.0"
@@ -66,9 +66,9 @@ publishing {
                     }
                 }
                 scm {
-                    connection = "scm:git:git://github.com/StefanBratanov/chatjpt.git"
-                    developerConnection = "scm:git:ssh://github.com/StefanBratanov/chatjpt.git"
-                    url = "https://github.com/StefanBratanov/chatjpt"
+                    connection = "scm:git:git://github.com/StefanBratanov/jvm-openai.git"
+                    developerConnection = "scm:git:ssh://github.com/StefanBratanov/jvm-openai.git"
+                    url = "https://github.com/StefanBratanov/jvm-openai"
                 }
             }
         }
