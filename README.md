@@ -5,7 +5,8 @@
 [![javadoc](https://javadoc.io/badge2/io.github.stefanbratanov/jvm-openai/javadoc.svg)](https://javadoc.io/doc/io.github.stefanbratanov/jvm-openai)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=StefanBratanov_jvm-openai&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=StefanBratanov_jvm-openai)
 
-A minimalistic unofficial JVM client for the [OpenAI API](https://platform.openai.com/docs/api-reference) written in Java
+A minimalistic unofficial [OpenAI API](https://platform.openai.com/docs/api-reference) client for the JVM, written in
+Java
 
 ## Add dependency
 
@@ -28,7 +29,7 @@ implementation("io.github.stefanbratanov:jvm-openai:${version}")
 </dependency>
 ```
 
-## Minimal sample
+## Minimal example
 
 ```java
 OpenAI openAI = OpenAI.newBuilder(System.getenv("OPENAI_API_KEY")).build();

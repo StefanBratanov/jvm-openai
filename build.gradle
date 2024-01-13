@@ -51,7 +51,7 @@ publishing {
 
             pom {
                 name = "jvm-openai"
-                description = "A minimalistic JVM client for the OpenAI API written in Java"
+                description = "A minimalistic OpenAI API client for the JVM, written in Java"
                 url = "https://github.com/StefanBratanov/jvm-openai"
                 licenses {
                     license {

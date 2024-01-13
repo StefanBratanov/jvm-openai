@@ -38,9 +38,9 @@ public class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
             .message(ChatMessage.userMessage("Who won the world series in 2020?"))
             .build();
 
-    ChatCompletion response = chatClient.createChatCompletion(request);
+    ChatCompletion completion = chatClient.createChatCompletion(request);
 
-    assertThat(response.choices())
+    assertThat(completion.choices())
         .hasSize(1)
         .first()
         .satisfies(choice -> assertThat(choice.message().content()).isNotNull());
@@ -53,7 +53,7 @@ public class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
             .stream(true)
             .build();
 
-    String joinedResponse =
+    String joinedContent =
         chatClient
             .streamChatCompletion(streamRequest)
             .map(ChatCompletionChunk::choices)
@@ -65,14 +65,14 @@ public class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
             .filter(Objects::nonNull)
             .collect(Collectors.joining());
 
-    assertThat(joinedResponse).containsPattern("(?i)this is (a|the) test");
+    assertThat(joinedContent).containsPattern("(?i)this is (a|the) test");
 
     // test streaming with a subscriber
-    CompletableFuture<String> joinedResponseFuture = new CompletableFuture<>();
+    CompletableFuture<String> joinedContentFuture = new CompletableFuture<>();
     chatClient.streamChatCompletion(
         streamRequest,
         new StreamChatCompletionSubscriber() {
-          private final StringBuilder joinedResponse = new StringBuilder();
+          private final StringBuilder joinedContent = new StringBuilder();
 
           @Override
           public void onChunk(ChatCompletionChunk chunk) {
@@ -80,17 +80,17 @@ public class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
             assertThat(choices).hasSize(1);
             String content = choices.get(0).delta().content();
             if (content != null) {
-              joinedResponse.append(content);
+              joinedContent.append(content);
             }
           }
 
           @Override
           public void onComplete() {
-            joinedResponseFuture.complete(joinedResponse.toString());
+            joinedContentFuture.complete(joinedContent.toString());
           }
         });
 
-    assertThat(joinedResponseFuture)
+    assertThat(joinedContentFuture)
         .succeedsWithin(Duration.ofSeconds(30))
         .asString()
         .containsPattern("(?i)this is (a|the) test");
