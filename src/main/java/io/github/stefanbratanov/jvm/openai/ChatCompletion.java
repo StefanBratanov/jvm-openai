@@ -3,7 +3,7 @@ package io.github.stefanbratanov.jvm.openai;
 import java.util.List;
 
 /** Represents a chat completion response returned by model, based on the provided input. */
-public record ChatResponse(
+public record ChatCompletion(
     String id,
     long created,
     String model,

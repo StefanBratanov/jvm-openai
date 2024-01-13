@@ -6,7 +6,7 @@ import java.util.List;
  * Represents a streamed chunk of a chat completion response returned by model, based on the
  * provided input.
  */
-public record ChatChunkResponse(
+public record ChatCompletionChunk(
     String id, List<Choice> choices, long created, String model, String systemFingerprint) {
 
   public record Choice(Delta delta, int index, Logprobs logprobs, String finishReason) {

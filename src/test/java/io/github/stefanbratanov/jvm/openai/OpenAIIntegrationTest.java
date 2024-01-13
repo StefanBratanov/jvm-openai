@@ -30,15 +30,15 @@ public class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
   }
 
   @Test
-  public void testChatClient() throws InterruptedException {
+  public void testChatClient() {
     ChatClient chatClient = openAI.chatClient();
 
-    ChatRequest request =
-        ChatRequest.newBuilder()
+    CreateChatCompletionRequest request =
+        CreateChatCompletionRequest.newBuilder()
             .message(ChatMessage.userMessage("Who won the world series in 2020?"))
             .build();
 
-    ChatResponse response = chatClient.sendRequest(request);
+    ChatCompletion response = chatClient.createChatCompletion(request);
 
     assertThat(response.choices())
         .hasSize(1)
@@ -46,8 +46,8 @@ public class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
         .satisfies(choice -> assertThat(choice.message().content()).isNotNull());
 
     // test streaming
-    ChatRequest streamRequest =
-        ChatRequest.newBuilder()
+    CreateChatCompletionRequest streamRequest =
+        CreateChatCompletionRequest.newBuilder()
             // test sending content part
             .message(ChatMessage.userMessage(new TextContentPart("Say this is a test")))
             .stream(true)
@@ -55,8 +55,8 @@ public class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
 
     String joinedResponse =
         chatClient
-            .sendStreamRequest(streamRequest)
-            .map(ChatChunkResponse::choices)
+            .streamChatCompletion(streamRequest)
+            .map(ChatCompletionChunk::choices)
             .map(
                 choices -> {
                   assertThat(choices).hasSize(1);
@@ -69,14 +69,14 @@ public class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
 
     // test streaming with a subscriber
     CompletableFuture<String> joinedResponseFuture = new CompletableFuture<>();
-    chatClient.sendStreamRequest(
+    chatClient.streamChatCompletion(
         streamRequest,
-        new ChatStreamResponseSubscriber() {
+        new StreamChatCompletionSubscriber() {
           private final StringBuilder joinedResponse = new StringBuilder();
 
           @Override
-          public void onResponse(ChatChunkResponse response) {
-            List<ChatChunkResponse.Choice> choices = response.choices();
+          public void onChunk(ChatCompletionChunk chunk) {
+            List<ChatCompletionChunk.Choice> choices = chunk.choices();
             assertThat(choices).hasSize(1);
             String content = choices.get(0).delta().content();
             if (content != null) {

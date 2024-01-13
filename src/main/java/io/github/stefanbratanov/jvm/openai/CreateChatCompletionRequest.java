@@ -5,7 +5,7 @@ import java.util.*;
 /**
  * @param toolChoice {@link String} or {@link ToolChoice}
  */
-public record ChatRequest(
+public record CreateChatCompletionRequest(
     String model,
     List<ChatMessage> messages,
     Optional<Double> frequencyPenalty,
@@ -300,8 +300,8 @@ public record ChatRequest(
       return this;
     }
 
-    public ChatRequest build() {
-      return new ChatRequest(
+    public CreateChatCompletionRequest build() {
+      return new CreateChatCompletionRequest(
           model,
           List.copyOf(messages),
           frequencyPenalty,

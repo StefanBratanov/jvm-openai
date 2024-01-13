@@ -35,47 +35,50 @@ public final class ChatClient extends OpenAIClient {
    *
    * @throws OpenAIException in case of API errors
    */
-  public ChatResponse sendRequest(ChatRequest request) {
+  public ChatCompletion createChatCompletion(CreateChatCompletionRequest request) {
     HttpRequest httpRequest = createPostRequest(request);
     HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
-    return deserializeResponse(httpResponse.body(), ChatResponse.class);
+    return deserializeResponse(httpResponse.body(), ChatCompletion.class);
   }
 
   /**
-   * Same as {@link #sendRequest(ChatRequest)} but returns a response in a {@link CompletableFuture}
+   * Same as {@link #createChatCompletion(CreateChatCompletionRequest)} but returns a response in a
+   * {@link CompletableFuture}
    */
-  public CompletableFuture<ChatResponse> sendRequestAsync(ChatRequest request) {
+  public CompletableFuture<ChatCompletion> createChatCompletionAsync(
+      CreateChatCompletionRequest request) {
     HttpRequest httpRequest = createPostRequest(request);
     return sendHttpRequestAsync(httpRequest)
-        .thenApply(httpResponse -> deserializeResponse(httpResponse.body(), ChatResponse.class));
+        .thenApply(httpResponse -> deserializeResponse(httpResponse.body(), ChatCompletion.class));
   }
 
   /**
    * Stream model responses back in order to allow partial results for the given request.
    *
    * @param request the request should be configured with {@link
-   *     ChatRequest.Builder#stream(boolean)} set to true
+   *     CreateChatCompletionRequest.Builder#stream(boolean)} set to true
    * @throws OpenAIException in case of API errors
    */
-  public Stream<ChatChunkResponse> sendStreamRequest(ChatRequest request) {
+  public Stream<ChatCompletionChunk> streamChatCompletion(CreateChatCompletionRequest request) {
     validateStreamRequest(request);
-    HttpRequest httpStreamRequest = createPostRequest(request);
-    return getStreamedResponses(httpStreamRequest);
+    HttpRequest httpRequest = createPostRequest(request);
+    return getStreamedResponses(httpRequest);
   }
 
   /**
-   * Same as {@link #sendStreamRequest(ChatRequest)} but can pass a {@link
-   * ChatStreamResponseSubscriber} implementation instead of using a {@link
-   * Stream<ChatChunkResponse>}
+   * Same as {@link #streamChatCompletion(CreateChatCompletionRequest)} but can pass a {@link
+   * StreamChatCompletionSubscriber} implementation instead of using a {@link
+   * Stream<ChatCompletionChunk>}
    */
-  public void sendStreamRequest(ChatRequest request, ChatStreamResponseSubscriber subscriber) {
+  public void streamChatCompletion(
+      CreateChatCompletionRequest request, StreamChatCompletionSubscriber subscriber) {
     validateStreamRequest(request);
-    HttpRequest httpStreamRequest = createPostRequest(request);
-    getStreamedResponses(httpStreamRequest).forEach(subscriber::onResponse);
+    HttpRequest httpRequest = createPostRequest(request);
+    getStreamedResponses(httpRequest).forEach(subscriber::onChunk);
     subscriber.onComplete();
   }
 
-  private HttpRequest createPostRequest(ChatRequest request) {
+  private HttpRequest createPostRequest(CreateChatCompletionRequest request) {
     return newHttpRequestBuilder(
             Constants.CONTENT_TYPE_HEADER,
             Constants.JSON_MEDIA_TYPE,
@@ -86,21 +89,21 @@ public final class ChatClient extends OpenAIClient {
         .build();
   }
 
-  private void validateStreamRequest(ChatRequest request) {
+  private void validateStreamRequest(CreateChatCompletionRequest request) {
     if (!request.stream().orElse(false)) {
       throw new IllegalArgumentException("stream must be set to true when requesting a stream");
     }
   }
 
-  private Stream<ChatChunkResponse> getStreamedResponses(HttpRequest streamHttpRequest) {
-    return sendHttpRequest(streamHttpRequest, HttpResponse.BodyHandlers.ofLines())
+  private Stream<ChatCompletionChunk> getStreamedResponses(HttpRequest httpRequest) {
+    return sendHttpRequest(httpRequest, HttpResponse.BodyHandlers.ofLines())
         .body()
         .filter(sseEvent -> !sseEvent.isBlank())
         .takeWhile(sseEvent -> !sseEvent.equals(STREAM_TERMINATION))
         .map(
             sseEvent -> {
               String chatChunkResponse = sseEvent.substring(sseEvent.indexOf("{"));
-              return deserializeResponse(chatChunkResponse.getBytes(), ChatChunkResponse.class);
+              return deserializeResponse(chatChunkResponse.getBytes(), ChatCompletionChunk.class);
             });
   }
 }
