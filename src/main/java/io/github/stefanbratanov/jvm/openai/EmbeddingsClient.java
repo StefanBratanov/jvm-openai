@@ -1,6 +1,5 @@
 package io.github.stefanbratanov.jvm.openai;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -18,12 +17,8 @@ public final class EmbeddingsClient extends OpenAIClient {
   private final URI endpoint;
 
   EmbeddingsClient(
-      URI baseUrl,
-      String apiKey,
-      Optional<String> organization,
-      HttpClient httpClient,
-      ObjectMapper objectMapper) {
-    super(apiKey, organization, httpClient, objectMapper);
+      URI baseUrl, String apiKey, Optional<String> organization, HttpClient httpClient) {
+    super(apiKey, organization, httpClient);
     endpoint = baseUrl.resolve(Endpoint.EMBEDDINCS.getPath());
   }
 

@@ -1,6 +1,5 @@
 package io.github.stefanbratanov.jvm.openai;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -20,12 +19,8 @@ public final class AssistantsClient extends OpenAIAssistantsClient {
   private final URI baseUrl;
 
   AssistantsClient(
-      URI baseUrl,
-      String apiKey,
-      Optional<String> organization,
-      HttpClient httpClient,
-      ObjectMapper objectMapper) {
-    super(apiKey, organization, httpClient, objectMapper);
+      URI baseUrl, String apiKey, Optional<String> organization, HttpClient httpClient) {
+    super(apiKey, organization, httpClient);
     this.baseUrl = baseUrl;
   }
 

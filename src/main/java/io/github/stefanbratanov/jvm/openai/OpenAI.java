@@ -1,10 +1,5 @@
 package io.github.stefanbratanov.jvm.openai;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.util.Optional;
@@ -15,15 +10,6 @@ import java.util.Optional;
  * Reference - OpenAI API</a>
  */
 public final class OpenAI {
-
-  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
-  static {
-    OBJECT_MAPPER.registerModule(new Jdk8Module());
-    OBJECT_MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    OBJECT_MAPPER.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
-    OBJECT_MAPPER.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
-  }
 
   private final AudioClient audioClient;
   private final ChatClient chatClient;
@@ -39,22 +25,18 @@ public final class OpenAI {
   private final RunsClient runsClient;
 
   private OpenAI(URI baseUrl, String apiKey, Optional<String> organization, HttpClient httpClient) {
-    audioClient = new AudioClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
-    chatClient = new ChatClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
-    embeddingsClient =
-        new EmbeddingsClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
-    fineTuningClient =
-        new FineTuningClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
-    filesClient = new FilesClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
-    imagesClient = new ImagesClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
-    modelsClient = new ModelsClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
-    moderationsClient =
-        new ModerationsClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
-    assistantsClient =
-        new AssistantsClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
-    threadsClient = new ThreadsClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
-    messagesClient = new MessagesClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
-    runsClient = new RunsClient(baseUrl, apiKey, organization, httpClient, OBJECT_MAPPER);
+    audioClient = new AudioClient(baseUrl, apiKey, organization, httpClient);
+    chatClient = new ChatClient(baseUrl, apiKey, organization, httpClient);
+    embeddingsClient = new EmbeddingsClient(baseUrl, apiKey, organization, httpClient);
+    fineTuningClient = new FineTuningClient(baseUrl, apiKey, organization, httpClient);
+    filesClient = new FilesClient(baseUrl, apiKey, organization, httpClient);
+    imagesClient = new ImagesClient(baseUrl, apiKey, organization, httpClient);
+    modelsClient = new ModelsClient(baseUrl, apiKey, organization, httpClient);
+    moderationsClient = new ModerationsClient(baseUrl, apiKey, organization, httpClient);
+    assistantsClient = new AssistantsClient(baseUrl, apiKey, organization, httpClient);
+    threadsClient = new ThreadsClient(baseUrl, apiKey, organization, httpClient);
+    messagesClient = new MessagesClient(baseUrl, apiKey, organization, httpClient);
+    runsClient = new RunsClient(baseUrl, apiKey, organization, httpClient);
   }
 
   /**

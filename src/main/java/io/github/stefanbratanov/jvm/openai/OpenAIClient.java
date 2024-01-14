@@ -24,16 +24,11 @@ abstract class OpenAIClient {
   private final String[] authenticationHeaders;
 
   protected final HttpClient httpClient;
-  protected final ObjectMapper objectMapper;
+  protected final ObjectMapper objectMapper = ObjectMapperSingleton.getInstance();
 
-  OpenAIClient(
-      String apiKey,
-      Optional<String> organization,
-      HttpClient httpClient,
-      ObjectMapper objectMapper) {
+  OpenAIClient(String apiKey, Optional<String> organization, HttpClient httpClient) {
     this.authenticationHeaders = getAuthenticationHeaders(apiKey, organization);
     this.httpClient = httpClient;
-    this.objectMapper = objectMapper;
   }
 
   HttpRequest.Builder newHttpRequestBuilder(String... headers) {

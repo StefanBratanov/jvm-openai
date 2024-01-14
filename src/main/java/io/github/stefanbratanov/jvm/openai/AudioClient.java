@@ -1,6 +1,5 @@
 package io.github.stefanbratanov.jvm.openai;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.URI;
@@ -21,13 +20,8 @@ public final class AudioClient extends OpenAIClient {
 
   private final URI baseUrl;
 
-  AudioClient(
-      URI baseUrl,
-      String apiKey,
-      Optional<String> organization,
-      HttpClient httpClient,
-      ObjectMapper objectMapper) {
-    super(apiKey, organization, httpClient, objectMapper);
+  AudioClient(URI baseUrl, String apiKey, Optional<String> organization, HttpClient httpClient) {
+    super(apiKey, organization, httpClient);
     this.baseUrl = baseUrl;
   }
 

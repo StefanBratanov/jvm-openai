@@ -1,6 +1,5 @@
 package io.github.stefanbratanov.jvm.openai;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -17,13 +16,8 @@ public final class ImagesClient extends OpenAIClient {
 
   private final URI baseUrl;
 
-  ImagesClient(
-      URI baseUrl,
-      String apiKey,
-      Optional<String> organization,
-      HttpClient httpClient,
-      ObjectMapper objectMapper) {
-    super(apiKey, organization, httpClient, objectMapper);
+  ImagesClient(URI baseUrl, String apiKey, Optional<String> organization, HttpClient httpClient) {
+    super(apiKey, organization, httpClient);
     this.baseUrl = baseUrl;
   }
 

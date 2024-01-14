@@ -1,6 +1,5 @@
 package io.github.stefanbratanov.jvm.openai;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.util.Map;
@@ -12,12 +11,8 @@ import java.util.Optional;
  */
 class OpenAIAssistantsClient extends OpenAIClient {
 
-  OpenAIAssistantsClient(
-      String apiKey,
-      Optional<String> organization,
-      HttpClient httpClient,
-      ObjectMapper objectMapper) {
-    super(apiKey, organization, httpClient, objectMapper);
+  OpenAIAssistantsClient(String apiKey, Optional<String> organization, HttpClient httpClient) {
+    super(apiKey, organization, httpClient);
   }
 
   @Override
