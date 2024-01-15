@@ -51,7 +51,7 @@ public final class AudioClient extends OpenAIClient {
             .build();
 
     return sendHttpRequestAsync(httpRequest, HttpResponse.BodyHandlers.ofFile(output))
-        .thenApply(__ -> null);
+        .thenApply(httpResponse -> null);
   }
 
   /**

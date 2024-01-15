@@ -8,18 +8,18 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
 class ObjectMapperSingleton {
 
-  private static ObjectMapper INSTANCE;
+  private static ObjectMapper instance;
 
   private ObjectMapperSingleton() {}
 
   static ObjectMapper getInstance() {
-    if (INSTANCE == null) {
-      INSTANCE = new ObjectMapper();
-      INSTANCE.registerModule(new Jdk8Module());
-      INSTANCE.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-      INSTANCE.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
-      INSTANCE.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+    if (instance == null) {
+      instance = new ObjectMapper();
+      instance.registerModule(new Jdk8Module());
+      instance.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+      instance.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+      instance.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
     }
-    return INSTANCE;
+    return instance;
   }
 }
