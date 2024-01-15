@@ -21,7 +21,6 @@ implementation("io.github.stefanbratanov:jvm-openai:${version}")
 #### Maven
 
 ```xml
-
 <dependency>
     <groupId>io.github.stefanbratanov</groupId>
     <artifactId>jvm-openai</artifactId>
@@ -40,15 +39,6 @@ CreateChatCompletionRequest createChatCompletionRequest = CreateChatCompletionRe
     .message(ChatMessage.userMessage("Who won the world series in 2020?"))
     .build();
 ChatCompletion chatCompletion = chatClient.createChatCompletion(createChatCompletionRequest);
-// ChatCompletion[id=chatcmpl-123, created=1703506594, model=gpt-3.5-turbo-0613, systemFingerprint=fp_44709d6fcb, choices=[Choice[index=0, message=Message[content=The Los Angeles Dodgers won the World Series in 2020., toolCalls=null, role=assistant], logProbs=null, finishReason=stop]], usage=Usage[promptTokens=17, completionTokens=13, totalTokens=30]]
-
-ImagesClient imagesClient = openAI.imagesClient();
-CreateImageRequest createImageRequest = CreateImageRequest.newBuilder()
-    .model("dall-e-3")
-    .prompt("A cute baby sea otter")
-    .build();
-Images images = imagesClient.createImage(createImageRequest);
-// Images[created=1704009569, data=[Image[b64Json=null, url=https://foo.bar/cute-baby-sea-otter.png, revisedPrompt=Generate an image of a baby sea otter, exuding cuteness. The small, furry creature should be floating blissfully on its back in clear, calm waters, its round button eyes are brimming with innocence and curiosity.]]]
 ```
 
 ## Supported APIs
@@ -123,6 +113,15 @@ chatClient.streamChatCompletion(request, new StreamChatCompletionSubscriber() {
         // ...
     }
 });
+```
+- Create image
+```java
+ImagesClient imagesClient = openAI.imagesClient();
+CreateImageRequest createImageRequest = CreateImageRequest.newBuilder()
+    .model("dall-e-3")
+    .prompt("A cute baby sea otter")
+    .build();
+Images images = imagesClient.createImage(createImageRequest);
 ```
 - Create speech
 ```java
