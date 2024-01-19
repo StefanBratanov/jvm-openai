@@ -17,6 +17,6 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
       - name: Build
-        run: ./gradlew spotlessCheck build
+        run: ./gradlew spotlessCheck build jacocoTestReport sonarqube
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
