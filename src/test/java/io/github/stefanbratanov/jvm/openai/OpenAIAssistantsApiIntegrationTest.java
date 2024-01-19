@@ -232,7 +232,7 @@ public class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBas
         CreateThreadAndRunRequest.newBuilder()
             .assistantId(assistant.id())
             .thread(
-                CreateThreadAndRunRequest.Thread.newBuilder()
+                CreateThreadRequest.newBuilder()
                     .messages(
                         List.of(
                             CreateThreadRequest.Message.newBuilder()

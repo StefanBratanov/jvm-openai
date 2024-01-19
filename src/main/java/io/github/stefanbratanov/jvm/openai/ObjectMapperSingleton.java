@@ -18,7 +18,7 @@ class ObjectMapperSingleton {
       instance.registerModule(new Jdk8Module());
       instance.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
       instance.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
-      instance.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+      instance.setSerializationInclusion(JsonInclude.Include.NON_ABSENT);
     }
     return instance;
   }
