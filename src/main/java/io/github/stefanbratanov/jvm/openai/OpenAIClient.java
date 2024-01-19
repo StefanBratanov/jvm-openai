@@ -149,7 +149,7 @@ abstract class OpenAIClient {
       } else if (httpResponse.body() instanceof Path path) {
         body = Files.readAllBytes(path);
       } else if (httpResponse.body() instanceof Stream<?> stream) {
-        body = stream.map(elem -> (String) elem).collect(Collectors.joining()).getBytes();
+        body = stream.map(String.class::cast).collect(Collectors.joining()).getBytes();
       } else {
         return Optional.empty();
       }

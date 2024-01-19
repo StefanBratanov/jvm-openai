@@ -16,10 +16,10 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-public class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
+class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
 
   @Test
-  public void testUnauthorizedRequest() {
+  void testUnauthorizedRequest() {
     OpenAI unauthorizedOpenAI = OpenAI.newBuilder("foobar").build();
 
     OpenAIException exception =
@@ -30,7 +30,7 @@ public class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
   }
 
   @Test
-  public void testChatClient() {
+  void testChatClient() {
     ChatClient chatClient = openAI.chatClient();
 
     CreateChatCompletionRequest request =
@@ -97,7 +97,7 @@ public class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
   }
 
   @Test
-  public void testModelsClient() {
+  void testModelsClient() {
     ModelsClient modelsClient = openAI.modelsClient();
 
     List<Model> models = modelsClient.listModels();
@@ -110,7 +110,7 @@ public class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
   }
 
   @Test
-  public void testAudioClient(@TempDir Path tempDir) {
+  void testAudioClient(@TempDir Path tempDir) {
     AudioClient audioClient = openAI.audioClient();
 
     SpeechRequest speechRequest =
@@ -147,7 +147,7 @@ public class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
 
   @Test
   @Disabled("Image models are costly")
-  public void testImagesClient() {
+  void testImagesClient() {
     ImagesClient imagesClient = openAI.imagesClient();
 
     CreateImageRequest createImageRequest =
@@ -193,7 +193,7 @@ public class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
   }
 
   @Test
-  public void testModerationsClient() {
+  void testModerationsClient() {
     ModerationsClient moderationsClient = openAI.moderationsClient();
 
     ModerationRequest request =
@@ -207,7 +207,7 @@ public class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
   }
 
   @Test
-  public void testEmbeddingsClient() {
+  void testEmbeddingsClient() {
     EmbeddingsClient embeddingsClient = openAI.embeddingsClient();
 
     EmbeddingsRequest request =
@@ -224,7 +224,7 @@ public class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
   }
 
   @Test
-  public void testFilesClient() {
+  void testFilesClient() {
     FilesClient filesClient = openAI.filesClient();
 
     Path jsonlFile = getTestResource("/mydata.jsonl");
@@ -245,7 +245,7 @@ public class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
 
   @Test
   @Disabled("Fine-tuning models are costly")
-  public void testFineTuningClient() {
+  void testFineTuningClient() {
     FilesClient filesClient = openAI.filesClient();
     FineTuningClient fineTuningClient = openAI.fineTuningClient();
 

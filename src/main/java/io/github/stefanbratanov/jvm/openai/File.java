@@ -6,4 +6,4 @@ public record File(
     long createdAt,
     String filename,
     String purpose,
-    @Deprecated String status) {}
+    @Deprecated(forRemoval = true) String status) {}

@@ -9,12 +9,12 @@ import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
+class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
 
   private static final Map<String, String> METADATA = Map.of("modified", "true", "user", "abc123");
 
   @Test
-  public void testThreadsClient() {
+  void testThreadsClient() {
     ThreadsClient threadsClient = openAI.threadsClient();
 
     CreateThreadRequest.Message message =
@@ -42,7 +42,7 @@ public class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBas
   }
 
   @Test
-  public void testMessagesClient() {
+  void testMessagesClient() {
     ThreadsClient threadsClient = openAI.threadsClient();
 
     MessagesClient messagesClient = openAI.messagesClient();
@@ -113,7 +113,7 @@ public class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBas
   }
 
   @Test
-  public void testAssistantsClient() {
+  void testAssistantsClient() {
     AssistantsClient assistantsClient = openAI.assistantsClient();
 
     File file = uploadRealEstateAgentAssistantFile();
@@ -179,7 +179,7 @@ public class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBas
   }
 
   @Test
-  public void testRunsClient() {
+  void testRunsClient() {
     ThreadsClient threadsClient = openAI.threadsClient();
     AssistantsClient assistantsClient = openAI.assistantsClient();
 

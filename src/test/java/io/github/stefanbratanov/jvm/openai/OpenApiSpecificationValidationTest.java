@@ -18,7 +18,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.RepeatedTest;
 
-public class OpenApiSpecificationValidationTest {
+class OpenApiSpecificationValidationTest {
 
   private static final String OPEN_AI_SPECIFICATION_URL =
       "https://github.com/openai/openai-openapi/raw/master/openapi.yaml";
@@ -35,7 +35,7 @@ public class OpenApiSpecificationValidationTest {
   }
 
   @RepeatedTest(50)
-  public void validateAudio() {
+  void validateAudio() {
     SpeechRequest speechRequest = testDataUtil.randomSpeechRequest();
 
     Request request =
@@ -47,7 +47,7 @@ public class OpenApiSpecificationValidationTest {
   }
 
   @RepeatedTest(50)
-  public void validateChat() {
+  void validateChat() {
     CreateChatCompletionRequest createChatCompletionRequest =
         testDataUtil.randomCreateChatCompletionRequest();
 
@@ -65,7 +65,7 @@ public class OpenApiSpecificationValidationTest {
   }
 
   @RepeatedTest(50)
-  public void validateEmbeddings() {
+  void validateEmbeddings() {
     EmbeddingsRequest embeddingsRequest = testDataUtil.randomEmbeddingsRequest();
 
     Embeddings embeddings = testDataUtil.randomEmbeddings();
@@ -80,7 +80,7 @@ public class OpenApiSpecificationValidationTest {
   }
 
   @RepeatedTest(50)
-  public void validateFineTuning() {
+  void validateFineTuning() {
     CreateFineTuningJobRequest createFineTuningJobRequest =
         testDataUtil.randomCreateFineTuningJobRequest();
 
@@ -117,7 +117,7 @@ public class OpenApiSpecificationValidationTest {
   }
 
   @RepeatedTest(50)
-  public void validateFiles() {
+  void validateFiles() {
     File file = testDataUtil.randomFile();
 
     Response response = createResponseWithBody(serializeObject(file));
@@ -126,7 +126,7 @@ public class OpenApiSpecificationValidationTest {
   }
 
   @RepeatedTest(50)
-  public void validateImages() {
+  void validateImages() {
     CreateImageRequest createImageRequest = testDataUtil.randomCreateImageRequest();
 
     Request request =
@@ -144,7 +144,7 @@ public class OpenApiSpecificationValidationTest {
   }
 
   @RepeatedTest(50)
-  public void validateModels() {
+  void validateModels() {
     Model model = testDataUtil.randomModelObject();
 
     Response response = createResponseWithBody(serializeObject(model));
@@ -153,7 +153,7 @@ public class OpenApiSpecificationValidationTest {
   }
 
   @RepeatedTest(50)
-  public void validateModerations() {
+  void validateModerations() {
     ModerationRequest moderationRequest = testDataUtil.randomModerationRequest();
 
     Request request =
@@ -168,7 +168,7 @@ public class OpenApiSpecificationValidationTest {
   }
 
   @RepeatedTest(50)
-  public void validateAssistants() {
+  void validateAssistants() {
     CreateAssistantRequest createAssistantRequest = testDataUtil.randomCreateAssistantRequest();
 
     Request request =
@@ -185,7 +185,7 @@ public class OpenApiSpecificationValidationTest {
   }
 
   @RepeatedTest(50)
-  public void validateThreads() {
+  void validateThreads() {
     CreateThreadRequest createThreadRequest = testDataUtil.randomCreateThreadRequest();
 
     Request request =
@@ -210,7 +210,7 @@ public class OpenApiSpecificationValidationTest {
   }
 
   @RepeatedTest(50)
-  public void validateMessages() {
+  void validateMessages() {
     CreateMessageRequest createMessageRequest = testDataUtil.randomCreateMessageRequest();
 
     Request request =
@@ -236,7 +236,7 @@ public class OpenApiSpecificationValidationTest {
   }
 
   @RepeatedTest(50)
-  public void validateRuns() {
+  void validateRuns() {
     // Comment out until https://github.com/openai/openai-openapi/pull/170 is merged
     //    CreateRunRequest createRunRequest = testDataUtil.randomCreateRunRequest();
     //
