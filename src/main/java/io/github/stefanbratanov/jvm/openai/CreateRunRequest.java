@@ -8,6 +8,7 @@ public record CreateRunRequest(
     String assistantId,
     Optional<String> model,
     Optional<String> instructions,
+    Optional<String> additionalInstructions,
     Optional<List<Tool>> tools,
     Optional<Map<String, String>> metadata) {
 
@@ -21,6 +22,7 @@ public record CreateRunRequest(
 
     private Optional<String> model = Optional.empty();
     private Optional<String> instructions = Optional.empty();
+    private Optional<String> additionalInstructions = Optional.empty();
     private Optional<List<Tool>> tools = Optional.empty();
     private Optional<Map<String, String>> metadata = Optional.empty();
 
@@ -52,6 +54,16 @@ public record CreateRunRequest(
     }
 
     /**
+     * @param additionalInstructions Appends additional instructions at the end of the instructions
+     *     for the run. This is useful for modifying the behavior on a per-run basis without
+     *     overriding other instructions.
+     */
+    public Builder additionalInstructions(String additionalInstructions) {
+      this.additionalInstructions = Optional.of(additionalInstructions);
+      return this;
+    }
+
+    /**
      * @param tools Override the tools the assistant can use for this run. This is useful for
      *     modifying the behavior on a per-run basis.
      */
@@ -74,7 +86,8 @@ public record CreateRunRequest(
       if (assistantId == null) {
         throw new IllegalStateException("assistantId must be set");
       }
-      return new CreateRunRequest(assistantId, model, instructions, tools, metadata);
+      return new CreateRunRequest(
+          assistantId, model, instructions, additionalInstructions, tools, metadata);
     }
   }
 }

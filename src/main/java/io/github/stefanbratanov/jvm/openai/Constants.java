@@ -35,4 +35,6 @@ class Constants {
 
   static final String TEXT_CONTENT_PART_TYPE = "text";
   static final String IMAGE_CONTENT_PART_TYPE = "image_url";
+
+  static final String SUBMIT_TOOL_OUTPUTS_REQUIRED_ACTION_TYPE = "submit_tool_outputs";
 }

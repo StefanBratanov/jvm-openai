@@ -6,49 +6,11 @@ import java.util.Optional;
 
 public record CreateThreadAndRunRequest(
     String assistantId,
-    Optional<Thread> thread,
+    Optional<CreateThreadRequest> thread,
     Optional<String> model,
     Optional<String> instructions,
     Optional<List<Tool>> tools,
     Optional<Map<String, String>> metadata) {
-
-  public record Thread(
-      Optional<List<CreateThreadRequest.Message>> messages,
-      Optional<Map<String, String>> metadata) {
-
-    public static Builder newBuilder() {
-      return new Builder();
-    }
-
-    public static class Builder {
-
-      private Optional<List<CreateThreadRequest.Message>> messages = Optional.empty();
-      private Optional<Map<String, String>> metadata = Optional.empty();
-
-      /**
-       * @param messages A list of messages to start the thread with.
-       */
-      public Builder messages(List<CreateThreadRequest.Message> messages) {
-        this.messages = Optional.of(messages);
-        return this;
-      }
-
-      /**
-       * @param metadata Set of 16 key-value pairs that can be attached to an object. This can be
-       *     useful for storing additional information about the object in a structured format. Keys
-       *     can be a maximum of 64 characters long and values can be a maxium of 512 characters
-       *     long.
-       */
-      public Builder metadata(Map<String, String> metadata) {
-        this.metadata = Optional.of(metadata);
-        return this;
-      }
-
-      public Thread build() {
-        return new Thread(messages, metadata);
-      }
-    }
-  }
 
   public static Builder newBuilder() {
     return new Builder();
@@ -58,7 +20,7 @@ public record CreateThreadAndRunRequest(
 
     private String assistantId;
 
-    private Optional<Thread> thread = Optional.empty();
+    private Optional<CreateThreadRequest> thread = Optional.empty();
     private Optional<String> model = Optional.empty();
     private Optional<String> instructions = Optional.empty();
     private Optional<List<Tool>> tools = Optional.empty();
@@ -75,7 +37,7 @@ public record CreateThreadAndRunRequest(
     /**
      * @param thread Thread to be created as part of the request
      */
-    public Builder thread(Thread thread) {
+    public Builder thread(CreateThreadRequest thread) {
       this.thread = Optional.of(thread);
       return this;
     }

@@ -1,5 +1,6 @@
 package io.github.stefanbratanov.jvm.openai;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -24,7 +25,8 @@ public final class FineTuningClient extends OpenAIClient {
   }
 
   /**
-   * Creates a job that fine-tunes a specified model from a given dataset.
+   * Creates a fine-tuning job which begins the process of creating a new model from a given
+   * dataset.
    *
    * <p>Response includes details of the enqueued job including job status and the name of the
    * fine-tuned models once complete.
@@ -61,6 +63,7 @@ public final class FineTuningClient extends OpenAIClient {
   }
 
   public record PaginatedFineTuningJobs(List<FineTuningJob> data, boolean hasMore) {
+    @JsonIgnore
     public String getLastJobId() {
       return data.get(data.size() - 1).id();
     }
@@ -93,6 +96,7 @@ public final class FineTuningClient extends OpenAIClient {
   }
 
   public record PaginatedFineTuningEvents(List<FineTuningJobEvent> data, boolean hasMore) {
+    @JsonIgnore
     public String getLastEventId() {
       return data.get(data.size() - 1).id();
     }

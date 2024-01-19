@@ -26,6 +26,12 @@ public record ThreadRun(
   /** Details on the action required to continue the run. */
   public record RequiredAction(String type, SubmitToolOutputs submitToolOutputs) {
     public record SubmitToolOutputs(List<ToolCall> toolCalls) {}
+
+    public static RequiredAction submitToolOutputsRequiredAction(
+        SubmitToolOutputs submitToolOutputs) {
+      return new RequiredAction(
+          Constants.SUBMIT_TOOL_OUTPUTS_REQUIRED_ACTION_TYPE, submitToolOutputs);
+    }
   }
 
   /** The last error associated with this run. */

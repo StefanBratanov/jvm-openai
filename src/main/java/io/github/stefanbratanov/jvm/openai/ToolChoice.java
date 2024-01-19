@@ -7,4 +7,8 @@ public record ToolChoice(String type, Function function) {
    * @param name The name of the function to call.
    */
   public record Function(String name) {}
+
+  public static ToolChoice functionToolChoice(Function function) {
+    return new ToolChoice(Constants.FUNCTION_TOOL_TYPE, function);
+  }
 }
