@@ -1,4 +1,4 @@
 package io.github.stefanbratanov.jvm.openai;
 
-/** Usage statistics * */
+/** Usage statistics */
 public record Usage(int completionTokens, int promptTokens, int totalTokens) {}
