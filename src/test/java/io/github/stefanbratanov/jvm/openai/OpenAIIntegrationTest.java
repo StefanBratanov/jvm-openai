@@ -22,8 +22,24 @@ class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
   void testUnauthorizedRequest() {
     OpenAI unauthorizedOpenAI = OpenAI.newBuilder("foobar").build();
 
-    OpenAIException exception =
-        assertThrows(OpenAIException.class, () -> unauthorizedOpenAI.modelsClient().listModels());
+    ModelsClient modelsClient = unauthorizedOpenAI.modelsClient();
+
+    OpenAIException exception = assertThrows(OpenAIException.class, modelsClient::listModels);
+
+    assertThat(exception.statusCode()).isEqualTo(401);
+    assertThat(exception.errorMessage()).startsWith("Incorrect API key provided: foobar");
+
+    // test capturing exception when stream requested
+    CreateChatCompletionRequest streamRequest =
+        CreateChatCompletionRequest.newBuilder()
+            .message(ChatMessage.userMessage("Who won the world series in 2020?"))
+            .stream(true)
+            .build();
+
+    ChatClient chatClient = unauthorizedOpenAI.chatClient();
+
+    exception =
+        assertThrows(OpenAIException.class, () -> chatClient.streamChatCompletion(streamRequest));
 
     assertThat(exception.statusCode()).isEqualTo(401);
     assertThat(exception.errorMessage()).startsWith("Incorrect API key provided: foobar");
