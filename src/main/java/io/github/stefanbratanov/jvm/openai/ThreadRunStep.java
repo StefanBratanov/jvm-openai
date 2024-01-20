@@ -21,7 +21,8 @@ public record ThreadRunStep(
     Long cancelledAt,
     Long failedAt,
     Long completedAt,
-    Map<String, String> metadata) {
+    Map<String, String> metadata,
+    Usage usage) {
 
   /** The details of the run step. */
   @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")

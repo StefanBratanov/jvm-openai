@@ -21,7 +21,8 @@ public record ThreadRun(
     String instructions,
     List<Tool> tools,
     List<String> fileIds,
-    Map<String, String> metadata) {
+    Map<String, String> metadata,
+    Usage usage) {
 
   /** Details on the action required to continue the run. */
   public record RequiredAction(String type, SubmitToolOutputs submitToolOutputs) {

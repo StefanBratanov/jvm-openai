@@ -65,7 +65,7 @@ public class TestDataUtil {
         randomString(10),
         randomString(10),
         listOf(randomInt(1, 3), this::randomChatCompletionChoice),
-        new ChatCompletion.Usage(randomInt(0, 100), randomInt(0, 100), randomInt(0, 100)));
+        randomUsage());
   }
 
   public SpeechRequest randomSpeechRequest() {
@@ -150,8 +150,7 @@ public class TestDataUtil {
         randomInt(1, 1000),
         randomLong(1, 42_000),
         randomString(7),
-        oneOf("fine-tune", "fine-tune-results", "assistants", "assistants_output"),
-        oneOf("uploaded", "processed", "error"));
+        oneOf("fine-tune", "fine-tune-results", "assistants", "assistants_output"));
   }
 
   public CreateImageRequest randomCreateImageRequest() {
@@ -348,7 +347,8 @@ public class TestDataUtil {
         randomString(10, 200),
         listOf(randomInt(1, 20), this::randomTool),
         randomFileIds(20),
-        randomMetadata());
+        randomMetadata(),
+        randomUsage());
   }
 
   public ThreadRunStep randomThreadRunStep() {
@@ -367,7 +367,8 @@ public class TestDataUtil {
         randomLong(4, 333),
         randomLong(7, 888),
         randomLong(9, 345),
-        randomMetadata());
+        randomMetadata(),
+        randomUsage());
   }
 
   public SubmitToolOutputsRequest randomSubmitToolOutputsRequest() {
@@ -393,6 +394,10 @@ public class TestDataUtil {
                         randomFunctionToolCall(true),
                         randomCodeInterpreterToolCall(),
                         ToolCall.retrievalToolCall(randomString(5))))));
+  }
+
+  private Usage randomUsage() {
+    return new Usage(randomInt(0, 100), randomInt(0, 100), randomInt(0, 100));
   }
 
   private Annotation randomAnnotation() {

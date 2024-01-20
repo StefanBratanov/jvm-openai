@@ -11,10 +11,12 @@ import com.atlassian.oai.validator.model.SimpleResponse;
 import com.atlassian.oai.validator.report.ValidationReport;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.parser.OpenAPIV3Parser;
 import java.io.UncheckedIOException;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.RepeatedTest;
 
@@ -120,7 +122,9 @@ class OpenApiSpecificationValidationTest {
   void validateFiles() {
     File file = testDataUtil.randomFile();
 
-    Response response = createResponseWithBody(serializeObject(file));
+    // manually add deprecated required field "status"
+    Response response =
+        createResponseWithBody(serializeObject(file, Map.of("status", "processed")));
 
     validate("/" + Endpoint.FILES.getPath() + "/{file_id}", Method.GET, response);
   }
@@ -338,6 +342,16 @@ class OpenApiSpecificationValidationTest {
   private String serializeObject(Object object) {
     try {
       return objectMapper.writeValueAsString(object);
+    } catch (JsonProcessingException ex) {
+      throw new UncheckedIOException(ex);
+    }
+  }
+
+  private String serializeObject(Object object, Map<String, Object> additionalFields) {
+    try {
+      ObjectNode objectNode = objectMapper.valueToTree(object);
+      additionalFields.forEach(objectNode::putPOJO);
+      return objectMapper.writeValueAsString(objectNode);
     } catch (JsonProcessingException ex) {
       throw new UncheckedIOException(ex);
     }
