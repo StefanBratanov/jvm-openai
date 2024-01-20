@@ -134,6 +134,15 @@ SpeechRequest request = SpeechRequest.newBuilder()
 Path output = Paths.get("/tmp/speech.mp3");
 audioClient.createSpeech(request, output);
 ```
+- Create translation
+```java
+AudioClient audioClient = openAI.audioClient();
+TranslationRequest request = TranslationRequest.newBuilder()
+    .model("whisper-1")
+    .file(Paths.get("/tmp/german.m4a"))
+    .build();
+String translatedText = audioClient.createTranslation(request);
+```
 - List models
 ```java
 ModelsClient modelsClient = openAI.modelsClient();
