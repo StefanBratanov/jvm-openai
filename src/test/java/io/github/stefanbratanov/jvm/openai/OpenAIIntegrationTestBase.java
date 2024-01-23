@@ -1,6 +1,8 @@
 package io.github.stefanbratanov.jvm.openai;
 
+import static io.github.stefanbratanov.jvm.openai.TestConstants.OPEN_AI_SPECIFICATION_URL;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockserver.mock.OpenAPIExpectation.openAPIExpectation;
 
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -12,15 +14,23 @@ import java.util.function.Supplier;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.mockserver.integration.ClientAndServer;
 
 public class OpenAIIntegrationTestBase {
 
   protected static OpenAI openAI;
 
+  private static ClientAndServer mockServer;
+  protected static OpenAI openAIWithMockServer;
+
   @BeforeAll
   public static void setUp() {
     String apiKey = System.getenv("OPENAI_API_KEY");
     openAI = OpenAI.newBuilder(apiKey).build();
+    mockServer = ClientAndServer.startClientAndServer();
+    mockServer.upsert(openAPIExpectation(OPEN_AI_SPECIFICATION_URL));
+    openAIWithMockServer =
+        OpenAI.newBuilder(apiKey).baseUrl("http://localhost:" + mockServer.getPort()).build();
   }
 
   @AfterAll
@@ -40,6 +50,7 @@ public class OpenAIIntegrationTestBase {
                     .isEqualTo("File is still processing. Check back later.");
               }
             });
+    mockServer.stop();
   }
 
   protected Path getTestResource(String resource) {

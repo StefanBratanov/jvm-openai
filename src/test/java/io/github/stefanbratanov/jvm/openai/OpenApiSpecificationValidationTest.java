@@ -1,5 +1,6 @@
 package io.github.stefanbratanov.jvm.openai;
 
+import static io.github.stefanbratanov.jvm.openai.TestConstants.OPEN_AI_SPECIFICATION_URL;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.atlassian.oai.validator.OpenApiInteractionValidator;
@@ -21,9 +22,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.RepeatedTest;
 
 class OpenApiSpecificationValidationTest {
-
-  private static final String OPEN_AI_SPECIFICATION_URL =
-      "https://github.com/openai/openai-openapi/raw/master/openapi.yaml";
 
   private static OpenApiInteractionValidator validator;
 

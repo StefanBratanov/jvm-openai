@@ -12,7 +12,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -161,10 +160,9 @@ class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
     assertThat(translation).isEqualTo("My name is Diego. What's your name?");
   }
 
-  @Test
-  @Disabled("Image models are costly")
+  @Test // using mock server because image models are costly
   void testImagesClient() {
-    ImagesClient imagesClient = openAI.imagesClient();
+    ImagesClient imagesClient = openAIWithMockServer.imagesClient();
 
     CreateImageRequest createImageRequest =
         CreateImageRequest.newBuilder()
@@ -174,9 +172,7 @@ class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
 
     Images createdImage = imagesClient.createImage(createImageRequest);
 
-    assertThat(createdImage.data())
-        .hasSize(1)
-        .allSatisfy(image -> assertThat(image.b64Json()).isNotEmpty());
+    assertThat(createdImage.data()).isNotEmpty().allMatch(Objects::nonNull);
 
     Path duck = getTestResource("/duck.png");
 
@@ -185,9 +181,7 @@ class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
 
     Images editedImage = imagesClient.editImage(editImageRequest);
 
-    assertThat(editedImage.data())
-        .hasSize(1)
-        .allSatisfy(image -> assertThat(image.url()).isNotNull());
+    assertThat(editedImage.data()).isNotEmpty().allMatch(Objects::nonNull);
 
     Path duckSuperman = getTestResource("/duck-superman.png");
 
@@ -201,11 +195,8 @@ class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
     assertThat(imageVariationsFuture)
         .succeedsWithin(Duration.ofMinutes(1))
         .satisfies(
-            imageVariations -> {
-              assertThat(imageVariations.data())
-                  .hasSize(2)
-                  .allSatisfy(image -> assertThat(image.url()).isNotNull());
-            });
+            imageVariations ->
+                assertThat(imageVariations.data()).isNotEmpty().allMatch(Objects::nonNull));
   }
 
   @Test
@@ -259,20 +250,13 @@ class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
     assertThat(retrievedFile).isEqualTo(uploadedFile);
   }
 
-  @Test
-  @Disabled("Fine-tuning models are costly")
+  @Test // using mock server because fine-tuning models are costly
   void testFineTuningClient() {
-    FilesClient filesClient = openAI.filesClient();
-    FineTuningClient fineTuningClient = openAI.fineTuningClient();
-
-    Path trainingFile = getTestResource("/mydata.jsonl");
-    UploadFileRequest uploadFileRequest =
-        UploadFileRequest.newBuilder().file(trainingFile).purpose("fine-tune").build();
-    File uploadedTrainingFile = filesClient.uploadFile(uploadFileRequest);
+    FineTuningClient fineTuningClient = openAIWithMockServer.fineTuningClient();
 
     CreateFineTuningJobRequest createFineTuningJobRequest =
         CreateFineTuningJobRequest.newBuilder()
-            .trainingFile(uploadedTrainingFile.id())
+            .trainingFile("123abc")
             .model("gpt-3.5-turbo")
             .build();
 

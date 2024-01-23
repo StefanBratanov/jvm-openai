@@ -13,10 +13,6 @@ import io.github.stefanbratanov.jvm.openai.Tool.FunctionTool;
 import io.github.stefanbratanov.jvm.openai.ToolCall.CodeInterpreterToolCall.CodeInterpreter;
 import io.github.stefanbratanov.jvm.openai.ToolCall.CodeInterpreterToolCall.CodeInterpreter.Output.ImageOutput;
 import io.github.stefanbratanov.jvm.openai.ToolCall.FunctionToolCall;
-import java.io.UncheckedIOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
 import java.util.*;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
@@ -422,7 +418,7 @@ public class TestDataUtil {
   private Images.Image randomImage() {
     return oneOf(
         new Images.Image(randomString(200), null, randomString(10)),
-        new Images.Image(null, randomUrl(), randomString(10)));
+        new Images.Image(null, randomString(7), randomString(10)));
   }
 
   private List<String> randomFileIds(int max) {
@@ -508,14 +504,6 @@ public class TestDataUtil {
 
   private String randomFinishReason() {
     return oneOf("stop", "length", "tool_calls", "content_filter", "function_call");
-  }
-
-  private URL randomUrl() {
-    try {
-      return URI.create("https://" + randomString(5) + ".com").toURL();
-    } catch (MalformedURLException ex) {
-      throw new UncheckedIOException(ex);
-    }
   }
 
   private Tool randomTool() {
