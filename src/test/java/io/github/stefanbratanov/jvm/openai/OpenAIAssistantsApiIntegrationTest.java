@@ -193,6 +193,7 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
             .build();
 
     Thread thread = threadsClient.createThread(createThreadRequest);
+    String threadId = thread.id();
 
     // create assistant
     File assistantFile = uploadRealEstateAgentAssistantFile();
@@ -213,12 +214,13 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
     CreateRunRequest createRequest =
         CreateRunRequest.newBuilder().assistantId(assistant.id()).build();
 
-    ThreadRun run = runsClient.createRun(thread.id(), createRequest);
+    ThreadRun run = runsClient.createRun(threadId, createRequest);
+    String runId = run.id();
 
-    assertThat(run.threadId()).isEqualTo(thread.id());
+    assertThat(run.threadId()).isEqualTo(threadId);
     assertThat(run.assistantId()).isEqualTo(assistant.id());
 
-    ThreadRun retrievedRun = runsClient.retrieveRun(thread.id(), run.id());
+    ThreadRun retrievedRun = runsClient.retrieveRun(threadId, runId);
 
     String[] runFieldsToIgnore = new String[] {"status", "startedAt", "completedAt", "expiresAt"};
 
@@ -247,8 +249,7 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
     assertThat(runWithThread.threadId()).isNotNull();
 
     // retrieve runs
-    List<ThreadRun> runs =
-        runsClient.listRuns(thread.id(), PaginationQueryParameters.none()).data();
+    List<ThreadRun> runs = runsClient.listRuns(threadId, PaginationQueryParameters.none()).data();
 
     assertThat(runs)
         .hasSize(1)
@@ -260,7 +261,7 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
     // wait for the run to complete, fail or expire
     awaitCondition(
         () -> {
-          String status = runsClient.retrieveRun(thread.id(), run.id()).status();
+          String status = runsClient.retrieveRun(threadId, runId).status();
           return status.equals("completed") || status.equals("failed") || status.equals("expired");
         },
         Duration.ofSeconds(5),
@@ -268,48 +269,47 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
 
     // retrieve run steps
     List<ThreadRunStep> runSteps =
-        runsClient.listRunSteps(thread.id(), run.id(), PaginationQueryParameters.none()).data();
+        runsClient.listRunSteps(threadId, runId, PaginationQueryParameters.none()).data();
 
     assertThat(runSteps).isNotEmpty();
 
     ThreadRunStep runStep = runSteps.get(0);
 
-    ThreadRunStep retrievedRunStep =
-        runsClient.retrieveRunStep(thread.id(), run.id(), runStep.id());
+    ThreadRunStep retrievedRunStep = runsClient.retrieveRunStep(threadId, runId, runStep.id());
 
     assertThat(retrievedRunStep).isEqualTo(runStep);
 
     // modify run
     ThreadRun modifiedRun =
         runsClient.modifyRun(
-            thread.id(), run.id(), ModifyRunRequest.newBuilder().metadata(METADATA).build());
+            threadId, runId, ModifyRunRequest.newBuilder().metadata(METADATA).build());
 
     assertThat(modifiedRun.metadata()).isEqualTo(METADATA);
+
+    SubmitToolOutputsRequest submitToolOutputsRequest =
+        new SubmitToolOutputsRequest(
+            List.of(
+                SubmitToolOutputsRequest.ToolOutput.newBuilder()
+                    .toolCallId("call_abc123")
+                    .output("28C")
+                    .build()));
 
     OpenAIException submitToolOutputException =
         assertThrows(
             OpenAIException.class,
-            () -> {
-              SubmitToolOutputsRequest.ToolOutput toolOutput =
-                  SubmitToolOutputsRequest.ToolOutput.newBuilder()
-                      .toolCallId("call_abc123")
-                      .output("28C")
-                      .build();
-              runsClient.submitToolOutputs(
-                  thread.id(), run.id(), new SubmitToolOutputsRequest(List.of(toolOutput)));
-            });
+            () -> runsClient.submitToolOutputs(threadId, runId, submitToolOutputsRequest));
 
     assertThat(submitToolOutputException.statusCode()).isEqualTo(400);
     assertThat(submitToolOutputException.errorMessage()).contains("do not accept tool outputs");
 
     OpenAIException cancelRunException =
-        assertThrows(OpenAIException.class, () -> runsClient.cancelRun(thread.id(), run.id()));
+        assertThrows(OpenAIException.class, () -> runsClient.cancelRun(threadId, runId));
 
     assertThat(cancelRunException.statusCode()).isEqualTo(400);
     assertThat(cancelRunException.errorMessage()).contains("Cannot cancel run");
 
     // cleanup
-    threadsClient.deleteThread(thread.id());
+    threadsClient.deleteThread(threadId);
     threadsClient.deleteThread(runWithThread.threadId());
     assistantsClient.deleteAssistantFile(assistant.id(), assistantFile.id());
     assistantsClient.deleteAssistant(assistant.id());
