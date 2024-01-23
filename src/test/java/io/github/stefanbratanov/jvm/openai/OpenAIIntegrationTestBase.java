@@ -14,7 +14,9 @@ import java.util.function.Supplier;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.mockserver.configuration.Configuration;
 import org.mockserver.integration.ClientAndServer;
+import org.slf4j.event.Level;
 
 public class OpenAIIntegrationTestBase {
 
@@ -27,7 +29,8 @@ public class OpenAIIntegrationTestBase {
   public static void setUp() {
     String apiKey = System.getenv("OPENAI_API_KEY");
     openAI = OpenAI.newBuilder(apiKey).build();
-    mockServer = ClientAndServer.startClientAndServer();
+    mockServer =
+        ClientAndServer.startClientAndServer(Configuration.configuration().logLevel(Level.WARN));
     mockServer.upsert(openAPIExpectation(OPEN_AI_SPECIFICATION_URL));
     openAIWithMockServer =
         OpenAI.newBuilder(apiKey).baseUrl("http://localhost:" + mockServer.getPort()).build();
