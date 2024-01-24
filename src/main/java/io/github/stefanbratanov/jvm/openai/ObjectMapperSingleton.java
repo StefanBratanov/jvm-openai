@@ -13,7 +13,7 @@ class ObjectMapperSingleton {
 
   private ObjectMapperSingleton() {}
 
-  static ObjectMapper getInstance() {
+  static synchronized ObjectMapper getInstance() {
     if (instance == null) {
       instance =
           JsonMapper.builder()
