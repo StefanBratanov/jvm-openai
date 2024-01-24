@@ -20,4 +20,6 @@ The following is a set of guidelines for contributing to this repo:
 * If your PR modifies a request/response object, please add the changes in `TestDataUtil` and
   run the `OpenApiSpecificationValidationTest` tests to ensure
   the [spec](https://github.com/openai/openai-openapi/raw/master/openapi.yaml) is not violated.
-* If your PR adds a new endpoint, please refer to the classes extending `OpenAIClient` for code examples.
+* If your PR adds a new endpoint, please refer to the classes extending `OpenAIClient` for code examples. Also, please
+  add a test case either in `OpenAIIntegrationTest` or `OpenAIAssistantsApiIntegrationTest` depending on the endpoint
+  implemented.
