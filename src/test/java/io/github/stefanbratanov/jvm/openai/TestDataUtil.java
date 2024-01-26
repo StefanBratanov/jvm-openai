@@ -83,8 +83,9 @@ public class TestDataUtil {
         () -> builder.input(randomIntArray(randomInt(1, 5))),
         () -> builder.input(listOf(randomInt(1, 10), () -> randomIntArray(randomInt(1, 5)))));
     return builder
-        .model(randomModel())
+        .model(oneOf("text-embedding-ada-002", "text-embedding-3-small", "text-embedding-3-large"))
         .encodingFormat(oneOf("float", "base64"))
+        .dimensions(randomInt(1, 10))
         .user(randomString(10))
         .build();
   }

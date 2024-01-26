@@ -5,7 +5,11 @@ import java.util.List;
 import java.util.Optional;
 
 public record EmbeddingsRequest(
-    List<Object> input, String model, Optional<String> encodingFormat, Optional<String> user) {
+    List<Object> input,
+    String model,
+    Optional<String> encodingFormat,
+    Optional<Integer> dimensions,
+    Optional<String> user) {
 
   public static Builder newBuilder() {
     return new Builder();
@@ -16,6 +20,7 @@ public record EmbeddingsRequest(
     private List<Object> input;
     private String model;
     private Optional<String> encodingFormat = Optional.empty();
+    private Optional<Integer> dimensions = Optional.empty();
     private Optional<String> user = Optional.empty();
 
     /**
@@ -59,6 +64,15 @@ public record EmbeddingsRequest(
     }
 
     /**
+     * @param dimensions The number of dimensions the resulting output embeddings should have. Only
+     *     supported in text-embedding-3 and later models.
+     */
+    public Builder dimensions(int dimensions) {
+      this.dimensions = Optional.of(dimensions);
+      return this;
+    }
+
+    /**
      * @param user A unique identifier representing your end-user, which can help OpenAI to monitor
      *     and detect abuse.
      */
@@ -74,7 +88,7 @@ public record EmbeddingsRequest(
       if (model == null) {
         throw new IllegalStateException("model must be set");
       }
-      return new EmbeddingsRequest(List.copyOf(input), model, encodingFormat, user);
+      return new EmbeddingsRequest(List.copyOf(input), model, encodingFormat, dimensions, user);
     }
   }
 }
