@@ -75,6 +75,7 @@ class MultipartBodyPublisher implements HttpRequest.BodyPublisher {
     Builder filePart(String key, Path value) {
       try {
         String mimeType = Files.probeContentType(value);
+        byte[] fileBytes = Files.readAllBytes(value);
         multipartBodyParts.add(
             (separator
                     + "\""
@@ -86,9 +87,12 @@ class MultipartBodyPublisher implements HttpRequest.BodyPublisher {
                     + "Content-Type: "
                     + mimeType
                     + CRLF
+                    + "Content-Length: "
+                    + fileBytes.length
+                    + CRLF
                     + CRLF)
                 .getBytes());
-        multipartBodyParts.add(Files.readAllBytes(value));
+        multipartBodyParts.add(fileBytes);
         multipartBodyParts.add(CRLF.getBytes());
       } catch (IOException ex) {
         throw new UncheckedIOException(ex);
