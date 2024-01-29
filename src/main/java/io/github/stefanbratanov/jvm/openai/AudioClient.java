@@ -121,9 +121,8 @@ public final class AudioClient extends OpenAIClient {
   }
 
   private HttpRequest createTranscriptPostRequest(TranscriptionRequest request) {
-    long boundary = System.currentTimeMillis();
     MultipartBodyPublisher.Builder multipartBodyPublisherBuilder =
-        MultipartBodyPublisher.newBuilder(boundary)
+        MultipartBodyPublisher.newBuilder()
             .filePart("file", request.file())
             .textPart("model", request.model());
     request
@@ -135,17 +134,18 @@ public final class AudioClient extends OpenAIClient {
         .ifPresent(
             temperature -> multipartBodyPublisherBuilder.textPart("temperature", temperature));
 
+    MultipartBodyPublisher multipartBodyPublisher = multipartBodyPublisherBuilder.build();
+
     return newHttpRequestBuilder(
-            Constants.CONTENT_TYPE_HEADER, "multipart/form-data; boundary=" + boundary)
+            Constants.CONTENT_TYPE_HEADER, multipartBodyPublisher.getContentTypeHeader())
         .uri(baseUrl.resolve(Endpoint.TRANSCRIPTION.getPath()))
-        .POST(multipartBodyPublisherBuilder.build())
+        .POST(multipartBodyPublisher)
         .build();
   }
 
   private HttpRequest createTranslationPostRequest(TranslationRequest request) {
-    long boundary = System.currentTimeMillis();
     MultipartBodyPublisher.Builder multipartBodyPublisherBuilder =
-        MultipartBodyPublisher.newBuilder(boundary)
+        MultipartBodyPublisher.newBuilder()
             .filePart("file", request.file())
             .textPart("model", request.model());
     request.prompt().ifPresent(prompt -> multipartBodyPublisherBuilder.textPart("prompt", prompt));
@@ -154,10 +154,12 @@ public final class AudioClient extends OpenAIClient {
         .ifPresent(
             temperature -> multipartBodyPublisherBuilder.textPart("temperature", temperature));
 
+    MultipartBodyPublisher multipartBodyPublisher = multipartBodyPublisherBuilder.build();
+
     return newHttpRequestBuilder(
-            Constants.CONTENT_TYPE_HEADER, "multipart/form-data; boundary=" + boundary)
+            Constants.CONTENT_TYPE_HEADER, multipartBodyPublisher.getContentTypeHeader())
         .uri(baseUrl.resolve(Endpoint.TRANSLATION.getPath()))
-        .POST(multipartBodyPublisherBuilder.build())
+        .POST(multipartBodyPublisher)
         .build();
   }
 }

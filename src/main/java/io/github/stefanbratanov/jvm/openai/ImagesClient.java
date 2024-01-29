@@ -98,9 +98,8 @@ public final class ImagesClient extends OpenAIClient {
   }
 
   private HttpRequest editImagePostRequest(EditImageRequest request) {
-    long boundary = System.currentTimeMillis();
     MultipartBodyPublisher.Builder multipartBodyPublisherBuilder =
-        MultipartBodyPublisher.newBuilder(boundary)
+        MultipartBodyPublisher.newBuilder()
             .filePart("image", request.image())
             .textPart("prompt", request.prompt());
     request.mask().ifPresent(mask -> multipartBodyPublisherBuilder.filePart("mask", mask));
@@ -114,17 +113,18 @@ public final class ImagesClient extends OpenAIClient {
                 multipartBodyPublisherBuilder.textPart("response_format", responseFormat));
     request.user().ifPresent(user -> multipartBodyPublisherBuilder.textPart("user", user));
 
+    MultipartBodyPublisher multipartBodyPublisher = multipartBodyPublisherBuilder.build();
+
     return newHttpRequestBuilder(
-            Constants.CONTENT_TYPE_HEADER, "multipart/form-data; boundary=" + boundary)
+            Constants.CONTENT_TYPE_HEADER, multipartBodyPublisher.getContentTypeHeader())
         .uri(baseUrl.resolve(Endpoint.IMAGE_EDIT.getPath()))
-        .POST(multipartBodyPublisherBuilder.build())
+        .POST(multipartBodyPublisher)
         .build();
   }
 
   private HttpRequest createImageVariationPostRequest(CreateImageVariationRequest request) {
-    long boundary = System.currentTimeMillis();
     MultipartBodyPublisher.Builder multipartBodyPublisherBuilder =
-        MultipartBodyPublisher.newBuilder(boundary).filePart("image", request.image());
+        MultipartBodyPublisher.newBuilder().filePart("image", request.image());
     request.model().ifPresent(model -> multipartBodyPublisherBuilder.textPart("model", model));
     request
         .responseFormat()
@@ -135,10 +135,12 @@ public final class ImagesClient extends OpenAIClient {
     request.size().ifPresent(size -> multipartBodyPublisherBuilder.textPart("size", size));
     request.user().ifPresent(user -> multipartBodyPublisherBuilder.textPart("user", user));
 
+    MultipartBodyPublisher multipartBodyPublisher = multipartBodyPublisherBuilder.build();
+
     return newHttpRequestBuilder(
-            Constants.CONTENT_TYPE_HEADER, "multipart/form-data; boundary=" + boundary)
+            Constants.CONTENT_TYPE_HEADER, multipartBodyPublisher.getContentTypeHeader())
         .uri(baseUrl.resolve(Endpoint.IMAGE_VARIATION.getPath()))
-        .POST(multipartBodyPublisherBuilder.build())
+        .POST(multipartBodyPublisher)
         .build();
   }
 }

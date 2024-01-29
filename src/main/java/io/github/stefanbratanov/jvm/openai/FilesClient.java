@@ -29,16 +29,15 @@ public final class FilesClient extends OpenAIClient {
    * @throws OpenAIException in case of API errors
    */
   public File uploadFile(UploadFileRequest request) {
-    long boundary = System.currentTimeMillis();
     MultipartBodyPublisher multipartBodyPublisher =
-        MultipartBodyPublisher.newBuilder(boundary)
+        MultipartBodyPublisher.newBuilder()
             .filePart("file", request.file())
             .textPart("purpose", request.purpose())
             .build();
 
     HttpRequest httpRequest =
         newHttpRequestBuilder(
-                Constants.CONTENT_TYPE_HEADER, "multipart/form-data; boundary=" + boundary)
+                Constants.CONTENT_TYPE_HEADER, multipartBodyPublisher.getContentTypeHeader())
             .uri(baseUrl.resolve(Endpoint.FILES.getPath()))
             .POST(multipartBodyPublisher)
             .build();

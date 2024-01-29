@@ -8,13 +8,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.Flow;
 
 class MultipartBodyPublisher implements HttpRequest.BodyPublisher {
 
+  private final String boundary;
   private final List<byte[]> multipartBodyParts;
 
-  private MultipartBodyPublisher(List<byte[]> multipartBodyParts) {
+  private MultipartBodyPublisher(String boundary, List<byte[]> multipartBodyParts) {
+    this.boundary = boundary;
     this.multipartBodyParts = multipartBodyParts;
   }
 
@@ -48,21 +51,25 @@ class MultipartBodyPublisher implements HttpRequest.BodyPublisher {
         });
   }
 
-  static Builder newBuilder(long boundary) {
-    return new Builder(boundary);
+  String getContentTypeHeader() {
+    return "multipart/form-data; boundary=" + boundary;
+  }
+
+  static Builder newBuilder() {
+    return new Builder();
   }
 
   static class Builder {
 
     private static final String CRLF = "\r\n";
 
-    private final long boundary;
+    private final String boundary;
     private final String separator;
 
     private final List<byte[]> multipartBodyParts = new ArrayList<>();
 
-    Builder(long boundary) {
-      this.boundary = boundary;
+    Builder() {
+      boundary = UUID.randomUUID().toString();
       separator = "--" + boundary + CRLF + "Content-Disposition: form-data; name=";
     }
 
@@ -102,7 +109,7 @@ class MultipartBodyPublisher implements HttpRequest.BodyPublisher {
 
     MultipartBodyPublisher build() {
       multipartBodyParts.add(("--" + boundary + "--").getBytes());
-      return new MultipartBodyPublisher(multipartBodyParts);
+      return new MultipartBodyPublisher(boundary, multipartBodyParts);
     }
   }
 }
