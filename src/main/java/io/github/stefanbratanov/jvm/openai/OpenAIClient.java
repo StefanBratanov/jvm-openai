@@ -121,14 +121,6 @@ abstract class OpenAIClient {
     }
   }
 
-  JsonNode deserializeResponseAsTree(byte[] response) {
-    try {
-      return objectMapper.readTree(response);
-    } catch (IOException ex) {
-      throw new UncheckedIOException(ex);
-    }
-  }
-
   private String[] getAuthenticationHeaders(String apiKey, Optional<String> organization) {
     List<String> authHeaders = new ArrayList<>();
     authHeaders.add("Authorization");

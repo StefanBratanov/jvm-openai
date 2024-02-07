@@ -1,6 +1,7 @@
 package io.github.stefanbratanov.jvm.openai;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Optional;
 
 public record TranscriptionRequest(
@@ -8,7 +9,9 @@ public record TranscriptionRequest(
     String model,
     Optional<String> language,
     Optional<String> prompt,
-    Optional<Double> temperature) {
+    Optional<String> responseFormat,
+    Optional<Double> temperature,
+    Optional<List<String>> timestampGranularities) {
 
   public static Builder newBuilder() {
     return new Builder();
@@ -22,7 +25,9 @@ public record TranscriptionRequest(
     private String model = DEFAULT_MODEL;
     private Optional<String> language = Optional.empty();
     private Optional<String> prompt = Optional.empty();
+    private Optional<String> responseFormat = Optional.empty();
     private Optional<Double> temperature = Optional.empty();
+    private Optional<List<String>> timestampGranularities = Optional.empty();
 
     /**
      * @param file The audio file object (not file name) to transcribe, in one of these formats:
@@ -63,6 +68,14 @@ public record TranscriptionRequest(
     }
 
     /**
+     * @param responseFormat The format of the transcript output
+     */
+    public Builder responseFormat(String responseFormat) {
+      this.responseFormat = Optional.of(responseFormat);
+      return this;
+    }
+
+    /**
      * @param temperature The sampling temperature, between 0 and 1. Higher values like 0.8 will
      *     make the output more random, while lower values like 0.2 will make it more focused and
      *     deterministic. If set to 0, the model will use <a
@@ -78,11 +91,22 @@ public record TranscriptionRequest(
       return this;
     }
 
+    /**
+     * @param timestampGranularities The timestamp granularities to populate for this transcription.
+     *     Any of these options: word, or segment. Note: There is no additional latency for segment
+     *     timestamps, but generating word timestamps incurs additional latency.
+     */
+    public Builder timestampGranularities(List<String> timestampGranularities) {
+      this.timestampGranularities = Optional.of(timestampGranularities);
+      return this;
+    }
+
     public TranscriptionRequest build() {
       if (file == null) {
         throw new IllegalStateException("file must be set");
       }
-      return new TranscriptionRequest(file, model, language, prompt, temperature);
+      return new TranscriptionRequest(
+          file, model, language, prompt, responseFormat, temperature, timestampGranularities);
     }
   }
 }

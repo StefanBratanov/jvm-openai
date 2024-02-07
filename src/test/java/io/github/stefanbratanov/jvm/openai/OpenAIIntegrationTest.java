@@ -144,20 +144,30 @@ class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
     assertThat(speech).exists().isNotEmptyFile();
 
     TranscriptionRequest transcriptionRequest =
-        TranscriptionRequest.newBuilder().file(speech).model("whisper-1").build();
+        TranscriptionRequest.newBuilder()
+            .file(speech)
+            .model("whisper-1")
+            .responseFormat("text")
+            .build();
 
     String transcript = audioClient.createTranscript(transcriptionRequest);
 
-    assertThat(transcript).isEqualToIgnoringCase("The quick brown fox jumped over the lazy dog.");
+    assertThat(transcript)
+        .isEqualToIgnoringNewLines("The quick brown fox jumped over the lazy dog.");
 
     Path greeting = getTestResource("/italian-greeting.mp3");
 
     TranslationRequest translationRequest =
-        TranslationRequest.newBuilder().file(greeting).model("whisper-1").build();
+        TranslationRequest.newBuilder()
+            .file(greeting)
+            .model("whisper-1")
+            .responseFormat("json")
+            .build();
 
     String translation = audioClient.createTranslation(translationRequest);
 
-    assertThat(translation).isEqualTo("My name is Diego. What's your name?");
+    assertThat(translation)
+        .isEqualToIgnoringWhitespace("{\"text\":\"My name is Diego. What's your name?\"}");
   }
 
   @Test // using mock server because image models are costly

@@ -63,7 +63,7 @@ public final class AudioClient extends OpenAIClient {
     HttpRequest httpRequest = createTranscriptPostRequest(request);
 
     HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
-    return deserializeResponseAsTree(httpResponse.body()).get("text").asText();
+    return new String(httpResponse.body());
   }
 
   /**
@@ -74,8 +74,7 @@ public final class AudioClient extends OpenAIClient {
     HttpRequest httpRequest = createTranscriptPostRequest(request);
 
     return sendHttpRequestAsync(httpRequest)
-        .thenApply(
-            httpResponse -> deserializeResponseAsTree(httpResponse.body()).get("text").asText());
+        .thenApply(httpResponse -> new String(httpResponse.body()));
   }
 
   /**
@@ -87,7 +86,7 @@ public final class AudioClient extends OpenAIClient {
     HttpRequest httpRequest = createTranslationPostRequest(request);
 
     HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
-    return deserializeResponseAsTree(httpResponse.body()).get("text").asText();
+    return new String(httpResponse.body());
   }
 
   /**
@@ -98,8 +97,7 @@ public final class AudioClient extends OpenAIClient {
     HttpRequest httpRequest = createTranslationPostRequest(request);
 
     return sendHttpRequestAsync(httpRequest)
-        .thenApply(
-            httpResponse -> deserializeResponseAsTree(httpResponse.body()).get("text").asText());
+        .thenApply(httpResponse -> new String(httpResponse.body()));
   }
 
   private void createParentDirectories(Path path) {
@@ -130,9 +128,20 @@ public final class AudioClient extends OpenAIClient {
         .ifPresent(language -> multipartBodyPublisherBuilder.textPart("language", language));
     request.prompt().ifPresent(prompt -> multipartBodyPublisherBuilder.textPart("prompt", prompt));
     request
+        .responseFormat()
+        .ifPresent(
+            responseFormat ->
+                multipartBodyPublisherBuilder.textPart("response_format", responseFormat));
+    request
         .temperature()
         .ifPresent(
             temperature -> multipartBodyPublisherBuilder.textPart("temperature", temperature));
+    request
+        .timestampGranularities()
+        .ifPresent(
+            timestampGranularities ->
+                multipartBodyPublisherBuilder.textPart(
+                    "timestamp_granularities", timestampGranularities));
 
     MultipartBodyPublisher multipartBodyPublisher = multipartBodyPublisherBuilder.build();
 
@@ -149,6 +158,11 @@ public final class AudioClient extends OpenAIClient {
             .filePart("file", request.file())
             .textPart("model", request.model());
     request.prompt().ifPresent(prompt -> multipartBodyPublisherBuilder.textPart("prompt", prompt));
+    request
+        .responseFormat()
+        .ifPresent(
+            responseFormat ->
+                multipartBodyPublisherBuilder.textPart("response_format", responseFormat));
     request
         .temperature()
         .ifPresent(
