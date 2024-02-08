@@ -6,6 +6,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -35,7 +36,7 @@ public final class AudioClient extends OpenAIClient {
     createParentDirectories(output);
     HttpRequest httpRequest = createSpeechPostRequest(request);
 
-    sendHttpRequest(httpRequest, HttpResponse.BodyHandlers.ofFile(output));
+    sendHttpRequest(httpRequest, BodyHandlers.ofFile(output));
   }
 
   /**
@@ -50,7 +51,7 @@ public final class AudioClient extends OpenAIClient {
             .POST(createBodyPublisher(request))
             .build();
 
-    return sendHttpRequestAsync(httpRequest, HttpResponse.BodyHandlers.ofFile(output))
+    return sendHttpRequestAsync(httpRequest, BodyHandlers.ofFile(output))
         .thenApply(httpResponse -> null);
   }
 
@@ -62,8 +63,7 @@ public final class AudioClient extends OpenAIClient {
   public String createTranscript(TranscriptionRequest request) {
     HttpRequest httpRequest = createTranscriptPostRequest(request);
 
-    HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
-    return new String(httpResponse.body());
+    return sendHttpRequest(httpRequest, BodyHandlers.ofString()).body();
   }
 
   /**
@@ -73,8 +73,7 @@ public final class AudioClient extends OpenAIClient {
   public CompletableFuture<String> createTranscriptAsync(TranscriptionRequest request) {
     HttpRequest httpRequest = createTranscriptPostRequest(request);
 
-    return sendHttpRequestAsync(httpRequest)
-        .thenApply(httpResponse -> new String(httpResponse.body()));
+    return sendHttpRequestAsync(httpRequest, BodyHandlers.ofString()).thenApply(HttpResponse::body);
   }
 
   /**
@@ -85,8 +84,7 @@ public final class AudioClient extends OpenAIClient {
   public String createTranslation(TranslationRequest request) {
     HttpRequest httpRequest = createTranslationPostRequest(request);
 
-    HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
-    return new String(httpResponse.body());
+    return sendHttpRequest(httpRequest, BodyHandlers.ofString()).body();
   }
 
   /**
@@ -96,8 +94,7 @@ public final class AudioClient extends OpenAIClient {
   public CompletableFuture<String> createTranslationAsync(TranslationRequest request) {
     HttpRequest httpRequest = createTranslationPostRequest(request);
 
-    return sendHttpRequestAsync(httpRequest)
-        .thenApply(httpResponse -> new String(httpResponse.body()));
+    return sendHttpRequestAsync(httpRequest, BodyHandlers.ofString()).thenApply(HttpResponse::body);
   }
 
   private void createParentDirectories(Path path) {
