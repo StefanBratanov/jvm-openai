@@ -145,11 +145,15 @@ abstract class OpenAIClient {
       } else {
         return Optional.empty();
       }
-      JsonNode errorNode = objectMapper.readTree(body).get("error");
-      if (errorNode == null) {
+      try {
+        JsonNode errorNode = objectMapper.readTree(body).get("error");
+        if (errorNode == null) {
+          return Optional.empty();
+        }
+        return Optional.of(objectMapper.treeToValue(errorNode, OpenAIException.Error.class));
+      } catch (JsonProcessingException ex) {
         return Optional.empty();
       }
-      return Optional.of(objectMapper.treeToValue(errorNode, OpenAIException.Error.class));
     } catch (IOException ex) {
       throw new UncheckedIOException(ex);
     }
