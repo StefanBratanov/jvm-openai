@@ -134,28 +134,39 @@ abstract class OpenAIClient {
   }
 
   private Optional<OpenAIException.Error> getErrorFromHttpResponse(HttpResponse<?> httpResponse) {
-    try {
-      byte[] body;
-      if (httpResponse.body() instanceof byte[]) {
-        body = (byte[]) httpResponse.body();
-      } else if (httpResponse.body() instanceof Path path) {
-        body = Files.readAllBytes(path);
-      } else if (httpResponse.body() instanceof Stream<?> stream) {
-        body = stream.map(String.class::cast).collect(Collectors.joining()).getBytes();
-      } else {
-        return Optional.empty();
-      }
+    return getErrorBodyFromHttpResponse(httpResponse)
+        .flatMap(
+            body -> {
+              try {
+                JsonNode errorNode = objectMapper.readTree(body).get("error");
+                if (errorNode == null) {
+                  return Optional.empty();
+                }
+                return Optional.of(
+                    objectMapper.treeToValue(errorNode, OpenAIException.Error.class));
+              } catch (JsonProcessingException ex) {
+                return Optional.empty();
+              } catch (IOException ex) {
+                throw new UncheckedIOException(ex);
+              }
+            });
+  }
+
+  private Optional<byte[]> getErrorBodyFromHttpResponse(HttpResponse<?> httpResponse) {
+    byte[] body;
+    if (httpResponse.body() instanceof byte[]) {
+      body = (byte[]) httpResponse.body();
+    } else if (httpResponse.body() instanceof Path path) {
       try {
-        JsonNode errorNode = objectMapper.readTree(body).get("error");
-        if (errorNode == null) {
-          return Optional.empty();
-        }
-        return Optional.of(objectMapper.treeToValue(errorNode, OpenAIException.Error.class));
-      } catch (JsonProcessingException ex) {
-        return Optional.empty();
+        body = Files.readAllBytes(path);
+      } catch (IOException ex) {
+        throw new UncheckedIOException(ex);
       }
-    } catch (IOException ex) {
-      throw new UncheckedIOException(ex);
+    } else if (httpResponse.body() instanceof Stream<?> stream) {
+      body = stream.map(String.class::cast).collect(Collectors.joining()).getBytes();
+    } else {
+      return Optional.empty();
     }
+    return Optional.of(body);
   }
 }
