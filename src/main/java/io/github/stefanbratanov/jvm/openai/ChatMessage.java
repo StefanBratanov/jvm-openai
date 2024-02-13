@@ -59,6 +59,18 @@ public sealed interface ChatMessage
 
           public record ImageUrl(String url, Optional<String> detail) {}
         }
+
+        static TextContentPart textContentPart(String text) {
+          return new TextContentPart(text);
+        }
+
+        static ImageContentPart imageContentPart(String url) {
+          return new ImageContentPart(new ImageContentPart.ImageUrl(url, Optional.empty()));
+        }
+
+        static ImageContentPart imageContentPart(String url, String detail) {
+          return new ImageContentPart(new ImageContentPart.ImageUrl(url, Optional.of(detail)));
+        }
       }
     }
   }

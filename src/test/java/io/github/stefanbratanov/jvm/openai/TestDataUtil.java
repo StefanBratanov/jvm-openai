@@ -1,7 +1,6 @@
 package io.github.stefanbratanov.jvm.openai;
 
 import io.github.stefanbratanov.jvm.openai.ChatMessage.UserMessage.UserMessageWithContentParts.ContentPart;
-import io.github.stefanbratanov.jvm.openai.ChatMessage.UserMessage.UserMessageWithContentParts.ContentPart.ImageContentPart;
 import io.github.stefanbratanov.jvm.openai.CreateChatCompletionRequest.ResponseFormat;
 import io.github.stefanbratanov.jvm.openai.ThreadMessage.Content.ImageFileContent;
 import io.github.stefanbratanov.jvm.openai.ThreadMessage.Content.TextContent;
@@ -438,10 +437,10 @@ public class TestDataUtil {
                 randomInt(1, 5),
                 () ->
                     oneOf(
-                        new ContentPart.TextContentPart(randomString(15)),
-                        new ImageContentPart(
-                            new ImageContentPart.ImageUrl(
-                                randomString(7), Optional.of(oneOf("auto", "low", "high"))))),
+                        ContentPart.textContentPart(randomString(15)),
+                        ContentPart.imageContentPart(randomString(7)),
+                        ContentPart.imageContentPart(
+                            randomString(7), oneOf("auto", "low", "high"))),
                 ContentPart[]::new)),
         ChatMessage.assistantMessage(randomString(10)),
         ChatMessage.assistantMessage(
