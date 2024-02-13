@@ -35,6 +35,7 @@ public class TestDataUtil {
             .model(randomModel())
             .messages(listOf(randomInt(1, 3), this::randomChatMessage))
             .frequencyPenalty(randomDouble(-2.0, 2.0))
+            .instanceId(randomString(7))
             .logitBias(randomLogitBias(randomInt(0, 6)))
             .logprobs(randomBoolean())
             .topLogprobs(randomInt(0, 5))
