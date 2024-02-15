@@ -82,6 +82,12 @@ OpenAI openAI = OpenAI.newBuilder(System.getenv("OPENAI_API_KEY"))
     .httpClient(httpClient)
     .build();
 ```
+- Configure a timeout for all requests
+```java
+OpenAI openAI = OpenAI.newBuilder(System.getenv("OPENAI_API_KEY"))
+    .requestTimeout(Duration.ofSeconds(10))
+    .build();
+```
 - Create chat completion async
 ```java
 ChatClient chatClient = openAI.chatClient();
