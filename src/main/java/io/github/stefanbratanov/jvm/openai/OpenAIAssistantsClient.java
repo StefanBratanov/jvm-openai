@@ -2,6 +2,7 @@ package io.github.stefanbratanov.jvm.openai;
 
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
+import java.time.Duration;
 import java.util.Map;
 import java.util.Optional;
 
@@ -11,8 +12,12 @@ import java.util.Optional;
  */
 class OpenAIAssistantsClient extends OpenAIClient {
 
-  OpenAIAssistantsClient(String apiKey, Optional<String> organization, HttpClient httpClient) {
-    super(apiKey, organization, httpClient);
+  OpenAIAssistantsClient(
+      String apiKey,
+      Optional<String> organization,
+      HttpClient httpClient,
+      Optional<Duration> requestTimeout) {
+    super(apiKey, organization, httpClient, requestTimeout);
   }
 
   @Override

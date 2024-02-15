@@ -2,6 +2,7 @@ package io.github.stefanbratanov.jvm.openai;
 
 import java.net.URI;
 import java.net.http.HttpClient;
+import java.time.Duration;
 import java.util.Optional;
 
 /**
@@ -24,19 +25,28 @@ public final class OpenAI {
   private final MessagesClient messagesClient;
   private final RunsClient runsClient;
 
-  private OpenAI(URI baseUrl, String apiKey, Optional<String> organization, HttpClient httpClient) {
-    audioClient = new AudioClient(baseUrl, apiKey, organization, httpClient);
-    chatClient = new ChatClient(baseUrl, apiKey, organization, httpClient);
-    embeddingsClient = new EmbeddingsClient(baseUrl, apiKey, organization, httpClient);
-    fineTuningClient = new FineTuningClient(baseUrl, apiKey, organization, httpClient);
-    filesClient = new FilesClient(baseUrl, apiKey, organization, httpClient);
-    imagesClient = new ImagesClient(baseUrl, apiKey, organization, httpClient);
-    modelsClient = new ModelsClient(baseUrl, apiKey, organization, httpClient);
-    moderationsClient = new ModerationsClient(baseUrl, apiKey, organization, httpClient);
-    assistantsClient = new AssistantsClient(baseUrl, apiKey, organization, httpClient);
-    threadsClient = new ThreadsClient(baseUrl, apiKey, organization, httpClient);
-    messagesClient = new MessagesClient(baseUrl, apiKey, organization, httpClient);
-    runsClient = new RunsClient(baseUrl, apiKey, organization, httpClient);
+  private OpenAI(
+      URI baseUrl,
+      String apiKey,
+      Optional<String> organization,
+      HttpClient httpClient,
+      Optional<Duration> requestTimeout) {
+    audioClient = new AudioClient(baseUrl, apiKey, organization, httpClient, requestTimeout);
+    chatClient = new ChatClient(baseUrl, apiKey, organization, httpClient, requestTimeout);
+    embeddingsClient =
+        new EmbeddingsClient(baseUrl, apiKey, organization, httpClient, requestTimeout);
+    fineTuningClient =
+        new FineTuningClient(baseUrl, apiKey, organization, httpClient, requestTimeout);
+    filesClient = new FilesClient(baseUrl, apiKey, organization, httpClient, requestTimeout);
+    imagesClient = new ImagesClient(baseUrl, apiKey, organization, httpClient, requestTimeout);
+    modelsClient = new ModelsClient(baseUrl, apiKey, organization, httpClient, requestTimeout);
+    moderationsClient =
+        new ModerationsClient(baseUrl, apiKey, organization, httpClient, requestTimeout);
+    assistantsClient =
+        new AssistantsClient(baseUrl, apiKey, organization, httpClient, requestTimeout);
+    threadsClient = new ThreadsClient(baseUrl, apiKey, organization, httpClient, requestTimeout);
+    messagesClient = new MessagesClient(baseUrl, apiKey, organization, httpClient, requestTimeout);
+    runsClient = new RunsClient(baseUrl, apiKey, organization, httpClient, requestTimeout);
   }
 
   /**
@@ -152,6 +162,7 @@ public final class OpenAI {
 
     private Optional<String> organization = Optional.empty();
     private Optional<HttpClient> httpClient = Optional.empty();
+    private Optional<Duration> requestTimeout = Optional.empty();
 
     public Builder(String apiKey) {
       this.apiKey = apiKey;
@@ -182,6 +193,15 @@ public final class OpenAI {
       return this;
     }
 
+    /**
+     * @param requestTimeout a timeout in the form of a {@link Duration} which will be set for all
+     *     API requests. If none is set, there will be no timeout.
+     */
+    public Builder requestTimeout(Duration requestTimeout) {
+      this.requestTimeout = Optional.of(requestTimeout);
+      return this;
+    }
+
     public OpenAI build() {
       if (!baseUrl.endsWith("/")) {
         baseUrl += "/";
@@ -190,7 +210,8 @@ public final class OpenAI {
           URI.create(baseUrl),
           apiKey,
           organization,
-          httpClient.orElseGet(HttpClient::newHttpClient));
+          httpClient.orElseGet(HttpClient::newHttpClient),
+          requestTimeout);
     }
   }
 }

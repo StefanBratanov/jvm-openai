@@ -4,6 +4,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,8 +20,13 @@ public final class RunsClient extends OpenAIAssistantsClient {
 
   private final URI baseUrl;
 
-  RunsClient(URI baseUrl, String apiKey, Optional<String> organization, HttpClient httpClient) {
-    super(apiKey, organization, httpClient);
+  RunsClient(
+      URI baseUrl,
+      String apiKey,
+      Optional<String> organization,
+      HttpClient httpClient,
+      Optional<Duration> requestTimeout) {
+    super(apiKey, organization, httpClient, requestTimeout);
     this.baseUrl = baseUrl;
   }
 

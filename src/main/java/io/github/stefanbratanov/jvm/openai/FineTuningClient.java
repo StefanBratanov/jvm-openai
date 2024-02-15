@@ -5,6 +5,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -19,8 +20,12 @@ public final class FineTuningClient extends OpenAIClient {
   private final URI baseUrl;
 
   FineTuningClient(
-      URI baseUrl, String apiKey, Optional<String> organization, HttpClient httpClient) {
-    super(apiKey, organization, httpClient);
+      URI baseUrl,
+      String apiKey,
+      Optional<String> organization,
+      HttpClient httpClient,
+      Optional<Duration> requestTimeout) {
+    super(apiKey, organization, httpClient, requestTimeout);
     this.baseUrl = baseUrl;
   }
 

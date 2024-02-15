@@ -9,6 +9,7 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -21,8 +22,13 @@ public final class AudioClient extends OpenAIClient {
 
   private final URI baseUrl;
 
-  AudioClient(URI baseUrl, String apiKey, Optional<String> organization, HttpClient httpClient) {
-    super(apiKey, organization, httpClient);
+  AudioClient(
+      URI baseUrl,
+      String apiKey,
+      Optional<String> organization,
+      HttpClient httpClient,
+      Optional<Duration> requestTimeout) {
+    super(apiKey, organization, httpClient, requestTimeout);
     this.baseUrl = baseUrl;
   }
 

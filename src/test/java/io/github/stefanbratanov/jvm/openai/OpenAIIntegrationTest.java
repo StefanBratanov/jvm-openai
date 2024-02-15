@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.github.stefanbratanov.jvm.openai.ChatMessage.UserMessage.UserMessageWithContentParts.ContentPart.TextContentPart;
+import java.io.UncheckedIOException;
+import java.net.http.HttpTimeoutException;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
@@ -14,6 +16,8 @@ import java.util.stream.Collectors;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockserver.integration.ClientAndServer;
+import org.mockserver.model.*;
 
 class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
 
@@ -42,6 +46,40 @@ class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
 
     assertThat(exception.statusCode()).isEqualTo(401);
     assertThat(exception.errorMessage()).startsWith("Incorrect API key provided: foobar");
+  }
+
+  @Test
+  void testConfiguringRequestTimeout() {
+    try (ClientAndServer mockServer = ClientAndServer.startClientAndServer()) {
+      mockServer
+          .when(HttpRequest.request())
+          .respond(
+              HttpResponse.response()
+                  .withStatusCode(200)
+                  .withBody(
+                      "{\"id\":\"chatcmpl-123\",\"object\":\"chat.completion\",\"created\":1677652288,\"model\":\"gpt-3.5-turbo-0613\",\"system_fingerprint\":\"fp_44709d6fcb\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Hello there, how may I assist you today?\"},\"logprobs\":null,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":9,\"completion_tokens\":12,\"total_tokens\":21}}")
+                  // simulate a backend delay
+                  .withDelay(Delay.seconds(1)));
+
+      OpenAI openAI =
+          OpenAI.newBuilder("foobar")
+              .baseUrl("http://localhost:" + mockServer.getPort())
+              // set the request timeout to less than the backend delay
+              .requestTimeout(Duration.ofMillis(500))
+              .build();
+
+      ChatClient chatClient = openAI.chatClient();
+
+      CreateChatCompletionRequest request =
+          CreateChatCompletionRequest.newBuilder()
+              .message(ChatMessage.userMessage("This is a timeout test"))
+              .build();
+
+      UncheckedIOException exception =
+          assertThrows(UncheckedIOException.class, () -> chatClient.createChatCompletion(request));
+
+      assertThat(exception).hasCauseInstanceOf(HttpTimeoutException.class);
+    }
   }
 
   @Test

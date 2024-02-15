@@ -10,6 +10,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -21,14 +22,20 @@ import java.util.stream.Stream;
  */
 abstract class OpenAIClient {
 
+  private final ObjectMapper objectMapper = ObjectMapperSingleton.getInstance();
+
   private final String[] authenticationHeaders;
+  private final HttpClient httpClient;
+  private final Optional<Duration> requestTimeout;
 
-  protected final HttpClient httpClient;
-  protected final ObjectMapper objectMapper = ObjectMapperSingleton.getInstance();
-
-  OpenAIClient(String apiKey, Optional<String> organization, HttpClient httpClient) {
+  OpenAIClient(
+      String apiKey,
+      Optional<String> organization,
+      HttpClient httpClient,
+      Optional<Duration> requestTimeout) {
     this.authenticationHeaders = getAuthenticationHeaders(apiKey, organization);
     this.httpClient = httpClient;
+    this.requestTimeout = requestTimeout;
   }
 
   HttpRequest.Builder newHttpRequestBuilder(String... headers) {
@@ -37,6 +44,7 @@ abstract class OpenAIClient {
     if (headers.length > 0) {
       httpRequestBuilder.headers(headers);
     }
+    requestTimeout.ifPresent(httpRequestBuilder::timeout);
     return httpRequestBuilder;
   }
 
