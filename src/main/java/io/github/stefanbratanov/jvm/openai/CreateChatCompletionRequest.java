@@ -9,7 +9,6 @@ public record CreateChatCompletionRequest(
     String model,
     List<ChatMessage> messages,
     Optional<Double> frequencyPenalty,
-    Optional<String> instanceId,
     Optional<Map<Integer, Integer>> logitBias,
     Optional<Boolean> logprobs,
     Optional<Integer> topLogprobs,
@@ -49,7 +48,6 @@ public record CreateChatCompletionRequest(
     private final List<ChatMessage> messages = new LinkedList<>();
 
     private Optional<Double> frequencyPenalty = Optional.empty();
-    private Optional<String> instanceId = Optional.empty();
     private Optional<Map<Integer, Integer>> logitBias = Optional.empty();
     private Optional<Boolean> logprobs = Optional.empty();
     private Optional<Integer> topLogprobs = Optional.empty();
@@ -101,15 +99,6 @@ public record CreateChatCompletionRequest(
             "frequencyPenalty must be between -2.0 and 2.0 but it was " + frequencyPenalty);
       }
       this.frequencyPenalty = Optional.of(frequencyPenalty);
-      return this;
-    }
-
-    /**
-     * @param instanceId A unique identifier to a custom instance to execute the request. The
-     *     requesting organization is required to have access to the instance.
-     */
-    public Builder instanceId(String instanceId) {
-      this.instanceId = Optional.of(instanceId);
       return this;
     }
 
@@ -316,7 +305,6 @@ public record CreateChatCompletionRequest(
           model,
           List.copyOf(messages),
           frequencyPenalty,
-          instanceId,
           logitBias,
           logprobs,
           topLogprobs,

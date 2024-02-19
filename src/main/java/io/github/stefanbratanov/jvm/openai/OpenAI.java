@@ -194,7 +194,7 @@ public final class OpenAI {
     }
 
     /**
-     * @param requestTimeout a timeout in the form of a {@link Duration} which will be set for all
+     * @param requestTimeout a timeout in the form of a {@link Duration} which will be set for the
      *     API requests. If none is set, there will be no timeout.
      */
     public Builder requestTimeout(Duration requestTimeout) {
