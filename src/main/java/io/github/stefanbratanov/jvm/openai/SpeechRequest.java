@@ -65,10 +65,6 @@ public record SpeechRequest(
      *     default.
      */
     public Builder speed(double speed) {
-      if (speed < 0.25 || speed > 4) {
-        throw new IllegalArgumentException(
-            "speed must be between 0.25 and 4.0 but it was " + speed);
-      }
       this.speed = Optional.of(speed);
       return this;
     }

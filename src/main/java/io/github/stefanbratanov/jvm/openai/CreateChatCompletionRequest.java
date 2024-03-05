@@ -94,10 +94,6 @@ public record CreateChatCompletionRequest(
      *     to repeat the same line verbatim.
      */
     public Builder frequencyPenalty(double frequencyPenalty) {
-      if (frequencyPenalty < -2 || frequencyPenalty > 2) {
-        throw new IllegalArgumentException(
-            "frequencyPenalty must be between -2.0 and 2.0 but it was " + frequencyPenalty);
-      }
       this.frequencyPenalty = Optional.of(frequencyPenalty);
       return this;
     }
@@ -129,10 +125,6 @@ public record CreateChatCompletionRequest(
      *     set to true if this parameter is used.
      */
     public Builder topLogprobs(int topLogprobs) {
-      if (topLogprobs < 0 || topLogprobs > 5) {
-        throw new IllegalArgumentException(
-            "topLogprobs must be between 0 and 5 but it was " + topLogprobs);
-      }
       this.topLogprobs = Optional.of(topLogprobs);
       return this;
     }
@@ -142,9 +134,6 @@ public record CreateChatCompletionRequest(
      *     model's context length
      */
     public Builder maxTokens(int maxTokens) {
-      if (maxTokens < 1) {
-        throw new IllegalArgumentException("maxTokens must be a positive number");
-      }
       this.maxTokens = Optional.of(maxTokens);
       return this;
     }
@@ -155,9 +144,6 @@ public record CreateChatCompletionRequest(
      *     as 1 to minimize costs.
      */
     public Builder n(int n) {
-      if (n < 1) {
-        throw new IllegalArgumentException("n must be a positive number");
-      }
       this.n = Optional.of(n);
       return this;
     }
@@ -168,10 +154,6 @@ public record CreateChatCompletionRequest(
      *     about new topics.
      */
     public Builder presencePenalty(double presencePenalty) {
-      if (presencePenalty < -2 || presencePenalty > 2) {
-        throw new IllegalArgumentException(
-            "presencePenalty must be between -2.0 and 2.0 but it was " + presencePenalty);
-      }
       this.presencePenalty = Optional.of(presencePenalty);
       return this;
     }
@@ -202,10 +184,6 @@ public record CreateChatCompletionRequest(
      * @param stop Up to 4 sequences where the API will stop generating further tokens.
      */
     public Builder stop(String... stop) {
-      if (stop.length > 4) {
-        throw new IllegalArgumentException(
-            "Up to 4 stop sequences could be defined, but it was " + stop.length);
-      }
       this.stop.addAll(Arrays.asList(stop));
       return this;
     }
@@ -225,10 +203,6 @@ public record CreateChatCompletionRequest(
      *     and deterministic.
      */
     public Builder temperature(double temperature) {
-      if (temperature < 0 || temperature > 2) {
-        throw new IllegalArgumentException(
-            "temperature must be between 0 and 2 but it was " + temperature);
-      }
       this.temperature = Optional.of(temperature);
       return this;
     }

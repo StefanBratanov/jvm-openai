@@ -83,10 +83,6 @@ public record TranscriptionRequest(
      *     increase the temperature until certain thresholds are hit.
      */
     public Builder temperature(double temperature) {
-      if (temperature < 0 || temperature > 1) {
-        throw new IllegalArgumentException(
-            "temperature must be between 0 and 1 but it was " + temperature);
-      }
       this.temperature = Optional.of(temperature);
       return this;
     }
