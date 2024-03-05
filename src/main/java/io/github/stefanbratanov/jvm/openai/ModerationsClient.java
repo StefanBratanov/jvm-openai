@@ -8,7 +8,8 @@ import java.time.Duration;
 import java.util.Optional;
 
 /**
- * Given a input text, outputs if the model classifies it as violating OpenAI's content policy.
+ * Given some input text, outputs if the model classifies it as potentially harmful across several
+ * categories.
  *
  * <p>Based on <a href="https://platform.openai.com/docs/api-reference/moderations">Moderations</a>
  */
@@ -27,7 +28,7 @@ public final class ModerationsClient extends OpenAIClient {
   }
 
   /**
-   * Classifies if text violates OpenAI's Content Policy
+   * Classifies if text is potentially harmful.
    *
    * @throws OpenAIException in case of API errors
    */

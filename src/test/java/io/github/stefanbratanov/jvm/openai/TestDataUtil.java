@@ -36,7 +36,7 @@ public class TestDataUtil {
             .frequencyPenalty(randomDouble(-2.0, 2.0))
             .logitBias(randomLogitBias(randomInt(0, 6)))
             .logprobs(randomBoolean())
-            .topLogprobs(randomInt(0, 5))
+            .topLogprobs(randomInt(0, 20))
             .maxTokens(randomInt(0, 10_000))
             .n(randomInt(1, 128))
             .presencePenalty(randomDouble(-2.0, 2.0))
@@ -335,7 +335,8 @@ public class TestDataUtil {
         ThreadRun.RequiredAction.submitToolOutputsRequiredAction(
             new ThreadRun.RequiredAction.SubmitToolOutputs(
                 listOf(randomInt(1, 5), () -> randomFunctionToolCall(false)))),
-        new ThreadRun.LastError(oneOf("server_error", "rate_limit_exceeded"), randomString(5, 20)),
+        new ThreadRun.LastError(
+            oneOf("server_error", "rate_limit_exceeded", "invalid_prompt"), randomString(5, 20)),
         randomLong(5, 999),
         randomLong(4, 333),
         randomLong(7, 888),

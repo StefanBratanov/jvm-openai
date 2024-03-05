@@ -89,8 +89,9 @@ public record TranscriptionRequest(
 
     /**
      * @param timestampGranularities The timestamp granularities to populate for this transcription.
-     *     Any of these options: word, or segment. Note: There is no additional latency for segment
-     *     timestamps, but generating word timestamps incurs additional latency.
+     *     `response_format` must be set `verbose_json` to use timestamp granularities. Either or
+     *     both of these options are supported: `word`, or `segment`. Note: There is no additional
+     *     latency for segment timestamps, but generating word timestamps incurs additional latency.
      */
     public Builder timestampGranularities(List<String> timestampGranularities) {
       this.timestampGranularities = Optional.of(timestampGranularities);
