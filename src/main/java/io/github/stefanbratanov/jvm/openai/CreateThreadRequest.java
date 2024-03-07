@@ -65,9 +65,6 @@ public record CreateThreadRequest(
       }
 
       public Message build() {
-        if (content == null) {
-          throw new IllegalStateException("content must be set");
-        }
         return new Message(role, content, fileIds, metadata);
       }
     }

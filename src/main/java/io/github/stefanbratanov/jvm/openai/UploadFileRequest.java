@@ -30,12 +30,6 @@ public record UploadFileRequest(Path file, String purpose) {
     }
 
     public UploadFileRequest build() {
-      if (file == null) {
-        throw new IllegalStateException("file must be set");
-      }
-      if (purpose == null) {
-        throw new IllegalStateException("purpose must be set");
-      }
       return new UploadFileRequest(file, purpose);
     }
   }

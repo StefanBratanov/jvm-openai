@@ -143,12 +143,6 @@ public record CreateFineTuningJobRequest(
     }
 
     public CreateFineTuningJobRequest build() {
-      if (model == null) {
-        throw new IllegalStateException("model must be set");
-      }
-      if (trainingFile == null) {
-        throw new IllegalStateException("trainingFile must be set");
-      }
       return new CreateFineTuningJobRequest(
           model, trainingFile, hyperparameters, suffix, validationFile);
     }

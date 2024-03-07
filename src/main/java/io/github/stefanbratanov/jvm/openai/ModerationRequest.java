@@ -46,9 +46,6 @@ public record ModerationRequest(List<String> input, Optional<String> model) {
     }
 
     public ModerationRequest build() {
-      if (input.isEmpty()) {
-        throw new IllegalStateException("at least one input must be set");
-      }
       return new ModerationRequest(List.copyOf(input), model);
     }
   }

@@ -102,9 +102,6 @@ public record CreateImageRequest(
     }
 
     public CreateImageRequest build() {
-      if (prompt == null) {
-        throw new IllegalStateException("prompt must be set");
-      }
       return new CreateImageRequest(prompt, model, n, quality, responseFormat, size, style, user);
     }
   }

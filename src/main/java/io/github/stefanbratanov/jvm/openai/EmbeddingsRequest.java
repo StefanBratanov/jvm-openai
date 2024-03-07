@@ -82,12 +82,6 @@ public record EmbeddingsRequest(
     }
 
     public EmbeddingsRequest build() {
-      if (input == null) {
-        throw new IllegalStateException("input must be set");
-      }
-      if (model == null) {
-        throw new IllegalStateException("model must be set");
-      }
       return new EmbeddingsRequest(List.copyOf(input), model, encodingFormat, dimensions, user);
     }
   }

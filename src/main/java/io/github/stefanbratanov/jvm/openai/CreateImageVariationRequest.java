@@ -77,9 +77,6 @@ public record CreateImageVariationRequest(
     }
 
     public CreateImageVariationRequest build() {
-      if (image == null) {
-        throw new IllegalStateException("image must be set");
-      }
       return new CreateImageVariationRequest(image, model, n, responseFormat, size, user);
     }
   }

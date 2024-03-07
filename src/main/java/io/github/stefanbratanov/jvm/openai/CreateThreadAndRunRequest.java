@@ -81,9 +81,6 @@ public record CreateThreadAndRunRequest(
     }
 
     public CreateThreadAndRunRequest build() {
-      if (assistantId == null) {
-        throw new IllegalStateException("assistantId must be set");
-      }
       return new CreateThreadAndRunRequest(
           assistantId, thread, model, instructions, tools, metadata);
     }

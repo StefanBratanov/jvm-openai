@@ -62,9 +62,6 @@ public record CreateMessageRequest(
     }
 
     public CreateMessageRequest build() {
-      if (content == null) {
-        throw new IllegalStateException("content must be set");
-      }
       return new CreateMessageRequest(role, content, fileIds, metadata);
     }
   }

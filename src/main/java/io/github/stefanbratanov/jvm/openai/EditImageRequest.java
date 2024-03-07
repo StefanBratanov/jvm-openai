@@ -99,12 +99,6 @@ public record EditImageRequest(
     }
 
     public EditImageRequest build() {
-      if (image == null) {
-        throw new IllegalStateException("image must be set");
-      }
-      if (prompt == null) {
-        throw new IllegalStateException("prompt must be set");
-      }
       return new EditImageRequest(image, prompt, mask, model, n, size, responseFormat, user);
     }
   }

@@ -84,9 +84,6 @@ public sealed interface Tool
         }
 
         public Function build() {
-          if (name == null) {
-            throw new IllegalStateException("name must be set");
-          }
           return new Function(name, description, parameters);
         }
       }

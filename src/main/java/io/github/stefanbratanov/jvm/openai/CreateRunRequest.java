@@ -83,9 +83,6 @@ public record CreateRunRequest(
     }
 
     public CreateRunRequest build() {
-      if (assistantId == null) {
-        throw new IllegalStateException("assistantId must be set");
-      }
       return new CreateRunRequest(
           assistantId, model, instructions, additionalInstructions, tools, metadata);
     }

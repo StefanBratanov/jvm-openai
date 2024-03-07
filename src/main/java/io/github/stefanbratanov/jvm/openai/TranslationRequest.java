@@ -73,9 +73,6 @@ public record TranslationRequest(
     }
 
     public TranslationRequest build() {
-      if (file == null) {
-        throw new IllegalStateException("file must be set");
-      }
       return new TranslationRequest(file, model, prompt, responseFormat, temperature);
     }
   }
