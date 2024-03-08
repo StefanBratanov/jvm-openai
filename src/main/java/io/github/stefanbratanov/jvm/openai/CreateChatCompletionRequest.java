@@ -6,8 +6,8 @@ import java.util.*;
  * @param toolChoice {@link String} or {@link ToolChoice}
  */
 public record CreateChatCompletionRequest(
-    String model,
     List<ChatMessage> messages,
+    String model,
     Optional<Double> frequencyPenalty,
     Optional<Map<Integer, Integer>> logitBias,
     Optional<Boolean> logprobs,
@@ -43,9 +43,9 @@ public record CreateChatCompletionRequest(
 
     private static final String DEFAULT_MODEL = "gpt-3.5-turbo";
 
-    private String model = DEFAULT_MODEL;
-
     private final List<ChatMessage> messages = new LinkedList<>();
+
+    private String model = DEFAULT_MODEL;
 
     private Optional<Double> frequencyPenalty = Optional.empty();
     private Optional<Map<Integer, Integer>> logitBias = Optional.empty();
@@ -65,14 +65,6 @@ public record CreateChatCompletionRequest(
     private Optional<String> user = Optional.empty();
 
     /**
-     * @param model ID of the model to use
-     */
-    public Builder model(String model) {
-      this.model = model;
-      return this;
-    }
-
-    /**
      * @param message message to append to the list of messages comprising the conversation so far
      */
     public Builder message(ChatMessage message) {
@@ -85,6 +77,14 @@ public record CreateChatCompletionRequest(
      */
     public Builder messages(List<ChatMessage> messages) {
       this.messages.addAll(messages);
+      return this;
+    }
+
+    /**
+     * @param model ID of the model to use
+     */
+    public Builder model(String model) {
+      this.model = model;
       return this;
     }
 
@@ -276,8 +276,8 @@ public record CreateChatCompletionRequest(
 
     public CreateChatCompletionRequest build() {
       return new CreateChatCompletionRequest(
-          model,
           List.copyOf(messages),
+          model,
           frequencyPenalty,
           logitBias,
           logprobs,
