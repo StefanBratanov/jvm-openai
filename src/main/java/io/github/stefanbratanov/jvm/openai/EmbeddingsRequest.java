@@ -82,7 +82,7 @@ public record EmbeddingsRequest(
     }
 
     public EmbeddingsRequest build() {
-      return new EmbeddingsRequest(List.copyOf(input), model, encodingFormat, dimensions, user);
+      return new EmbeddingsRequest(input, model, encodingFormat, dimensions, user);
     }
   }
 }
