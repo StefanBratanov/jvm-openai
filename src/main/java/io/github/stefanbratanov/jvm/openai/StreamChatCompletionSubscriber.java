@@ -6,6 +6,9 @@ public interface StreamChatCompletionSubscriber {
   /** Will be called when a partial response is received */
   void onChunk(ChatCompletionChunk chunk);
 
+  /** Will be called if any exception happens while processing * */
+  void onException(Throwable ex);
+
   /** Will be called when the stream is complete */
   void onComplete();
 }

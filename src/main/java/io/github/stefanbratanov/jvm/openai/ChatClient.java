@@ -74,8 +74,16 @@ public final class ChatClient extends OpenAIClient {
       CreateChatCompletionRequest request, StreamChatCompletionSubscriber subscriber) {
     validateStreamRequest(request);
     HttpRequest httpRequest = createPostRequest(request);
-    getStreamedResponses(httpRequest).forEach(subscriber::onChunk);
-    subscriber.onComplete();
+    CompletableFuture.supplyAsync(() -> getStreamedResponses(httpRequest))
+        .thenAccept(streamedResponses -> streamedResponses.forEach(subscriber::onChunk))
+        .whenComplete(
+            (__, ex) -> {
+              if (ex != null) {
+                subscriber.onException(ex);
+              } else {
+                subscriber.onComplete();
+              }
+            });
   }
 
   private HttpRequest createPostRequest(CreateChatCompletionRequest request) {

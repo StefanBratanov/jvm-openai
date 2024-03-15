@@ -13,7 +13,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockserver.integration.ClientAndServer;
@@ -138,6 +138,11 @@ class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
           }
 
           @Override
+          public void onException(Throwable ex) {
+            Assertions.fail(ex);
+          }
+
+          @Override
           public void onComplete() {
             joinedContentFuture.complete(joinedContent.toString());
           }
@@ -155,7 +160,7 @@ class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
 
     List<Model> models = modelsClient.listModels();
 
-    Assertions.assertThat(models).isNotEmpty();
+    assertThat(models).isNotEmpty();
 
     Model model = modelsClient.retrieveModel("gpt-3.5-turbo-instruct");
 
