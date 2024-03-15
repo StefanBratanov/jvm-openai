@@ -9,6 +9,6 @@ public interface StreamChatCompletionSubscriber {
   /** Will be called if any exception happens while processing * */
   void onException(Throwable ex);
 
-  /** Will be called when the stream is complete */
+  /** Will be called when the stream is complete or an exception has happened */
   void onComplete();
 }

@@ -80,9 +80,8 @@ public final class ChatClient extends OpenAIClient {
             (__, ex) -> {
               if (ex != null) {
                 subscriber.onException(ex);
-              } else {
-                subscriber.onComplete();
               }
+              subscriber.onComplete();
             });
   }
 
