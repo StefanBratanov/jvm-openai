@@ -77,7 +77,7 @@ public final class ChatClient extends OpenAIClient {
     CompletableFuture.supplyAsync(() -> getStreamedResponses(httpRequest))
         .thenAccept(streamedResponses -> streamedResponses.forEach(subscriber::onChunk))
         .whenComplete(
-            (__, ex) -> {
+            (result, ex) -> {
               if (ex != null) {
                 subscriber.onException(ex);
               }
