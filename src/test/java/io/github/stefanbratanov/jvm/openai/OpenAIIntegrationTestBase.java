@@ -4,11 +4,7 @@ import static io.github.stefanbratanov.jvm.openai.TestConstants.OPEN_AI_SPECIFIC
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockserver.mock.OpenAPIExpectation.openAPIExpectation;
 
-import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Duration;
-import java.util.Objects;
 import java.util.concurrent.*;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.AfterAll;
@@ -54,15 +50,6 @@ public class OpenAIIntegrationTestBase {
               }
             });
     mockServer.stop();
-  }
-
-  protected Path getTestResource(String resource) {
-    try {
-      return Paths.get(
-          Objects.requireNonNull(OpenAIIntegrationTestBase.class.getResource(resource)).toURI());
-    } catch (URISyntaxException ex) {
-      throw new RuntimeException(ex);
-    }
   }
 
   protected void awaitCondition(

@@ -1,5 +1,6 @@
 package io.github.stefanbratanov.jvm.openai;
 
+import static io.github.stefanbratanov.jvm.openai.TestUtil.getTestResource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
