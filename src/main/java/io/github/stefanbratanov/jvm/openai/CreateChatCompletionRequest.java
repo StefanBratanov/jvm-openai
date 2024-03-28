@@ -1,5 +1,6 @@
 package io.github.stefanbratanov.jvm.openai;
 
+import io.github.stefanbratanov.jvm.openai.CompletionModel.ContinuousCompletionModel;
 import java.util.*;
 
 /**
@@ -7,7 +8,7 @@ import java.util.*;
  */
 public record CreateChatCompletionRequest(
     List<ChatMessage> messages,
-    String model,
+    CompletionModel model,
     Optional<Double> frequencyPenalty,
     Optional<Map<Integer, Integer>> logitBias,
     Optional<Boolean> logprobs,
@@ -41,11 +42,11 @@ public record CreateChatCompletionRequest(
 
   public static class Builder {
 
-    private static final String DEFAULT_MODEL = "gpt-3.5-turbo";
+    private static final CompletionModel DEFAULT_MODEL = ContinuousCompletionModel.GPT_3_5_TURBO;
 
     private final List<ChatMessage> messages = new LinkedList<>();
 
-    private String model = DEFAULT_MODEL;
+    private CompletionModel model = DEFAULT_MODEL;
 
     private Optional<Double> frequencyPenalty = Optional.empty();
     private Optional<Map<Integer, Integer>> logitBias = Optional.empty();
@@ -82,8 +83,25 @@ public record CreateChatCompletionRequest(
 
     /**
      * @param model ID of the model to use
+     * @deprecated use {@link #model(CompletionModel)} instead
      */
+    @Deprecated
     public Builder model(String model) {
+      return model(CompletionModel.of(model));
+    }
+
+    /**
+     * @param model {@link CompletionModel} to use
+     */
+    public Builder model(CompletionModel model) {
+      this.model = model;
+      return this;
+    }
+
+    /**
+     * @param model {@link ContinuousCompletionModel} to use
+     */
+    public Builder model(ContinuousCompletionModel model) {
       this.model = model;
       return this;
     }

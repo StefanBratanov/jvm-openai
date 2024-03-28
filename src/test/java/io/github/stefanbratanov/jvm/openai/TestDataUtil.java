@@ -31,7 +31,7 @@ public class TestDataUtil {
   public CreateChatCompletionRequest randomCreateChatCompletionRequest() {
     CreateChatCompletionRequest.Builder builder =
         CreateChatCompletionRequest.newBuilder()
-            .model(randomModel())
+            .model(randomCompletionModel())
             .messages(listOf(randomInt(1, 3), this::randomChatMessage))
             .frequencyPenalty(randomDouble(-2.0, 2.0))
             .logitBias(randomLogitBias(randomInt(0, 6)))
@@ -499,21 +499,25 @@ public class TestDataUtil {
   }
 
   private String randomModel() {
+    return randomCompletionModel().getId();
+  }
+
+  private CompletionModel randomCompletionModel() {
     return oneOf(
-        "gpt-4-1106-preview",
-        "gpt-4-vision-preview",
-        "gpt-4",
-        "gpt-4-0314",
-        "gpt-4-0613",
-        "gpt-4-32k",
-        "gpt-4-32k-0314",
-        "gpt-4-32k-0613",
-        "gpt-3.5-turbo",
-        "gpt-3.5-turbo-16k",
-        "gpt-3.5-turbo-0301",
-        "gpt-3.5-turbo-0613",
-        "gpt-3.5-turbo-1106",
-        "gpt-3.5-turbo-16k-0613");
+        CompletionModel.of("gpt-4-1106-preview"),
+        CompletionModel.of("gpt-4-vision-preview"),
+        CompletionModel.of("gpt-4"),
+        CompletionModel.of("gpt-4-0314"),
+        CompletionModel.of("gpt-4-0613"),
+        CompletionModel.of("gpt-4-32k"),
+        CompletionModel.of("gpt-4-32k-0314"),
+        CompletionModel.of("gpt-4-32k-0613"),
+        CompletionModel.of("gpt-3.5-turbo"),
+        CompletionModel.of("gpt-3.5-turbo-16k"),
+        CompletionModel.of("gpt-3.5-turbo-0301"),
+        CompletionModel.of("gpt-3.5-turbo-0613"),
+        CompletionModel.of("gpt-3.5-turbo-1106"),
+        CompletionModel.of("gpt-3.5-turbo-16k-0613"));
   }
 
   private String randomTtsModel() {

@@ -35,7 +35,7 @@ OpenAI openAI = OpenAI.newBuilder(System.getenv("OPENAI_API_KEY")).build();
 
 ChatClient chatClient = openAI.chatClient();
 CreateChatCompletionRequest createChatCompletionRequest = CreateChatCompletionRequest.newBuilder()
-    .model("gpt-3.5-turbo")
+    .model(ContinuousCompletionModel.GPT_3_5_TURBO)
     .message(ChatMessage.userMessage("Who won the world series in 2020?"))
     .build();
 ChatCompletion chatCompletion = chatClient.createChatCompletion(createChatCompletionRequest);
@@ -46,7 +46,7 @@ ChatCompletion chatCompletion = chatClient.createChatCompletion(createChatComple
 | API                                                                       | Status |
 |---------------------------------------------------------------------------|:------:|
 | [Audio](https://platform.openai.com/docs/api-reference/audio)             |   ✔️   |
-| [Chat](https://platform.openai.com/docs/api-reference/chat)               | ️  ✔️  |
+| [Chat](https://platform.openai.com/docs/api-reference/chat)               |   ✔️   |
 | [Embeddings](https://platform.openai.com/docs/api-reference/embeddings)   |   ✔️   |
 | [Fine-tuning](https://platform.openai.com/docs/api-reference/fine-tuning) |   ✔️   |
 | [Files](https://platform.openai.com/docs/api-reference/files)             |   ✔️   |
@@ -59,7 +59,7 @@ ChatCompletion chatCompletion = chatClient.createChatCompletion(createChatComple
 | API                                                                     | Status |
 |-------------------------------------------------------------------------|:------:|
 | [Assistants](https://platform.openai.com/docs/api-reference/assistants) |   ✔️   |
-| [Threads](https://platform.openai.com/docs/api-reference/threads)       | ️  ✔️  |
+| [Threads](https://platform.openai.com/docs/api-reference/threads)       |   ✔️   |
 | [Messages](https://platform.openai.com/docs/api-reference/messages)     |   ✔️   |
 | [Runs](https://platform.openai.com/docs/api-reference/runs)             |   ✔️   |
 
@@ -92,7 +92,7 @@ OpenAI openAI = OpenAI.newBuilder(System.getenv("OPENAI_API_KEY"))
 ```java
 ChatClient chatClient = openAI.chatClient();
 CreateChatCompletionRequest request = CreateChatCompletionRequest.newBuilder()
-    .model("gpt-3.5-turbo")
+    .model(ContinuousCompletionModel.GPT_3_5_TURBO)
     .message(ChatMessage.userMessage("Who won the world series in 2020?"))
     .build();
 CompletableFuture<ChatCompletion> chatCompletion = chatClient.createChatCompletionAsync(request);
