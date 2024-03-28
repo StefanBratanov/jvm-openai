@@ -57,6 +57,16 @@ public record CreateThreadAndRunRequest(
     }
 
     /**
+     * @param model {@link OpenAIModel} to be used to execute this run. If a value is provided here,
+     *     it will override the model associated with the assistant. If not, the model associated
+     *     with the assistant will be used.
+     */
+    public Builder model(OpenAIModel model) {
+      this.model = Optional.of(model.getId());
+      return this;
+    }
+
+    /**
      * @param instructions Overrides the instructions of the assistant. This is useful for modifying
      *     the behavior on a per-run basis.
      */

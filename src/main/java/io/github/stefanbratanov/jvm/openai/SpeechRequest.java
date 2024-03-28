@@ -15,7 +15,7 @@ public record SpeechRequest(
 
   public static class Builder {
 
-    private static final String DEFAULT_MODEL = "tts-1";
+    private static final String DEFAULT_MODEL = OpenAIModel.TTS_1.getId();
     private static final String DEFAULT_VOICE = "alloy";
 
     private String model = DEFAULT_MODEL;
@@ -30,6 +30,15 @@ public record SpeechRequest(
      */
     public Builder model(String model) {
       this.model = model;
+      return this;
+    }
+
+    /**
+     * @param model {@link OpenAIModel} to use. {@link OpenAIModel#TTS_1} and {@link
+     *     OpenAIModel#TTS_1_HD} are available.
+     */
+    public Builder model(OpenAIModel model) {
+      this.model = model.getId();
       return this;
     }
 

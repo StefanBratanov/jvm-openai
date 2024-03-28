@@ -45,6 +45,15 @@ public record ModerationRequest(List<String> input, Optional<String> model) {
       return this;
     }
 
+    /**
+     * @param model Two content moderations models are available: {@link
+     *     OpenAIModel#TEXT_MODERATION_LATEST} and {@link OpenAIModel#TEXT_MODERATION_STABLE}.
+     */
+    public Builder model(OpenAIModel model) {
+      this.model = Optional.of(model.getId());
+      return this;
+    }
+
     public ModerationRequest build() {
       return new ModerationRequest(List.copyOf(input), model);
     }

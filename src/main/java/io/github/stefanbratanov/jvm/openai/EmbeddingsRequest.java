@@ -56,6 +56,14 @@ public record EmbeddingsRequest(
     }
 
     /**
+     * @param model {@link OpenAIModel} to use
+     */
+    public Builder model(OpenAIModel model) {
+      this.model = model.getId();
+      return this;
+    }
+
+    /**
      * @param encodingFormat The format to return the embeddings in. Can be either float or base64.
      */
     public Builder encodingFormat(String encodingFormat) {

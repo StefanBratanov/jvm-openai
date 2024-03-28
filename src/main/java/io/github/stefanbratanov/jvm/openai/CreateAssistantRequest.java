@@ -20,7 +20,7 @@ public record CreateAssistantRequest(
 
   public static class Builder {
 
-    private static final String DEFAULT_MODEL = "gpt-4";
+    private static final String DEFAULT_MODEL = OpenAIModel.GPT_4.getId();
 
     private String model = DEFAULT_MODEL;
 
@@ -38,6 +38,14 @@ public record CreateAssistantRequest(
      */
     public Builder model(String model) {
       this.model = model;
+      return this;
+    }
+
+    /**
+     * @param model {@link OpenAIModel} to use
+     */
+    public Builder model(OpenAIModel model) {
+      this.model = model.getId();
       return this;
     }
 

@@ -42,6 +42,15 @@ public record CreateImageVariationRequest(
     }
 
     /**
+     * @param model {@link OpenAIModel} to use for image generation. Only {@link
+     *     OpenAIModel#DALL_E_2} is supported at this time.
+     */
+    public Builder model(OpenAIModel model) {
+      this.model = Optional.of(model.getId());
+      return this;
+    }
+
+    /**
      * @param n The number of images to generate. Must be between 1 and 10. For dall-e-3, only n=1
      *     is supported.
      */

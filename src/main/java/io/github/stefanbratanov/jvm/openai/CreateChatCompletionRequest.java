@@ -41,7 +41,7 @@ public record CreateChatCompletionRequest(
 
   public static class Builder {
 
-    private static final String DEFAULT_MODEL = "gpt-3.5-turbo";
+    private static final String DEFAULT_MODEL = OpenAIModel.GPT_3_5_TURBO.getId();
 
     private final List<ChatMessage> messages = new LinkedList<>();
 
@@ -85,6 +85,14 @@ public record CreateChatCompletionRequest(
      */
     public Builder model(String model) {
       this.model = model;
+      return this;
+    }
+
+    /**
+     * @param model {@link OpenAIModel} to use
+     */
+    public Builder model(OpenAIModel model) {
+      this.model = model.getId();
       return this;
     }
 
