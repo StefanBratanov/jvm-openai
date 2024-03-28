@@ -7,12 +7,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
-public class DeserializationTest {
+class DeserializationTest {
 
   private final ObjectMapper objectMapper = ObjectMapperSingleton.getInstance();
 
   @Test
-  public void deserializesChatCompletionChunk() throws JsonProcessingException {
+  void deserializesChatCompletionChunk() throws JsonProcessingException {
     ChatCompletionChunk result =
         objectMapper.readValue(
             getStringResource("/chat-completion-chunk.json"), ChatCompletionChunk.class);
@@ -26,7 +26,7 @@ public class DeserializationTest {
             choice -> {
               assertThat(choice.index()).isZero();
               assertThat(choice.delta().role()).isEqualTo("assistant");
-              assertThat(choice.delta().content()).isEqualTo("");
+              assertThat(choice.delta().content()).isEmpty();
               assertThat(choice.finishReason()).isNull();
             });
   }
