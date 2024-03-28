@@ -276,6 +276,11 @@ public class TestDataUtil {
         randomString(6),
         randomLong(1, 31_000),
         randomString(8),
+        oneOf("in_progress", "incomplete", "completed"),
+        new ThreadMessage.IncompleteDetails(
+            oneOf("content_filter", "max_tokens", "run_cancelled", "run_expired", "run_failed")),
+        randomLong(1, 25_000),
+        randomLong(1, 24_000),
         oneOf("user", "assistant"),
         listOf(
             randomInt(1, 8),

@@ -11,12 +11,18 @@ public record ThreadMessage(
     String id,
     long createdAt,
     String threadId,
+    String status,
+    IncompleteDetails incompleteDetails,
+    Long completedAt,
+    Long incompleteAt,
     String role,
     List<Content> content,
     String assistantId,
     String runId,
     List<String> fileIds,
     Map<String, String> metadata) {
+
+  public record IncompleteDetails(String reason) {}
 
   @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
   @JsonSubTypes({
