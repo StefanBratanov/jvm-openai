@@ -265,6 +265,7 @@ public class TestDataUtil {
 
   public CreateMessageRequest randomCreateMessageRequest() {
     return CreateMessageRequest.newBuilder()
+        .role(oneOf("user", "assistant"))
         .content(randomString(1, 32768))
         .fileIds(randomFileIds(10))
         .metadata(randomMetadata())
@@ -308,6 +309,7 @@ public class TestDataUtil {
         .additionalInstructions(randomString(5, 50))
         .tools(listOf(randomInt(1, 20), this::randomTool))
         .metadata(randomMetadata())
+        .temperature(randomDouble(0, 2))
         .build();
   }
 
@@ -352,7 +354,8 @@ public class TestDataUtil {
         listOf(randomInt(1, 20), this::randomTool),
         randomFileIds(20),
         randomMetadata(),
-        randomUsage());
+        randomUsage(),
+        randomDouble(0, 2));
   }
 
   public ThreadRunStep randomThreadRunStep() {

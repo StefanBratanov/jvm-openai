@@ -10,7 +10,8 @@ public record CreateRunRequest(
     Optional<String> instructions,
     Optional<String> additionalInstructions,
     Optional<List<Tool>> tools,
-    Optional<Map<String, String>> metadata) {
+    Optional<Map<String, String>> metadata,
+    Optional<Double> temperature) {
 
   public static Builder newBuilder() {
     return new Builder();
@@ -25,6 +26,7 @@ public record CreateRunRequest(
     private Optional<String> additionalInstructions = Optional.empty();
     private Optional<List<Tool>> tools = Optional.empty();
     private Optional<Map<String, String>> metadata = Optional.empty();
+    private Optional<Double> temperature = Optional.empty();
 
     /**
      * @param assistantId The ID of the assistant to use to execute this run.
@@ -82,9 +84,19 @@ public record CreateRunRequest(
       return this;
     }
 
+    /**
+     * @param temperature What sampling temperature to use, between 0 and 2. Higher values like 0.8
+     *     will make the output more random, while lower values like 0.2 will make it more focused
+     *     and deterministic.
+     */
+    public Builder temperature(Double temperature) {
+      this.temperature = Optional.of(temperature);
+      return this;
+    }
+
     public CreateRunRequest build() {
       return new CreateRunRequest(
-          assistantId, model, instructions, additionalInstructions, tools, metadata);
+          assistantId, model, instructions, additionalInstructions, tools, metadata, temperature);
     }
   }
 }

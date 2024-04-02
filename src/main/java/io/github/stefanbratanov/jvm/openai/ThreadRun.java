@@ -22,7 +22,8 @@ public record ThreadRun(
     List<Tool> tools,
     List<String> fileIds,
     Map<String, String> metadata,
-    Usage usage) {
+    Usage usage,
+    Double temperature) {
 
   /** Details on the action required to continue the run. */
   public record RequiredAction(String type, SubmitToolOutputs submitToolOutputs) {
