@@ -64,12 +64,13 @@ public final class AssistantsClient extends OpenAIAssistantsClient {
    *
    * @throws OpenAIException in case of API errors
    */
-  public PaginatedAssistants listAssistants(PaginationQueryParameters queryParameters) {
+  public PaginatedAssistants listAssistants(PaginationQueryParameters paginationQueryParameters) {
     HttpRequest httpRequest =
         newHttpRequestBuilder()
             .uri(
                 baseUrl.resolve(
-                    Endpoint.ASSISTANTS.getPath() + createQueryParameters(queryParameters)))
+                    Endpoint.ASSISTANTS.getPath()
+                        + createQueryParameters(paginationQueryParameters)))
             .GET()
             .build();
     HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
@@ -85,7 +86,7 @@ public final class AssistantsClient extends OpenAIAssistantsClient {
    * @throws OpenAIException in case of API errors
    */
   public PaginatedAssistantFiles listAssistantFiles(
-      String assistantId, PaginationQueryParameters queryParameters) {
+      String assistantId, PaginationQueryParameters paginationQueryParameters) {
     HttpRequest httpRequest =
         newHttpRequestBuilder()
             .uri(
@@ -94,7 +95,7 @@ public final class AssistantsClient extends OpenAIAssistantsClient {
                         + "/"
                         + assistantId
                         + FILES_SEGMENT
-                        + createQueryParameters(queryParameters)))
+                        + createQueryParameters(paginationQueryParameters)))
             .GET()
             .build();
     HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);

@@ -3,6 +3,8 @@ package io.github.stefanbratanov.jvm.openai;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.time.Duration;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -25,16 +27,19 @@ class OpenAIAssistantsClient extends OpenAIClient {
     return super.newHttpRequestBuilder(headers).header("OpenAI-Beta", "assistants=v1");
   }
 
-  String createQueryParameters(PaginationQueryParameters queryParameters) {
-    return createQueryParameters(
-        Map.of(
-            "limit",
-            queryParameters.limit(),
-            "order",
-            queryParameters.order(),
-            "after",
-            queryParameters.after(),
-            "before",
-            queryParameters.before()));
+  String createQueryParameters(PaginationQueryParameters paginationQueryParameters) {
+    return createQueryParameters(paginationQueryParameters, Collections.emptyMap());
+  }
+
+  String createQueryParameters(
+      PaginationQueryParameters paginationQueryParameters,
+      Map<String, Optional<?>> additionalQueryParameters) {
+    Map<String, Optional<?>> queryParameters = new HashMap<>();
+    queryParameters.put("limit", paginationQueryParameters.limit());
+    queryParameters.put("order", paginationQueryParameters.order());
+    queryParameters.put("after", paginationQueryParameters.after());
+    queryParameters.put("before", paginationQueryParameters.before());
+    queryParameters.putAll(additionalQueryParameters);
+    return createQueryParameters(queryParameters);
   }
 }

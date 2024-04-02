@@ -6,6 +6,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -48,10 +49,13 @@ public final class MessagesClient extends OpenAIAssistantsClient {
   /**
    * Returns a list of messages for a given thread.
    *
+   * @param runId Filter messages by the run ID that generated them.
    * @throws OpenAIException in case of API errors
    */
   public PaginatedThreadMessages listMessages(
-      String threadId, PaginationQueryParameters queryParameters) {
+      String threadId,
+      PaginationQueryParameters paginationQueryParameters,
+      Optional<String> runId) {
     HttpRequest httpRequest =
         newHttpRequestBuilder()
             .uri(
@@ -60,7 +64,8 @@ public final class MessagesClient extends OpenAIAssistantsClient {
                         + "/"
                         + threadId
                         + MESSAGES_SEGMENT
-                        + createQueryParameters(queryParameters)))
+                        + createQueryParameters(
+                            paginationQueryParameters, Map.of("run_id", runId))))
             .GET()
             .build();
     HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
@@ -76,7 +81,7 @@ public final class MessagesClient extends OpenAIAssistantsClient {
    * @throws OpenAIException in case of API errors
    */
   public PaginatedThreadMessageFiles listMessageFiles(
-      String threadId, String messageId, PaginationQueryParameters queryParameters) {
+      String threadId, String messageId, PaginationQueryParameters paginationQueryParameters) {
     HttpRequest httpRequest =
         newHttpRequestBuilder()
             .uri(
@@ -88,7 +93,7 @@ public final class MessagesClient extends OpenAIAssistantsClient {
                         + "/"
                         + messageId
                         + FILES_SEGMENT
-                        + createQueryParameters(queryParameters)))
+                        + createQueryParameters(paginationQueryParameters)))
             .GET()
             .build();
     HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);

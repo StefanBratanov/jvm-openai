@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -74,7 +75,8 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
     assertThat(retrievedMessage).isEqualTo(createdMessage);
 
     MessagesClient.PaginatedThreadMessages paginatedMessages =
-        messagesClient.listMessages(thread.id(), PaginationQueryParameters.none());
+        messagesClient.listMessages(
+            thread.id(), PaginationQueryParameters.none(), Optional.empty());
 
     assertThat(paginatedMessages.hasMore()).isFalse();
     assertThat(paginatedMessages.firstId()).isEqualTo(createdMessage.id());

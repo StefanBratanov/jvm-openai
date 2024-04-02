@@ -65,7 +65,8 @@ public final class RunsClient extends OpenAIAssistantsClient {
    *
    * @throws OpenAIException in case of API errors
    */
-  public PaginatedThreadRuns listRuns(String threadId, PaginationQueryParameters queryParameters) {
+  public PaginatedThreadRuns listRuns(
+      String threadId, PaginationQueryParameters paginationQueryParameters) {
     HttpRequest httpRequest =
         newHttpRequestBuilder()
             .uri(
@@ -74,7 +75,7 @@ public final class RunsClient extends OpenAIAssistantsClient {
                         + "/"
                         + threadId
                         + RUNS_SEGMENT
-                        + createQueryParameters(queryParameters)))
+                        + createQueryParameters(paginationQueryParameters)))
             .GET()
             .build();
     HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
@@ -90,7 +91,7 @@ public final class RunsClient extends OpenAIAssistantsClient {
    * @throws OpenAIException in case of API errors
    */
   public PaginatedThreadRunSteps listRunSteps(
-      String threadId, String runId, PaginationQueryParameters queryParameters) {
+      String threadId, String runId, PaginationQueryParameters paginationQueryParameters) {
     HttpRequest httpRequest =
         newHttpRequestBuilder()
             .uri(
@@ -102,7 +103,7 @@ public final class RunsClient extends OpenAIAssistantsClient {
                         + "/"
                         + runId
                         + STEPS_SEGMENT
-                        + createQueryParameters(queryParameters)))
+                        + createQueryParameters(paginationQueryParameters)))
             .GET()
             .build();
     HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
