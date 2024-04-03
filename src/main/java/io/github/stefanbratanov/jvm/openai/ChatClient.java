@@ -65,11 +65,11 @@ public final class ChatClient extends OpenAIClient {
 
   /**
    * Same as {@link #streamChatCompletion(CreateChatCompletionRequest)} but can pass a {@link
-   * StreamChatCompletionSubscriber} implementation instead of using a {@link
+   * ChatCompletionStreamSubscriber} implementation instead of using a {@link
    * Stream<ChatCompletionChunk>}
    */
   public void streamChatCompletion(
-      CreateChatCompletionRequest request, StreamChatCompletionSubscriber subscriber) {
+      CreateChatCompletionRequest request, ChatCompletionStreamSubscriber subscriber) {
     validateStreamRequest(request);
     HttpRequest httpRequest = createPostRequest(request);
     CompletableFuture.supplyAsync(() -> getStreamedResponses(httpRequest))

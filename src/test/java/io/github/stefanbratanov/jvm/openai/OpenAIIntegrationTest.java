@@ -125,7 +125,7 @@ class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
     CompletableFuture<String> joinedContentFuture = new CompletableFuture<>();
     chatClient.streamChatCompletion(
         streamRequest,
-        new StreamChatCompletionSubscriber() {
+        new ChatCompletionStreamSubscriber() {
           private final StringBuilder joinedContent = new StringBuilder();
 
           @Override

@@ -1,7 +1,7 @@
 package io.github.stefanbratanov.jvm.openai;
 
 /** An interface which is used to subscribe to streamed partial responses */
-public interface StreamChatCompletionSubscriber {
+public interface ChatCompletionStreamSubscriber {
 
   /** Will be called when a partial response is received */
   void onChunk(ChatCompletionChunk chunk);

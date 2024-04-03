@@ -108,7 +108,7 @@ CreateChatCompletionRequest request = CreateChatCompletionRequest.newBuilder()
 // with java.util.stream.Stream
 chatClient.streamChatCompletion(request).forEach(System.out::println);
 // with subscriber
-chatClient.streamChatCompletion(request, new StreamChatCompletionSubscriber() {
+chatClient.streamChatCompletion(request, new ChatCompletionStreamSubscriber() {
     @Override
     public void onChunk(ChatCompletionChunk chunk) {
         System.out.println(chunk);
