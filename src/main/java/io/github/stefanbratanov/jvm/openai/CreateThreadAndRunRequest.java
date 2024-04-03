@@ -10,7 +10,9 @@ public record CreateThreadAndRunRequest(
     Optional<String> model,
     Optional<String> instructions,
     Optional<List<Tool>> tools,
-    Optional<Map<String, String>> metadata) {
+    Optional<Map<String, String>> metadata,
+    Optional<Double> temperature,
+    Optional<Boolean> stream) {
 
   public static Builder newBuilder() {
     return new Builder();
@@ -25,6 +27,8 @@ public record CreateThreadAndRunRequest(
     private Optional<String> instructions = Optional.empty();
     private Optional<List<Tool>> tools = Optional.empty();
     private Optional<Map<String, String>> metadata = Optional.empty();
+    private Optional<Double> temperature = Optional.empty();
+    private Optional<Boolean> stream = Optional.empty();
 
     /**
      * @param assistantId The ID of the assistant to use to execute this run.
@@ -80,9 +84,28 @@ public record CreateThreadAndRunRequest(
       return this;
     }
 
+    /**
+     * @param temperature What sampling temperature to use, between 0 and 2. Higher values like 0.8
+     *     will make the output more random, while lower values like 0.2 will make it more focused
+     *     and deterministic.
+     */
+    public Builder temperature(Double temperature) {
+      this.temperature = Optional.of(temperature);
+      return this;
+    }
+
+    /**
+     * @param stream If true, returns a stream of events that happen during the Run as server-sent
+     *     events
+     */
+    public Builder stream(Boolean stream) {
+      this.stream = Optional.of(stream);
+      return this;
+    }
+
     public CreateThreadAndRunRequest build() {
       return new CreateThreadAndRunRequest(
-          assistantId, thread, model, instructions, tools, metadata);
+          assistantId, thread, model, instructions, tools, metadata, temperature, stream);
     }
   }
 }

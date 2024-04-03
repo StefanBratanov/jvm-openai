@@ -113,6 +113,11 @@ chatClient.streamChatCompletion(request, new StreamChatCompletionSubscriber() {
     public void onChunk(ChatCompletionChunk chunk) {
         System.out.println(chunk);
     }
+
+    @Override
+    public void onException(Throwable ex) {
+        // ...
+    }
     
     @Override
     public void onComplete() {

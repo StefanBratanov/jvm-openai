@@ -11,7 +11,8 @@ public record CreateRunRequest(
     Optional<String> additionalInstructions,
     Optional<List<Tool>> tools,
     Optional<Map<String, String>> metadata,
-    Optional<Double> temperature) {
+    Optional<Double> temperature,
+    Optional<Boolean> stream) {
 
   public static Builder newBuilder() {
     return new Builder();
@@ -27,6 +28,7 @@ public record CreateRunRequest(
     private Optional<List<Tool>> tools = Optional.empty();
     private Optional<Map<String, String>> metadata = Optional.empty();
     private Optional<Double> temperature = Optional.empty();
+    private Optional<Boolean> stream = Optional.empty();
 
     /**
      * @param assistantId The ID of the assistant to use to execute this run.
@@ -94,9 +96,25 @@ public record CreateRunRequest(
       return this;
     }
 
+    /**
+     * @param stream If true, returns a stream of events that happen during the Run as server-sent
+     *     events
+     */
+    public Builder stream(Boolean stream) {
+      this.stream = Optional.of(stream);
+      return this;
+    }
+
     public CreateRunRequest build() {
       return new CreateRunRequest(
-          assistantId, model, instructions, additionalInstructions, tools, metadata, temperature);
+          assistantId,
+          model,
+          instructions,
+          additionalInstructions,
+          tools,
+          metadata,
+          temperature,
+          stream);
     }
   }
 }

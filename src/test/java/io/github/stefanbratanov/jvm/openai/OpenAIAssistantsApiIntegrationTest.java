@@ -290,12 +290,14 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
     assertThat(modifiedRun.metadata()).isEqualTo(METADATA);
 
     SubmitToolOutputsRequest submitToolOutputsRequest =
-        new SubmitToolOutputsRequest(
-            List.of(
-                SubmitToolOutputsRequest.ToolOutput.newBuilder()
-                    .toolCallId("call_abc123")
-                    .output("28C")
-                    .build()));
+        SubmitToolOutputsRequest.newBuilder()
+            .toolOutputs(
+                List.of(
+                    SubmitToolOutputsRequest.ToolOutput.newBuilder()
+                        .toolCallId("call_abc123")
+                        .output("28C")
+                        .build()))
+            .build();
 
     OpenAIException submitToolOutputException =
         assertThrows(

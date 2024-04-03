@@ -310,6 +310,7 @@ public class TestDataUtil {
         .tools(listOf(randomInt(1, 20), this::randomTool))
         .metadata(randomMetadata())
         .temperature(randomDouble(0, 2))
+        .stream(randomBoolean())
         .build();
   }
 
@@ -321,6 +322,8 @@ public class TestDataUtil {
         .instructions(randomString(10, 100))
         .tools(listOf(randomInt(1, 20), this::randomTool))
         .metadata(randomMetadata())
+        .temperature(randomDouble(0, 2))
+        .stream(randomBoolean())
         .build();
   }
 
@@ -379,14 +382,17 @@ public class TestDataUtil {
   }
 
   public SubmitToolOutputsRequest randomSubmitToolOutputsRequest() {
-    return new SubmitToolOutputsRequest(
-        listOf(
-            randomInt(1, 5),
-            () ->
-                SubmitToolOutputsRequest.ToolOutput.newBuilder()
-                    .toolCallId(randomString(6))
-                    .output(randomString(5, 20))
-                    .build()));
+    return SubmitToolOutputsRequest.newBuilder()
+        .toolOutputs(
+            listOf(
+                randomInt(1, 5),
+                () ->
+                    SubmitToolOutputsRequest.ToolOutput.newBuilder()
+                        .toolCallId(randomString(6))
+                        .output(randomString(5, 20))
+                        .build()))
+        .stream(randomBoolean())
+        .build();
   }
 
   private StepDetails randomStepDetails() {

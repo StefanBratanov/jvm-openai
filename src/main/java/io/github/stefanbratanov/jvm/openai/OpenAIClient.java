@@ -22,6 +22,8 @@ import java.util.stream.Stream;
  */
 abstract class OpenAIClient {
 
+  private static final String STREAM_TERMINATION = "data: [DONE]";
+
   private final ObjectMapper objectMapper = ObjectMapperSingleton.getInstance();
 
   private final String[] authenticationHeaders;
@@ -94,6 +96,13 @@ abstract class OpenAIClient {
               validateHttpResponse(httpResponse);
               return httpResponse;
             });
+  }
+
+  Stream<String> streamServerSentEvents(HttpRequest httpRequest) {
+    return sendHttpRequest(httpRequest, HttpResponse.BodyHandlers.ofLines())
+        .body()
+        .filter(sseEvent -> !sseEvent.isBlank())
+        .takeWhile(sseEvent -> !sseEvent.contains(STREAM_TERMINATION));
   }
 
   void validateHttpResponse(HttpResponse<?> httpResponse) {

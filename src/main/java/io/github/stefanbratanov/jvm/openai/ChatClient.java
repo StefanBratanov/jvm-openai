@@ -16,8 +16,6 @@ import java.util.stream.Stream;
  */
 public final class ChatClient extends OpenAIClient {
 
-  private static final String STREAM_TERMINATION = "data: [DONE]";
-
   private final URI endpoint;
 
   ChatClient(
@@ -103,10 +101,7 @@ public final class ChatClient extends OpenAIClient {
   }
 
   private Stream<ChatCompletionChunk> getStreamedResponses(HttpRequest httpRequest) {
-    return sendHttpRequest(httpRequest, HttpResponse.BodyHandlers.ofLines())
-        .body()
-        .filter(sseEvent -> !sseEvent.isBlank())
-        .takeWhile(sseEvent -> !sseEvent.equals(STREAM_TERMINATION))
+    return streamServerSentEvents(httpRequest)
         .map(
             sseEvent -> {
               String chatChunkResponse = sseEvent.substring(sseEvent.indexOf("{"));

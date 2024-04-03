@@ -1,9 +1,52 @@
 package io.github.stefanbratanov.jvm.openai;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-public record SubmitToolOutputsRequest(List<ToolOutput> toolOutputs) {
+public record SubmitToolOutputsRequest(List<ToolOutput> toolOutputs, Optional<Boolean> stream) {
+
+  public static Builder newBuilder() {
+    return new Builder();
+  }
+
+  public static class Builder {
+
+    private final List<ToolOutput> toolOutputs = new LinkedList<>();
+
+    private Optional<Boolean> stream = Optional.empty();
+
+    /**
+     * @param toolOutput Tool output to append to the list of tools for which the outputs are being
+     *     submitted.
+     */
+    public Builder toolOutput(ToolOutput toolOutput) {
+      toolOutputs.add(toolOutput);
+      return this;
+    }
+
+    /**
+     * @param toolOutputs Tool outputs to append to the list of tools for which the outputs are
+     *     being submitted.
+     */
+    public Builder toolOutputs(List<ToolOutput> toolOutputs) {
+      this.toolOutputs.addAll(toolOutputs);
+      return this;
+    }
+
+    /**
+     * @param stream If true, returns a stream of events that happen during the Run as server-sent
+     *     events
+     */
+    public Builder stream(boolean stream) {
+      this.stream = Optional.of(stream);
+      return this;
+    }
+
+    public SubmitToolOutputsRequest build() {
+      return new SubmitToolOutputsRequest(List.copyOf(toolOutputs), stream);
+    }
+  }
 
   public record ToolOutput(Optional<String> toolCallId, Optional<String> output) {
 
