@@ -154,7 +154,7 @@ public class TestDataUtil {
   public CreateImageRequest randomCreateImageRequest() {
     return CreateImageRequest.newBuilder()
         .prompt(randomString(10, 1000))
-        .model(oneOf("dall-e-2", "dall-e-3"))
+        .model(oneOf(OpenAIModel.DALL_E_2, OpenAIModel.DALL_E_3))
         .n(randomInt(1, 10))
         .quality(oneOf("standard", "hd"))
         .responseFormat(oneOf("url", "b64_json"))
@@ -177,7 +177,9 @@ public class TestDataUtil {
     runOne(
         () -> builder.input(randomString(10)),
         () -> builder.inputs(listOf(randomInt(1, 5), () -> randomString(10))));
-    return builder.model(oneOf("text-moderation-latest", "text-moderation-stable")).build();
+    return builder
+        .model(oneOf(OpenAIModel.TEXT_MODERATION_LATEST, OpenAIModel.TEXT_MODERATION_STABLE))
+        .build();
   }
 
   public Moderation randomModeration() {
@@ -526,8 +528,8 @@ public class TestDataUtil {
         "gpt-3.5-turbo-16k-0613");
   }
 
-  private String randomTtsModel() {
-    return oneOf("tts-1", "tts-1-hd");
+  private OpenAIModel randomTtsModel() {
+    return oneOf(OpenAIModel.TTS_1, OpenAIModel.TTS_1_HD);
   }
 
   private String randomFinishReason() {

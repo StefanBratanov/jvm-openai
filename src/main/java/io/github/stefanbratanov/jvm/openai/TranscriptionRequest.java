@@ -19,7 +19,7 @@ public record TranscriptionRequest(
 
   public static class Builder {
 
-    private static final String DEFAULT_MODEL = "whisper-1";
+    private static final String DEFAULT_MODEL = OpenAIModel.WHISPER_1.getId();
 
     private Path file;
     private String model = DEFAULT_MODEL;
@@ -43,6 +43,14 @@ public record TranscriptionRequest(
      */
     public Builder model(String model) {
       this.model = model;
+      return this;
+    }
+
+    /**
+     * @param model {@link OpenAIModel} to use
+     */
+    public Builder model(OpenAIModel model) {
+      this.model = model.getId();
       return this;
     }
 

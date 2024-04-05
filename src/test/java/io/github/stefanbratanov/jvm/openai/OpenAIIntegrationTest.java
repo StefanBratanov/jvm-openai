@@ -174,7 +174,7 @@ class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
 
     SpeechRequest speechRequest =
         SpeechRequest.newBuilder()
-            .model("tts-1")
+            .model(OpenAIModel.TTS_1)
             .input("The quick brown fox jumped over the lazy dog.")
             .voice("alloy")
             .build();
@@ -190,7 +190,7 @@ class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
     TranscriptionRequest transcriptionRequest =
         TranscriptionRequest.newBuilder()
             .file(speech)
-            .model("whisper-1")
+            .model(OpenAIModel.WHISPER_1)
             .responseFormat("text")
             .build();
 
@@ -204,7 +204,7 @@ class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
     TranslationRequest translationRequest =
         TranslationRequest.newBuilder()
             .file(greeting)
-            .model("whisper-1")
+            .model(OpenAIModel.WHISPER_1)
             .responseFormat("json")
             .build();
 
@@ -311,7 +311,7 @@ class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
     CreateFineTuningJobRequest createFineTuningJobRequest =
         CreateFineTuningJobRequest.newBuilder()
             .trainingFile("123abc")
-            .model("gpt-3.5-turbo")
+            .model(OpenAIModel.GPT_3_5_TURBO)
             .build();
 
     FineTuningJob createdFineTuningJob =

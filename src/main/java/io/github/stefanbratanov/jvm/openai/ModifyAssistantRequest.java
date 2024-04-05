@@ -39,6 +39,14 @@ public record ModifyAssistantRequest(
     }
 
     /**
+     * @param model {@link OpenAIModel} to use.
+     */
+    public Builder model(OpenAIModel model) {
+      this.model = Optional.of(model.getId());
+      return this;
+    }
+
+    /**
      * @param name The name of the assistant. The maximum length is 256 characters.
      */
     public Builder name(String name) {

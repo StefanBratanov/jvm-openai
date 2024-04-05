@@ -105,6 +105,14 @@ public record CreateFineTuningJobRequest(
     }
 
     /**
+     * @param model {@link OpenAIModel} to fine-tune
+     */
+    public Builder model(OpenAIModel model) {
+      this.model = model.getId();
+      return this;
+    }
+
+    /**
      * @param trainingFile The ID of an uploaded file that contains training data. Your dataset must
      *     be formatted as a JSONL file. Additionally, you must upload your file with the purpose
      *     fine-tune.
