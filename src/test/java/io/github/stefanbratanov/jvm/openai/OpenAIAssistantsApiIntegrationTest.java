@@ -10,7 +10,9 @@ import java.util.Map;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 
+@EnabledIfEnvironmentVariable(named = "OPENAI_API_KEY", matches = ".*\\S.*")
 class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
 
   private static final Map<String, String> METADATA = Map.of("modified", "true", "user", "abc123");

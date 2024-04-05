@@ -14,7 +14,7 @@ package io.github.stefanbratanov.jvm.openai;
  */
 public enum OpenAIModel {
 
-  // GPT-4 and GPT-4 Turbo (https://platform.openai.com/docs/models/gpt-3-5-turbo)
+  // GPT-4 and GPT-4 Turbo (https://platform.openai.com/docs/models/gpt-4-and-gpt-4-turbo)
   GPT_4("gpt-4"),
   GPT_4_TURBO_PREVIEW("gpt-4-turbo-preview"),
   GPT_4_VISION_PREVIEW("gpt-4-vision-preview"),
@@ -45,11 +45,11 @@ public enum OpenAIModel {
 
   private final String id;
 
-  OpenAIModel(String modelId) {
-    this.id = modelId;
+  OpenAIModel(String id) {
+    this.id = id;
   }
 
   public String getId() {
-    return this.id;
+    return id;
   }
 }
