@@ -12,7 +12,7 @@ public record ThreadRun(
     String status,
     RequiredAction requiredAction,
     LastError lastError,
-    long expiresAt,
+    Long expiresAt,
     Long startedAt,
     Long cancelledAt,
     Long failedAt,

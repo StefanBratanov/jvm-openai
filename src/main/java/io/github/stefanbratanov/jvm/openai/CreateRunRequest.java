@@ -9,6 +9,7 @@ public record CreateRunRequest(
     Optional<String> model,
     Optional<String> instructions,
     Optional<String> additionalInstructions,
+    Optional<List<CreateMessageRequest>> additionalMessages,
     Optional<List<Tool>> tools,
     Optional<Map<String, String>> metadata,
     Optional<Double> temperature,
@@ -25,6 +26,7 @@ public record CreateRunRequest(
     private Optional<String> model = Optional.empty();
     private Optional<String> instructions = Optional.empty();
     private Optional<String> additionalInstructions = Optional.empty();
+    private Optional<List<CreateMessageRequest>> additionalMessages = Optional.empty();
     private Optional<List<Tool>> tools = Optional.empty();
     private Optional<Map<String, String>> metadata = Optional.empty();
     private Optional<Double> temperature = Optional.empty();
@@ -64,6 +66,14 @@ public record CreateRunRequest(
      */
     public Builder additionalInstructions(String additionalInstructions) {
       this.additionalInstructions = Optional.of(additionalInstructions);
+      return this;
+    }
+
+    /**
+     * @param additionalMessages Adds additional messages to the thread before creating the run.
+     */
+    public Builder additionalMessages(List<CreateMessageRequest> additionalMessages) {
+      this.additionalMessages = Optional.of(additionalMessages);
       return this;
     }
 
@@ -111,6 +121,7 @@ public record CreateRunRequest(
           model,
           instructions,
           additionalInstructions,
+          additionalMessages,
           tools,
           metadata,
           temperature,

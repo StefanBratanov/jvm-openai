@@ -307,6 +307,7 @@ public class TestDataUtil {
         .model(randomModel())
         .instructions(randomString(10, 100))
         .additionalInstructions(randomString(5, 50))
+        .additionalMessages(listOf(randomInt(1, 5), this::randomCreateMessageRequest))
         .tools(listOf(randomInt(1, 20), this::randomTool))
         .metadata(randomMetadata())
         .temperature(randomDouble(0, 2))

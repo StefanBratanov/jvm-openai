@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.parser.OpenAPIV3Parser;
 import java.io.UncheckedIOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeAll;
@@ -103,17 +104,18 @@ class OpenApiSpecificationValidationTest {
 
     validate("/" + Endpoint.FINE_TUNING.getPath(), Method.GET, listJobsResponse);
 
-    // Comment out until https://github.com/openai/openai-openapi/pull/168 is merged
-    //    FineTuningClient.PaginatedFineTuningEvents paginatedFineTuningEvents =
-    //        testDataUtil.randomPaginatedFineTuningEvents();
-    //
-    //    Response listEventsResponse =
-    //        createResponseWithBody(serializeObject(paginatedFineTuningEvents));
-    //
-    //    validate(
-    //        "/" + Endpoint.FINE_TUNING.getPath() + "/{fine_tuning_job_id}/events",
-    //        Method.GET,
-    //            listEventsResponse);
+    FineTuningClient.PaginatedFineTuningEvents paginatedFineTuningEvents =
+        testDataUtil.randomPaginatedFineTuningEvents();
+
+    Response listEventsResponse =
+        createResponseWithBody(serializeObject(paginatedFineTuningEvents));
+
+    validate(
+        "/" + Endpoint.FINE_TUNING.getPath() + "/{fine_tuning_job_id}/events",
+        Method.GET,
+        listEventsResponse,
+        // https://github.com/openai/openai-openapi/pull/168
+        "Object instance has properties which are not allowed by the schema: [\"has_more\"]");
   }
 
   @RepeatedTest(50)
@@ -239,27 +241,29 @@ class OpenApiSpecificationValidationTest {
 
   @RepeatedTest(50)
   void validateRuns() {
-    // Comment out until https://github.com/openai/openai-openapi/pull/170 is merged
-    //    CreateRunRequest createRunRequest = testDataUtil.randomCreateRunRequest();
-    //
-    //    Request request =
-    //        createRequestWithBody(
-    //            Method.POST,
-    //            "/" + Endpoint.THREADS.getPath() + "/{thread_id}/runs",
-    //            serializeObject(createRunRequest));
-    //
-    //    validate(request);
-    //
-    //    CreateThreadAndRunRequest createThreadAndRunRequest =
-    //        testDataUtil.randomCreateThreadAndRunRequest();
-    //
-    //    request =
-    //        createRequestWithBody(
-    //            Method.POST,
-    //            "/" + Endpoint.THREADS.getPath() + "/runs",
-    //            serializeObject(createThreadAndRunRequest));
-    //
-    //    validate(request);
+    CreateRunRequest createRunRequest = testDataUtil.randomCreateRunRequest();
+
+    Request request =
+        createRequestWithBody(
+            Method.POST,
+            "/" + Endpoint.THREADS.getPath() + "/{thread_id}/runs",
+            serializeObject(createRunRequest));
+
+    // https://github.com/openai/openai-openapi/pull/170
+    String reportMessageToIgnore = "Object has missing required properties ([\"thread_id\"]";
+
+    validate(request, reportMessageToIgnore);
+
+    CreateThreadAndRunRequest createThreadAndRunRequest =
+        testDataUtil.randomCreateThreadAndRunRequest();
+
+    request =
+        createRequestWithBody(
+            Method.POST,
+            "/" + Endpoint.THREADS.getPath() + "/runs",
+            serializeObject(createThreadAndRunRequest));
+
+    validate(request, reportMessageToIgnore);
 
     ThreadRun threadRun = testDataUtil.randomThreadRun();
 
@@ -279,7 +283,7 @@ class OpenApiSpecificationValidationTest {
     SubmitToolOutputsRequest submitToolOutputsRequest =
         testDataUtil.randomSubmitToolOutputsRequest();
 
-    Request request =
+    request =
         createRequestWithBody(
             Method.POST,
             "/" + Endpoint.THREADS.getPath() + "/{thread_id}/runs/{run_id}/submit_tool_outputs",
@@ -293,17 +297,18 @@ class OpenApiSpecificationValidationTest {
     validateReport(report);
   }
 
-  private void validate(Request request) {
+  private void validate(Request request, String... reportMessagesToIgnore) {
     ValidationReport report = validator.validateRequest(request);
-    validateReport(report);
+    validateReport(report, reportMessagesToIgnore);
   }
 
-  private void validate(String path, Method method, Response response) {
+  private void validate(
+      String path, Method method, Response response, String... reportMessagesToIgnore) {
     ValidationReport report = validator.validateResponse(path, method, response);
-    validateReport(report);
+    validateReport(report, reportMessagesToIgnore);
   }
 
-  private void validateReport(ValidationReport report) {
+  private void validateReport(ValidationReport report, String... reportMessagesToIgnore) {
     List<ValidationReport.Message> errorMessages =
         report.getMessages().stream()
             .filter(
@@ -312,6 +317,10 @@ class OpenApiSpecificationValidationTest {
                   if (message
                       .getMessage()
                       .contains("Object has missing required properties ([\"object\"])")) {
+                    return false;
+                  }
+                  if (Arrays.stream(reportMessagesToIgnore)
+                      .anyMatch(toIgnore -> message.getMessage().contains(toIgnore))) {
                     return false;
                   }
                   return message.getLevel() == ValidationReport.Level.ERROR
