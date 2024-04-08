@@ -17,11 +17,13 @@ public enum OpenAIModel {
   // GPT-4 and GPT-4 Turbo (https://platform.openai.com/docs/models/gpt-4-and-gpt-4-turbo)
   GPT_4("gpt-4"),
   GPT_4_TURBO_PREVIEW("gpt-4-turbo-preview"),
+  GPT_4_1106_PREVIEW("gpt-4-1106-preview"),
   GPT_4_VISION_PREVIEW("gpt-4-vision-preview"),
   GPT_4_32K("gpt-4-32k"),
 
   // GPT-3.5 Turbo (https://platform.openai.com/docs/models/gpt-3-5-turbo)
   GPT_3_5_TURBO("gpt-3.5-turbo"),
+  GPT_3_5_TURBO_1106("gpt-3.5-turbo-1106"),
 
   // DALL·E (https://platform.openai.com/docs/models/dall-e)
   DALL_E_3("dall-e-3"),
