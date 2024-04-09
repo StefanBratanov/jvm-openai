@@ -15,11 +15,8 @@ import java.util.Optional;
 class OpenAIAssistantsClient extends OpenAIClient {
 
   OpenAIAssistantsClient(
-      String apiKey,
-      Optional<String> organization,
-      HttpClient httpClient,
-      Optional<Duration> requestTimeout) {
-    super(apiKey, organization, httpClient, requestTimeout);
+      String[] authenticationHeaders, HttpClient httpClient, Optional<Duration> requestTimeout) {
+    super(authenticationHeaders, httpClient, requestTimeout);
   }
 
   @Override

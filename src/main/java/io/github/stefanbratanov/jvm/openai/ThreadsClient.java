@@ -18,11 +18,10 @@ public final class ThreadsClient extends OpenAIAssistantsClient {
 
   ThreadsClient(
       URI baseUrl,
-      String apiKey,
-      Optional<String> organization,
+      String[] authenticationHeaders,
       HttpClient httpClient,
       Optional<Duration> requestTimeout) {
-    super(apiKey, organization, httpClient, requestTimeout);
+    super(authenticationHeaders, httpClient, requestTimeout);
     this.baseUrl = baseUrl;
   }
 

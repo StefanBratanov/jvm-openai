@@ -3,6 +3,8 @@ package io.github.stefanbratanov.jvm.openai;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -31,22 +33,23 @@ public final class OpenAI {
       Optional<String> organization,
       HttpClient httpClient,
       Optional<Duration> requestTimeout) {
-    audioClient = new AudioClient(baseUrl, apiKey, organization, httpClient, requestTimeout);
-    chatClient = new ChatClient(baseUrl, apiKey, organization, httpClient, requestTimeout);
+    String[] authenticationHeaders = createAuthenticationHeaders(apiKey, organization);
+    audioClient = new AudioClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
+    chatClient = new ChatClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
     embeddingsClient =
-        new EmbeddingsClient(baseUrl, apiKey, organization, httpClient, requestTimeout);
+        new EmbeddingsClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
     fineTuningClient =
-        new FineTuningClient(baseUrl, apiKey, organization, httpClient, requestTimeout);
-    filesClient = new FilesClient(baseUrl, apiKey, organization, httpClient, requestTimeout);
-    imagesClient = new ImagesClient(baseUrl, apiKey, organization, httpClient, requestTimeout);
-    modelsClient = new ModelsClient(baseUrl, apiKey, organization, httpClient, requestTimeout);
+        new FineTuningClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
+    filesClient = new FilesClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
+    imagesClient = new ImagesClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
+    modelsClient = new ModelsClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
     moderationsClient =
-        new ModerationsClient(baseUrl, apiKey, organization, httpClient, requestTimeout);
+        new ModerationsClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
     assistantsClient =
-        new AssistantsClient(baseUrl, apiKey, organization, httpClient, requestTimeout);
-    threadsClient = new ThreadsClient(baseUrl, apiKey, organization, httpClient, requestTimeout);
-    messagesClient = new MessagesClient(baseUrl, apiKey, organization, httpClient, requestTimeout);
-    runsClient = new RunsClient(baseUrl, apiKey, organization, httpClient, requestTimeout);
+        new AssistantsClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
+    threadsClient = new ThreadsClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
+    messagesClient = new MessagesClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
+    runsClient = new RunsClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
   }
 
   /**
@@ -143,6 +146,18 @@ public final class OpenAI {
    */
   public RunsClient runsClient() {
     return runsClient;
+  }
+
+  private String[] createAuthenticationHeaders(String apiKey, Optional<String> organization) {
+    List<String> authHeaders = new ArrayList<>();
+    authHeaders.add("Authorization");
+    authHeaders.add("Bearer " + apiKey);
+    organization.ifPresent(
+        org -> {
+          authHeaders.add("OpenAI-Organization");
+          authHeaders.add(org);
+        });
+    return authHeaders.toArray(new String[] {});
   }
 
   /**

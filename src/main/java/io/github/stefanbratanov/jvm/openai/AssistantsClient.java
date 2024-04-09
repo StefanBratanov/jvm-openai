@@ -21,11 +21,10 @@ public final class AssistantsClient extends OpenAIAssistantsClient {
 
   AssistantsClient(
       URI baseUrl,
-      String apiKey,
-      Optional<String> organization,
+      String[] authenticationHeaders,
       HttpClient httpClient,
       Optional<Duration> requestTimeout) {
-    super(apiKey, organization, httpClient, requestTimeout);
+    super(authenticationHeaders, httpClient, requestTimeout);
     this.baseUrl = baseUrl;
   }
 

@@ -19,11 +19,10 @@ public final class EmbeddingsClient extends OpenAIClient {
 
   EmbeddingsClient(
       URI baseUrl,
-      String apiKey,
-      Optional<String> organization,
+      String[] authenticationHeaders,
       HttpClient httpClient,
       Optional<Duration> requestTimeout) {
-    super(apiKey, organization, httpClient, requestTimeout);
+    super(authenticationHeaders, httpClient, requestTimeout);
     endpoint = baseUrl.resolve(Endpoint.EMBEDDINCS.getPath());
   }
 

@@ -23,7 +23,7 @@ import java.util.stream.Stream;
  */
 abstract class OpenAIClient {
 
-  private static final String STREAM_TERMINATION = "(data: \\[DONE]|event: done)";
+  private static final String STREAM_TERMINATION_REGEX = "(data: \\[DONE]|event: done)";
 
   private final ObjectMapper objectMapper = ObjectMapperSingleton.getInstance();
 
@@ -32,11 +32,8 @@ abstract class OpenAIClient {
   private final Optional<Duration> requestTimeout;
 
   OpenAIClient(
-      String apiKey,
-      Optional<String> organization,
-      HttpClient httpClient,
-      Optional<Duration> requestTimeout) {
-    this.authenticationHeaders = getAuthenticationHeaders(apiKey, organization);
+      String[] authenticationHeaders, HttpClient httpClient, Optional<Duration> requestTimeout) {
+    this.authenticationHeaders = authenticationHeaders;
     this.httpClient = httpClient;
     this.requestTimeout = requestTimeout;
   }
@@ -103,7 +100,7 @@ abstract class OpenAIClient {
     return sendHttpRequest(httpRequest, HttpResponse.BodyHandlers.ofLines())
         .body()
         .filter(sseEvent -> !sseEvent.isBlank())
-        .takeWhile(sseEvent -> !sseEvent.matches(STREAM_TERMINATION));
+        .takeWhile(sseEvent -> !sseEvent.matches(STREAM_TERMINATION_REGEX));
   }
 
   void validateStreamRequest(Supplier<Optional<Boolean>> streamField) {
@@ -151,18 +148,6 @@ abstract class OpenAIClient {
     } catch (IOException ex) {
       throw new UncheckedIOException(ex);
     }
-  }
-
-  private String[] getAuthenticationHeaders(String apiKey, Optional<String> organization) {
-    List<String> authHeaders = new ArrayList<>();
-    authHeaders.add("Authorization");
-    authHeaders.add("Bearer " + apiKey);
-    organization.ifPresent(
-        org -> {
-          authHeaders.add("OpenAI-Organization");
-          authHeaders.add(org);
-        });
-    return authHeaders.toArray(new String[] {});
   }
 
   private Optional<OpenAIException.Error> getErrorFromHttpResponse(HttpResponse<?> httpResponse) {
