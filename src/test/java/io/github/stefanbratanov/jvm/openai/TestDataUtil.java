@@ -294,12 +294,34 @@ public class TestDataUtil {
                 oneOf(
                     new TextContent(
                         new TextContent.Text(
-                            randomString(10), listOf(randomInt(1, 8), this::randomAnnotation))),
+                            randomString(10),
+                            listOf(randomInt(1, 8), this::randomThreadMessageAnnotation))),
                     new ImageFileContent(new ImageFileContent.ImageFile(randomString(4))))),
         randomString(8),
         randomString(5),
         randomFileIds(10),
         randomMetadata());
+  }
+
+  public ThreadMessageDelta randomThreadMessageDelta() {
+    return new ThreadMessageDelta(
+        randomString(6),
+        new ThreadMessageDelta.Delta(
+            oneOf("user", "assistant"),
+            listOf(
+                randomInt(1, 8),
+                () ->
+                    oneOf(
+                        new ThreadMessageDelta.Delta.Content.TextContent(
+                            randomInt(0, 25),
+                            new ThreadMessageDelta.Delta.Content.TextContent.Text(
+                                randomString(10),
+                                listOf(randomInt(1, 8), this::randomThreadMessageDeltaAnnotation))),
+                        new ThreadMessageDelta.Delta.Content.ImageFileContent(
+                            randomInt(0, 25),
+                            new ThreadMessageDelta.Delta.Content.ImageFileContent.ImageFile(
+                                randomString(4))))),
+            randomFileIds(10)));
   }
 
   public ThreadMessageFile randomThreadMessageFile() {
@@ -387,6 +409,11 @@ public class TestDataUtil {
         randomUsage());
   }
 
+  public ThreadRunStepDelta randomThreadRunStepDelta() {
+    return new ThreadRunStepDelta(
+        randomString(5), new ThreadRunStepDelta.Delta(randomStepDeltaDetails()));
+  }
+
   public SubmitToolOutputsRequest randomSubmitToolOutputsRequest() {
     return SubmitToolOutputsRequest.newBuilder()
         .toolOutputs(
@@ -415,21 +442,45 @@ public class TestDataUtil {
     return oneOf(
         new MessageCreationStepDetails(
             new MessageCreationStepDetails.MessageCreation(randomString(6))),
-        new ToolCallsStepDetails(
-            listOf(
-                randomInt(1, 10),
-                () ->
-                    oneOf(
-                        randomFunctionToolCall(true),
-                        randomCodeInterpreterToolCall(),
-                        ToolCall.retrievalToolCall(randomString(5))))));
+        new ToolCallsStepDetails(listOf(randomInt(1, 10), this::randomToolCall)));
+  }
+
+  private ThreadRunStepDelta.StepDetails randomStepDeltaDetails() {
+    return oneOf(
+        new ThreadRunStepDelta.StepDetails.MessageCreationStepDetails(
+            new ThreadRunStepDelta.StepDetails.MessageCreationStepDetails.MessageCreation(
+                randomString(6))),
+        new ThreadRunStepDelta.StepDetails.ToolCallsStepDetails(
+            listOf(randomInt(1, 10), this::randomDeltaToolCall)));
+  }
+
+  private DeltaToolCall randomDeltaToolCall() {
+    return oneOf(
+        DeltaToolCall.retrievalToolCall(randomDeltaIndex(), randomString(5)),
+        DeltaToolCall.functionToolCall(
+            randomDeltaIndex(),
+            randomString(5),
+            new DeltaToolCall.FunctionToolCall.Function(
+                randomDeltaIndex(), randomString(5), randomString(10), randomString(5))),
+        randomCodeInterpreterDeltaToolCall());
+  }
+
+  private int randomDeltaIndex() {
+    return randomInt(0, 100);
+  }
+
+  private ToolCall randomToolCall() {
+    return oneOf(
+        randomFunctionToolCall(true),
+        randomCodeInterpreterToolCall(),
+        ToolCall.retrievalToolCall(randomString(5)));
   }
 
   private Usage randomUsage() {
     return new Usage(randomInt(0, 100), randomInt(0, 100), randomInt(0, 100));
   }
 
-  private Annotation randomAnnotation() {
+  private Annotation randomThreadMessageAnnotation() {
     return oneOf(
         new FileCitationAnnotation(
             randomString(10, 100),
@@ -439,6 +490,25 @@ public class TestDataUtil {
         new FilePathAnnotation(
             randomString(10, 100),
             new FilePathAnnotation.FilePath(randomString(8)),
+            randomInt(0, 100),
+            randomInt(0, 100)));
+  }
+
+  private ThreadMessageDelta.Delta.Content.TextContent.Text.Annotation
+      randomThreadMessageDeltaAnnotation() {
+    return oneOf(
+        new ThreadMessageDelta.Delta.Content.TextContent.Text.Annotation.FileCitationAnnotation(
+            randomInt(0, 25),
+            randomString(10, 100),
+            new ThreadMessageDelta.Delta.Content.TextContent.Text.Annotation.FileCitationAnnotation
+                .FileCitation(randomString(8), randomString(5, 20)),
+            randomInt(0, 100),
+            randomInt(0, 100)),
+        new ThreadMessageDelta.Delta.Content.TextContent.Text.Annotation.FilePathAnnotation(
+            randomInt(0, 25),
+            randomString(10, 100),
+            new ThreadMessageDelta.Delta.Content.TextContent.Text.Annotation.FilePathAnnotation
+                .FilePath(randomString(8)),
             randomInt(0, 100),
             randomInt(0, 100)));
   }
@@ -556,6 +626,24 @@ public class TestDataUtil {
 
   private Tool randomTool() {
     return oneOf(randomFunctionTool(), Tool.retrievalTool(), Tool.codeInterpreterTool());
+  }
+
+  private DeltaToolCall randomCodeInterpreterDeltaToolCall() {
+    return DeltaToolCall.codeInterpreterToolCall(
+        randomDeltaIndex(),
+        randomString(5),
+        new DeltaToolCall.CodeInterpreterToolCall.CodeInterpreter(
+            randomString(5, 99),
+            listOf(
+                randomInt(1, 8),
+                () ->
+                    oneOf(
+                        DeltaToolCall.CodeInterpreterToolCall.CodeInterpreter.Output.logOutput(
+                            randomDeltaIndex(), randomString(5, 42)),
+                        DeltaToolCall.CodeInterpreterToolCall.CodeInterpreter.Output.imageOutput(
+                            randomDeltaIndex(),
+                            new DeltaToolCall.CodeInterpreterToolCall.CodeInterpreter.Output
+                                .ImageOutput.Image(randomString(4)))))));
   }
 
   private ToolCall randomCodeInterpreterToolCall() {

@@ -3,38 +3,43 @@ package io.github.stefanbratanov.jvm.openai;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import io.github.stefanbratanov.jvm.openai.ToolCall.CodeInterpreterToolCall.CodeInterpreter;
-import io.github.stefanbratanov.jvm.openai.ToolCall.CodeInterpreterToolCall.CodeInterpreter.Output.ImageOutput.Image;
-import io.github.stefanbratanov.jvm.openai.ToolCall.FunctionToolCall.Function;
+import io.github.stefanbratanov.jvm.openai.DeltaToolCall.CodeInterpreterToolCall.CodeInterpreter;
+import io.github.stefanbratanov.jvm.openai.DeltaToolCall.CodeInterpreterToolCall.CodeInterpreter.Output.ImageOutput.Image;
+import io.github.stefanbratanov.jvm.openai.DeltaToolCall.FunctionToolCall.Function;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+/** Details of the tool call the {@link ThreadRunStepDelta} was involved in. */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
   @JsonSubTypes.Type(
-      value = ToolCall.CodeInterpreterToolCall.class,
+      value = DeltaToolCall.CodeInterpreterToolCall.class,
       name = Constants.CODE_INTERPRETER_TOOL_CALL_TYPE),
   @JsonSubTypes.Type(
-      value = ToolCall.RetrievalToolCall.class,
+      value = DeltaToolCall.RetrievalToolCall.class,
       name = Constants.RETRIEVAL_TOOL_CALL_TYPE),
   @JsonSubTypes.Type(
-      value = ToolCall.FunctionToolCall.class,
+      value = DeltaToolCall.FunctionToolCall.class,
       name = Constants.FUNCTION_TOOL_CALL_TYPE)
 })
-public sealed interface ToolCall
-    permits ToolCall.CodeInterpreterToolCall,
-        ToolCall.RetrievalToolCall,
-        ToolCall.FunctionToolCall {
+public sealed interface DeltaToolCall
+    permits DeltaToolCall.CodeInterpreterToolCall,
+        DeltaToolCall.RetrievalToolCall,
+        DeltaToolCall.FunctionToolCall {
 
-  /** The ID of the tool call. */
+  /** The index of the tool call in the tool calls array. */
+  int index();
+
+  /** The ID of the tool call object. */
   String id();
 
   /** The type of tool call */
   @JsonProperty(access = JsonProperty.Access.READ_ONLY)
   String type();
 
-  record CodeInterpreterToolCall(String id, CodeInterpreter codeInterpreter) implements ToolCall {
+  record CodeInterpreterToolCall(int index, String id, CodeInterpreter codeInterpreter)
+      implements DeltaToolCall {
     @Override
     public String type() {
       return Constants.CODE_INTERPRETER_TOOL_CALL_TYPE;
@@ -58,10 +63,13 @@ public sealed interface ToolCall
             name = Constants.CODE_INTERPRETER_IMAGE_OUTPUT_TYPE),
       })
       public sealed interface Output permits Output.LogOutput, Output.ImageOutput {
+        /** The index of the output in the outputs array. */
+        int index();
+
         @JsonProperty(access = JsonProperty.Access.READ_ONLY)
         String type();
 
-        record LogOutput(String logs) implements Output {
+        record LogOutput(int index, String logs) implements Output {
 
           @Override
           public String type() {
@@ -69,7 +77,7 @@ public sealed interface ToolCall
           }
         }
 
-        record ImageOutput(Image image) implements Output {
+        record ImageOutput(int index, Image image) implements Output {
 
           @Override
           public String type() {
@@ -79,49 +87,51 @@ public sealed interface ToolCall
           public record Image(String fileId) {}
         }
 
-        static LogOutput logOutput(String logs) {
-          return new LogOutput(logs);
+        static LogOutput logOutput(int index, String logs) {
+          return new LogOutput(index, logs);
         }
 
-        static ImageOutput imageOutput(Image image) {
-          return new ImageOutput(image);
+        static ImageOutput imageOutput(int index, Image image) {
+          return new ImageOutput(index, image);
         }
       }
     }
   }
 
-  record RetrievalToolCall(String id, Map<String, Object> retrieval) implements ToolCall {
+  record RetrievalToolCall(int index, String id, Map<String, Object> retrieval)
+      implements DeltaToolCall {
     @Override
     public String type() {
       return Constants.RETRIEVAL_TOOL_CALL_TYPE;
     }
   }
 
-  record FunctionToolCall(String id, Function function) implements ToolCall {
+  record FunctionToolCall(int index, String id, Function function) implements DeltaToolCall {
     @Override
     public String type() {
       return Constants.FUNCTION_TOOL_CALL_TYPE;
     }
 
     /**
+     * @param index The index of the tool call in the tool calls array.
      * @param name The name of the function.
      * @param arguments The arguments passed to the function.
      * @param output The output of the function. This will be null if the outputs have not been
      *     submitted yet.
      */
-    public record Function(String name, String arguments, String output) {}
+    public record Function(int index, String name, String arguments, String output) {}
   }
 
   static CodeInterpreterToolCall codeInterpreterToolCall(
-      String id, CodeInterpreter codeInterpreter) {
-    return new CodeInterpreterToolCall(id, codeInterpreter);
+      int index, String id, CodeInterpreter codeInterpreter) {
+    return new CodeInterpreterToolCall(index, id, codeInterpreter);
   }
 
-  static RetrievalToolCall retrievalToolCall(String id) {
-    return new RetrievalToolCall(id, Collections.emptyMap());
+  static RetrievalToolCall retrievalToolCall(int index, String id) {
+    return new RetrievalToolCall(index, id, Collections.emptyMap());
   }
 
-  static FunctionToolCall functionToolCall(String id, Function function) {
-    return new FunctionToolCall(id, function);
+  static FunctionToolCall functionToolCall(int index, String id, Function function) {
+    return new FunctionToolCall(index, id, function);
   }
 }

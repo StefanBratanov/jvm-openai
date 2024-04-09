@@ -6,11 +6,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.stefanbratanov.jvm.openai.FineTuningJobCheckpoint.Metrics;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
-class DeserializationTest {
+class SerializationTest {
 
   private final ObjectMapper objectMapper = ObjectMapperSingleton.getInstance();
+  private final TestDataUtil testDataUtil = new TestDataUtil();
 
   @Test
   void deserializesChatCompletionChunk() throws JsonProcessingException {
@@ -51,5 +53,25 @@ class DeserializationTest {
     assertThat(metrics.fullValidLoss()).isEqualTo(0.567);
 
     assertThat(fineTuningJobCheckpoint.stepNumber()).isEqualTo(88);
+  }
+
+  @RepeatedTest(50)
+  void serializesAndDeserializesThreadMessageDelta() throws JsonProcessingException {
+    ThreadMessageDelta threadMessageDelta = testDataUtil.randomThreadMessageDelta();
+
+    String serialized = objectMapper.writeValueAsString(threadMessageDelta);
+
+    assertThat(objectMapper.readValue(serialized, ThreadMessageDelta.class))
+        .isEqualTo(threadMessageDelta);
+  }
+
+  @RepeatedTest(50)
+  void serializesAndDeserializesThreadRunStepDelta() throws JsonProcessingException {
+    ThreadRunStepDelta threadRunStepDelta = testDataUtil.randomThreadRunStepDelta();
+
+    String serialized = objectMapper.writeValueAsString(threadRunStepDelta);
+
+    assertThat(objectMapper.readValue(serialized, ThreadRunStepDelta.class))
+        .isEqualTo(threadRunStepDelta);
   }
 }
