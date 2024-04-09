@@ -5,10 +5,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.Duration;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import org.assertj.core.api.Assertions;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 
@@ -99,7 +98,7 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
 
     List<ThreadMessageFile> messageFiles = paginatedMessageFiles.data();
 
-    Assertions.assertThat(messageFiles).hasSize(1);
+    assertThat(messageFiles).hasSize(1);
 
     ThreadMessageFile messageFile = messageFiles.get(0);
 
@@ -227,38 +226,10 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
 
     ThreadRun retrievedRun = runsClient.retrieveRun(threadId, runId);
 
-    String[] runFieldsToIgnore = new String[] {"status", "startedAt", "completedAt", "expiresAt"};
+    String[] runFieldsToIgnore =
+        new String[] {"status", "startedAt", "completedAt", "expiresAt", "usage"};
 
     assertThat(retrievedRun)
-        .usingRecursiveComparison()
-        .ignoringFields(runFieldsToIgnore)
-        .isEqualTo(run);
-
-    // create thread and run in one request
-    CreateThreadAndRunRequest createThreadAndRunRequest =
-        CreateThreadAndRunRequest.newBuilder()
-            .assistantId(assistant.id())
-            .thread(
-                CreateThreadRequest.newBuilder()
-                    .messages(
-                        List.of(
-                            CreateThreadRequest.Message.newBuilder()
-                                .content("What is the house address?")
-                                .build()))
-                    .build())
-            .build();
-
-    ThreadRun runWithThread = runsClient.createThreadAndRun(createThreadAndRunRequest);
-
-    assertThat(runWithThread.assistantId()).isEqualTo(assistant.id());
-    assertThat(runWithThread.threadId()).isNotNull();
-
-    // retrieve runs
-    List<ThreadRun> runs = runsClient.listRuns(threadId, PaginationQueryParameters.none()).data();
-
-    assertThat(runs)
-        .hasSize(1)
-        .first()
         .usingRecursiveComparison()
         .ignoringFields(runFieldsToIgnore)
         .isEqualTo(run);
@@ -271,6 +242,124 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
         },
         Duration.ofSeconds(5),
         Duration.ofMinutes(1));
+
+    // create thread and run in one request and test streaming with a subscriber
+    CreateThreadAndRunRequest createThreadAndRunRequest =
+        CreateThreadAndRunRequest.newBuilder()
+            .assistantId(assistant.id())
+            .thread(
+                CreateThreadRequest.newBuilder()
+                    .messages(
+                        List.of(
+                            CreateThreadRequest.Message.newBuilder()
+                                .content("What is the house address?")
+                                .build()))
+                    .build())
+            .stream(true)
+            .build();
+
+    // capture all types of events
+    CompletableFuture<Set<String>> emittedEventsFuture = new CompletableFuture<>();
+    CompletableFuture<String> threadIdToDeleteFuture = new CompletableFuture<>();
+
+    runsClient.createThreadAndRunAndStream(
+        createThreadAndRunRequest,
+        new AssistantStreamEventSubscriber() {
+          private final Set<String> emittedEvents = new LinkedHashSet<>();
+
+          @Override
+          public void onThread(String event, Thread thread) {
+            assertThat(event).startsWith("thread");
+            assertThat(thread).isNotNull();
+            emittedEvents.add(event);
+            threadIdToDeleteFuture.complete(thread.id());
+          }
+
+          @Override
+          public void onThreadRun(String event, ThreadRun threadRun) {
+            assertThat(event).startsWith("thread.run");
+            assertThat(thread).isNotNull();
+            emittedEvents.add(event);
+          }
+
+          @Override
+          public void onThreadRunStep(String event, ThreadRunStep threadRunStep) {
+            assertThat(event).startsWith("thread.run.step");
+            assertThat(threadRunStep).isNotNull();
+            emittedEvents.add(event);
+          }
+
+          @Override
+          public void onThreadRunStepDelta(String event, ThreadRunStepDelta threadRunStepDelta) {
+            assertThat(event).startsWith("thread.run.step.delta");
+            assertThat(threadRunStepDelta).isNotNull();
+            emittedEvents.add(event);
+          }
+
+          @Override
+          public void onThreadMessage(String event, ThreadMessage threadMessage) {
+            assertThat(event).startsWith("thread.message");
+            assertThat(threadMessage).isNotNull();
+            emittedEvents.add(event);
+          }
+
+          @Override
+          public void onThreadMessageDelta(String event, ThreadMessageDelta threadMessageDelta) {
+            assertThat(event).startsWith("thread.message.delta");
+            assertThat(threadMessageDelta).isNotNull();
+            emittedEvents.add(event);
+          }
+
+          @Override
+          public void onUnknownEvent(String event, String data) {
+            Assertions.fail(
+                String.format("Unknown event %s and data %s have been received", event, data));
+          }
+
+          @Override
+          public void onException(Throwable ex) {
+            Assertions.fail(ex);
+          }
+
+          @Override
+          public void onComplete() {
+            emittedEventsFuture.complete(emittedEvents);
+          }
+        });
+
+    assertThat(emittedEventsFuture)
+        .succeedsWithin(Duration.ofMinutes(1))
+        .satisfies(
+            emittedEvents ->
+                assertThat(emittedEvents)
+                    .containsExactly(
+                        "thread.created",
+                        "thread.run.created",
+                        "thread.run.queued",
+                        "thread.run.in_progress",
+                        "thread.run.step.created",
+                        "thread.run.step.in_progress",
+                        "thread.run.step.delta",
+                        "thread.run.step.completed",
+                        "thread.message.created",
+                        "thread.message.in_progress",
+                        "thread.message.delta",
+                        "thread.message.completed",
+                        "thread.run.completed"));
+
+    assertThat(threadIdToDeleteFuture)
+        .isCompletedWithValueMatching(
+            threadIdToDelete -> threadsClient.deleteThread(threadIdToDelete).deleted());
+
+    // retrieve runs
+    List<ThreadRun> runs = runsClient.listRuns(threadId, PaginationQueryParameters.none()).data();
+
+    assertThat(runs)
+        .hasSize(1)
+        .first()
+        .usingRecursiveComparison()
+        .ignoringFields(runFieldsToIgnore)
+        .isEqualTo(run);
 
     // retrieve run steps
     List<ThreadRunStep> runSteps =
@@ -317,7 +406,6 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
 
     // cleanup
     threadsClient.deleteThread(threadId);
-    threadsClient.deleteThread(runWithThread.threadId());
     assistantsClient.deleteAssistantFile(assistant.id(), assistantFile.id());
     assistantsClient.deleteAssistant(assistant.id());
   }

@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,7 +23,7 @@ import java.util.stream.Stream;
  */
 abstract class OpenAIClient {
 
-  private static final String STREAM_TERMINATION = "data: [DONE]";
+  private static final String STREAM_TERMINATION = "(data: \\[DONE]|event: done)";
 
   private final ObjectMapper objectMapper = ObjectMapperSingleton.getInstance();
 
@@ -102,7 +103,13 @@ abstract class OpenAIClient {
     return sendHttpRequest(httpRequest, HttpResponse.BodyHandlers.ofLines())
         .body()
         .filter(sseEvent -> !sseEvent.isBlank())
-        .takeWhile(sseEvent -> !sseEvent.contains(STREAM_TERMINATION));
+        .takeWhile(sseEvent -> !sseEvent.matches(STREAM_TERMINATION));
+  }
+
+  void validateStreamRequest(Supplier<Optional<Boolean>> streamField) {
+    if (!streamField.get().orElse(false)) {
+      throw new IllegalArgumentException("stream must be set to true when requesting a stream");
+    }
   }
 
   void validateHttpResponse(HttpResponse<?> httpResponse) {
@@ -122,6 +129,14 @@ abstract class OpenAIClient {
   <T> T deserializeResponse(byte[] response, Class<T> responseClass) {
     try {
       return objectMapper.readValue(response, responseClass);
+    } catch (IOException ex) {
+      throw new UncheckedIOException(ex);
+    }
+  }
+
+  <T> T deserializeData(String data, Class<T> responseClass) {
+    try {
+      return objectMapper.readValue(data, responseClass);
     } catch (IOException ex) {
       throw new UncheckedIOException(ex);
     }

@@ -5,8 +5,11 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
 /**
  * Represents an execution run on a thread.
@@ -46,6 +49,24 @@ public final class RunsClient extends OpenAIAssistantsClient {
   }
 
   /**
+   * Create a run and stream the result of executing it.
+   *
+   * @param subscriber an implementation of {@link AssistantStreamEventSubscriber} which will handle
+   *     the incoming events
+   * @throws OpenAIException in case of API errors
+   */
+  public void createRunAndStream(
+      String threadId, CreateRunRequest request, AssistantStreamEventSubscriber subscriber) {
+    validateStreamRequest(request::stream);
+    HttpRequest httpRequest =
+        newHttpRequestBuilder()
+            .uri(baseUrl.resolve(Endpoint.THREADS.getPath() + "/" + threadId + RUNS_SEGMENT))
+            .POST(createBodyPublisher(request))
+            .build();
+    streamAndHandleAssistantEvents(httpRequest, subscriber);
+  }
+
+  /**
    * Create a thread and run it in one request.
    *
    * @throws OpenAIException in case of API errors
@@ -58,6 +79,24 @@ public final class RunsClient extends OpenAIAssistantsClient {
             .build();
     HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
     return deserializeResponse(httpResponse.body(), ThreadRun.class);
+  }
+
+  /**
+   * Create a thread and run it in one request and stream the result of executing it.
+   *
+   * @param subscriber an implementation of {@link AssistantStreamEventSubscriber} which will handle
+   *     the incoming events
+   * @throws OpenAIException in case of API errors
+   */
+  public void createThreadAndRunAndStream(
+      CreateThreadAndRunRequest request, AssistantStreamEventSubscriber subscriber) {
+    validateStreamRequest(request::stream);
+    HttpRequest httpRequest =
+        newHttpRequestBuilder()
+            .uri(baseUrl.resolve(Endpoint.THREADS.getPath() + RUNS_SEGMENT))
+            .POST(createBodyPublisher(request))
+            .build();
+    streamAndHandleAssistantEvents(httpRequest, subscriber);
   }
 
   /**
@@ -199,6 +238,36 @@ public final class RunsClient extends OpenAIAssistantsClient {
   }
 
   /**
+   * Same as {@link #submitToolOutputs(String, String, SubmitToolOutputsRequest)} but the result of
+   * executing the thread run will be streamed
+   *
+   * @param subscriber an implementation of {@link AssistantStreamEventSubscriber} which will handle
+   *     the incoming events
+   * @throws OpenAIException in case of API errors
+   */
+  public void submitToolOutputsAndStream(
+      String threadId,
+      String runId,
+      SubmitToolOutputsRequest request,
+      AssistantStreamEventSubscriber subscriber) {
+    validateStreamRequest(request::stream);
+    HttpRequest httpRequest =
+        newHttpRequestBuilder()
+            .uri(
+                baseUrl.resolve(
+                    Endpoint.THREADS.getPath()
+                        + "/"
+                        + threadId
+                        + RUNS_SEGMENT
+                        + "/"
+                        + runId
+                        + "/submit_tool_outputs"))
+            .POST(createBodyPublisher(request))
+            .build();
+    streamAndHandleAssistantEvents(httpRequest, subscriber);
+  }
+
+  /**
    * Cancels a run that is in_progress.
    *
    * @throws OpenAIException in case of API errors
@@ -219,5 +288,55 @@ public final class RunsClient extends OpenAIAssistantsClient {
             .build();
     HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
     return deserializeResponse(httpResponse.body(), ThreadRun.class);
+  }
+
+  private void streamAndHandleAssistantEvents(
+      HttpRequest httpRequest, AssistantStreamEventSubscriber subscriber) {
+    CompletableFuture.supplyAsync(() -> streamServerSentEvents(httpRequest))
+        .thenAccept(sseEvents -> handleAssistantSseEvents(sseEvents, subscriber))
+        .whenComplete((result, ex) -> handleAssistantEventsStreamCompletion(ex, subscriber));
+  }
+
+  private void handleAssistantSseEvents(
+      Stream<String> sseEvents, AssistantStreamEventSubscriber subscriber) {
+    Iterator<String> iterator = sseEvents.iterator();
+    while (iterator.hasNext()) {
+      // have to group the event and the data because they are received separately
+      String event = iterator.next().split(":", 2)[1].trim();
+      String data;
+      if (iterator.hasNext()) {
+        data = iterator.next().split(":", 2)[1].trim();
+      } else {
+        throw new IllegalStateException("No data available for event " + event);
+      }
+      handleAssistantSseEvent(event, data, subscriber);
+    }
+  }
+
+  private void handleAssistantSseEvent(
+      String event, String data, AssistantStreamEventSubscriber subscriber) {
+    if (event.startsWith("thread.run.step.delta")) {
+      subscriber.onThreadRunStepDelta(event, deserializeData(data, ThreadRunStepDelta.class));
+    } else if (event.startsWith("thread.run.step")) {
+      subscriber.onThreadRunStep(event, deserializeData(data, ThreadRunStep.class));
+    } else if (event.startsWith("thread.run")) {
+      subscriber.onThreadRun(event, deserializeData(data, ThreadRun.class));
+    } else if (event.startsWith("thread.message.delta")) {
+      subscriber.onThreadMessageDelta(event, deserializeData(data, ThreadMessageDelta.class));
+    } else if (event.startsWith("thread.message")) {
+      subscriber.onThreadMessage(event, deserializeData(data, ThreadMessage.class));
+    } else if (event.startsWith("thread")) {
+      subscriber.onThread(event, deserializeData(data, Thread.class));
+    } else {
+      subscriber.onUnknownEvent(event, data);
+    }
+  }
+
+  private void handleAssistantEventsStreamCompletion(
+      Throwable ex, AssistantStreamEventSubscriber subscriber) {
+    if (ex != null) {
+      subscriber.onException(ex);
+    }
+    subscriber.onComplete();
   }
 }

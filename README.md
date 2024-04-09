@@ -210,3 +210,59 @@ String status = retrievedRun.status();
 PaginatedThreadMessages paginatedMessages = messagesClient.listMessages(thread.id(), PaginationQueryParameters.none());
 List<ThreadMessage> messages = paginatedMessages.data();
 ```
+- Create a run and stream the result of executing the run ([Assistants Streaming](https://platform.openai.com/docs/api-reference/assistants-streaming))
+```java
+RunsClient runsClient = openAI.runsClient();
+CreateRunRequest createRunRequest = CreateRunRequest.newBuilder()
+    .assistantId(assistant.id())
+    .instructions("Please address the user as Jane Doe. The user has a premium account.")
+    .stream(true)   
+    .build();
+runsClient.createRunAndStream(thread.id(), createRunRequest, new AssistantStreamEventSubscriber() {
+    @Override
+    public void onThread(String event, Thread thread) {
+        // ...
+    }
+
+    @Override
+    public void onThreadRun(String event, ThreadRun threadRun) {
+        // ...
+    }
+
+    @Override
+    public void onThreadRunStep(String event, ThreadRunStep threadRunStep) {
+        // ...
+    }
+
+    @Override
+    public void onThreadRunStepDelta(String event, ThreadRunStepDelta threadRunStepDelta) {
+        // ...
+    }
+
+    @Override
+    public void onThreadMessage(String event, ThreadMessage threadMessage) {
+        // ...
+    }
+
+    @Override
+    public void onThreadMessageDelta(String event, ThreadMessageDelta threadMessageDelta) {
+        // ...
+    }
+
+    @Override
+    public void onUnknownEvent(String event, String data) {
+        // ...
+    }
+
+    @Override
+    public void onException(Throwable ex) {
+        // ...
+    }
+
+    @Override
+    public void onComplete() {
+        // ...
+    }    
+});
+// "createThreadAndRunAndStream" and "submitToolOutputsAndStream" methods are also available
+```

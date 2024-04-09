@@ -58,9 +58,9 @@ public final class ChatClient extends OpenAIClient {
    * @throws OpenAIException in case of API errors
    */
   public Stream<ChatCompletionChunk> streamChatCompletion(CreateChatCompletionRequest request) {
-    validateStreamRequest(request);
+    validateStreamRequest(request::stream);
     HttpRequest httpRequest = createPostRequest(request);
-    return getStreamedResponses(httpRequest);
+    return getStreamedChatCompletionChunks(httpRequest);
   }
 
   /**
@@ -70,10 +70,10 @@ public final class ChatClient extends OpenAIClient {
    */
   public void streamChatCompletion(
       CreateChatCompletionRequest request, ChatCompletionStreamSubscriber subscriber) {
-    validateStreamRequest(request);
+    validateStreamRequest(request::stream);
     HttpRequest httpRequest = createPostRequest(request);
-    CompletableFuture.supplyAsync(() -> getStreamedResponses(httpRequest))
-        .thenAccept(streamedResponses -> streamedResponses.forEach(subscriber::onChunk))
+    CompletableFuture.supplyAsync(() -> getStreamedChatCompletionChunks(httpRequest))
+        .thenAccept(chatCompletionChunks -> chatCompletionChunks.forEach(subscriber::onChunk))
         .whenComplete(
             (result, ex) -> {
               if (ex != null) {
@@ -94,18 +94,12 @@ public final class ChatClient extends OpenAIClient {
         .build();
   }
 
-  private void validateStreamRequest(CreateChatCompletionRequest request) {
-    if (!request.stream().orElse(false)) {
-      throw new IllegalArgumentException("stream must be set to true when requesting a stream");
-    }
-  }
-
-  private Stream<ChatCompletionChunk> getStreamedResponses(HttpRequest httpRequest) {
+  private Stream<ChatCompletionChunk> getStreamedChatCompletionChunks(HttpRequest httpRequest) {
     return streamServerSentEvents(httpRequest)
         .map(
             sseEvent -> {
-              String chatChunkResponse = sseEvent.substring(sseEvent.indexOf("{"));
-              return deserializeResponse(chatChunkResponse.getBytes(), ChatCompletionChunk.class);
+              String data = sseEvent.substring(sseEvent.indexOf("{"));
+              return deserializeData(data, ChatCompletionChunk.class);
             });
   }
 }
