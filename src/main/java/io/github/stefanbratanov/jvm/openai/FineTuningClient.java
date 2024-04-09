@@ -57,7 +57,9 @@ public final class FineTuningClient extends OpenAIClient {
    */
   public PaginatedFineTuningJobs listFineTuningJobs(
       Optional<Integer> limit, Optional<String> after) {
-    String queryParameters = createQueryParameters(Map.of("limit", limit, "after", after));
+    String queryParameters =
+        createQueryParameters(
+            Map.of(Constants.LIMIT_QUERY_PARAMETER, limit, Constants.AFTER_QUERY_PARAMETER, after));
     HttpRequest httpRequest =
         newHttpRequestBuilder()
             .uri(baseUrl.resolve(Endpoint.FINE_TUNING.getPath() + queryParameters))
@@ -84,7 +86,9 @@ public final class FineTuningClient extends OpenAIClient {
    */
   public PaginatedFineTuningEvents listFineTuningJobEvents(
       String fineTuningJobId, Optional<Integer> limit, Optional<String> after) {
-    String queryParameters = createQueryParameters(Map.of("limit", limit, "after", after));
+    String queryParameters =
+        createQueryParameters(
+            Map.of(Constants.LIMIT_QUERY_PARAMETER, limit, Constants.AFTER_QUERY_PARAMETER, after));
     HttpRequest httpRequest =
         newHttpRequestBuilder()
             .uri(
@@ -117,7 +121,9 @@ public final class FineTuningClient extends OpenAIClient {
    */
   public PaginatedFineTuningCheckpoints listFineTuningCheckpoints(
       String fineTuningJobId, Optional<Integer> limit, Optional<String> after) {
-    String queryParameters = createQueryParameters(Map.of("limit", limit, "after", after));
+    String queryParameters =
+        createQueryParameters(
+            Map.of(Constants.LIMIT_QUERY_PARAMETER, limit, Constants.AFTER_QUERY_PARAMETER, after));
     HttpRequest httpRequest =
         newHttpRequestBuilder()
             .uri(

@@ -35,9 +35,9 @@ class OpenAIAssistantsClient extends OpenAIClient {
       PaginationQueryParameters paginationQueryParameters,
       Map<String, Optional<?>> additionalQueryParameters) {
     Map<String, Optional<?>> queryParameters = new HashMap<>();
-    queryParameters.put("limit", paginationQueryParameters.limit());
+    queryParameters.put(Constants.LIMIT_QUERY_PARAMETER, paginationQueryParameters.limit());
     queryParameters.put("order", paginationQueryParameters.order());
-    queryParameters.put("after", paginationQueryParameters.after());
+    queryParameters.put(Constants.AFTER_QUERY_PARAMETER, paginationQueryParameters.after());
     queryParameters.put("before", paginationQueryParameters.before());
     queryParameters.putAll(additionalQueryParameters);
     return createQueryParameters(queryParameters);

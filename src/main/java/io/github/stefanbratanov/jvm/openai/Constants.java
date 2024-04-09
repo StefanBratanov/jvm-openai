@@ -39,4 +39,7 @@ class Constants {
   static final String SUBMIT_TOOL_OUTPUTS_REQUIRED_ACTION_TYPE = "submit_tool_outputs";
 
   static final String WANDB_INTEGRATION_TYPE = "wandb";
+
+  static final String LIMIT_QUERY_PARAMETER = "limit";
+  static final String AFTER_QUERY_PARAMETER = "after";
 }
