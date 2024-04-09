@@ -269,51 +269,48 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
 
           @Override
           public void onThread(String event, Thread thread) {
-            assertThat(event).startsWith("thread");
-            assertThat(thread).isNotNull();
+            assertEventStartsWithAndDataIsNotNull(event, "thread", thread);
             emittedEvents.add(event);
             threadIdToDeleteFuture.complete(thread.id());
           }
 
           @Override
           public void onThreadRun(String event, ThreadRun threadRun) {
-            assertThat(event).startsWith("thread.run");
-            assertThat(thread).isNotNull();
+            assertEventStartsWithAndDataIsNotNull(event, "thread.run", threadRun);
             emittedEvents.add(event);
           }
 
           @Override
           public void onThreadRunStep(String event, ThreadRunStep threadRunStep) {
-            assertThat(event).startsWith("thread.run.step");
-            assertThat(threadRunStep).isNotNull();
+            assertEventStartsWithAndDataIsNotNull(event, "thread.run.step", threadRunStep);
             emittedEvents.add(event);
           }
 
           @Override
           public void onThreadRunStepDelta(String event, ThreadRunStepDelta threadRunStepDelta) {
-            assertThat(event).startsWith("thread.run.step.delta");
-            assertThat(threadRunStepDelta).isNotNull();
+            assertEventStartsWithAndDataIsNotNull(
+                event, "thread.run.step.delta", threadRunStepDelta);
             emittedEvents.add(event);
           }
 
           @Override
           public void onThreadMessage(String event, ThreadMessage threadMessage) {
-            assertThat(event).startsWith("thread.message");
-            assertThat(threadMessage).isNotNull();
+            assertEventStartsWithAndDataIsNotNull(event, "thread.message", threadMessage);
             emittedEvents.add(event);
           }
 
           @Override
           public void onThreadMessageDelta(String event, ThreadMessageDelta threadMessageDelta) {
-            assertThat(event).startsWith("thread.message.delta");
-            assertThat(threadMessageDelta).isNotNull();
+            assertEventStartsWithAndDataIsNotNull(
+                event, "thread.message.delta", threadMessageDelta);
             emittedEvents.add(event);
           }
 
           @Override
           public void onUnknownEvent(String event, String data) {
-            Assertions.fail(
-                String.format("Unknown event %s and data %s have been received", event, data));
+            String message =
+                String.format("Unknown event %s and data %s have been received", event, data);
+            Assertions.fail(message);
           }
 
           @Override
@@ -365,13 +362,12 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
     List<ThreadRunStep> runSteps =
         runsClient.listRunSteps(threadId, runId, PaginationQueryParameters.none()).data();
 
-    assertThat(runSteps).isNotEmpty();
-
-    ThreadRunStep runStep = runSteps.get(0);
-
-    ThreadRunStep retrievedRunStep = runsClient.retrieveRunStep(threadId, runId, runStep.id());
-
-    assertThat(retrievedRunStep).isEqualTo(runStep);
+    assertThat(runSteps)
+        .first()
+        .satisfies(
+            runStep ->
+                assertThat(runStep)
+                    .isEqualTo(runsClient.retrieveRunStep(threadId, runId, runStep.id())));
 
     // modify run
     ThreadRun modifiedRun =
@@ -417,5 +413,10 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
             .purpose("assistants")
             .build();
     return openAI.filesClient().uploadFile(uploadFileRequest);
+  }
+
+  private <T> void assertEventStartsWithAndDataIsNotNull(String event, String prefix, T data) {
+    assertThat(event).startsWith(prefix);
+    assertThat(data).isNotNull();
   }
 }
