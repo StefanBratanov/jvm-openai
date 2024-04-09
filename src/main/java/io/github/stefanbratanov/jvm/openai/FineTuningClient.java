@@ -108,6 +108,35 @@ public final class FineTuningClient extends OpenAIClient {
   }
 
   /**
+   * List checkpoints for a fine-tuning job.
+   *
+   * @param fineTuningJobId The ID of the fine-tuning job to get checkpoints for.
+   * @param limit Number of checkpoints to retrieve.
+   * @param after Identifier for the last checkpoint ID from the previous pagination request.
+   * @throws OpenAIException in case of API errors
+   */
+  public PaginatedFineTuningCheckpoints listFineTuningCheckpoints(
+      String fineTuningJobId, Optional<Integer> limit, Optional<String> after) {
+    String queryParameters = createQueryParameters(Map.of("limit", limit, "after", after));
+    HttpRequest httpRequest =
+        newHttpRequestBuilder()
+            .uri(
+                baseUrl.resolve(
+                    Endpoint.FINE_TUNING.getPath()
+                        + "/"
+                        + fineTuningJobId
+                        + "/checkpoints"
+                        + queryParameters))
+            .GET()
+            .build();
+    HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
+    return deserializeResponse(httpResponse.body(), PaginatedFineTuningCheckpoints.class);
+  }
+
+  public record PaginatedFineTuningCheckpoints(
+      List<FineTuningJobCheckpoint> data, String firstId, String lastId, boolean hasMore) {}
+
+  /**
    * Get info about a fine-tuning job.
    *
    * @param fineTuningJobId The ID of the fine-tuning job.
