@@ -95,7 +95,11 @@ class OpenApiSpecificationValidationTest {
 
     Response response = createResponseWithBody(serializeObject(fineTuningJob));
 
-    validate(request, response);
+    validate(
+        request,
+        response,
+        // https://github.com/openai/openai-openapi/issues/217
+        "Object instance has properties which are not allowed by the schema: [\"integrations\",\"seed\"]");
 
     FineTuningClient.PaginatedFineTuningJobs paginatedFineTuningJobs =
         testDataUtil.randomPaginatedFineTuningJobs();
@@ -292,9 +296,9 @@ class OpenApiSpecificationValidationTest {
     validate(request);
   }
 
-  private void validate(Request request, Response response) {
+  private void validate(Request request, Response response, String... reportMessagesToIgnore) {
     ValidationReport report = validator.validate(request, response);
-    validateReport(report);
+    validateReport(report, reportMessagesToIgnore);
   }
 
   private void validate(Request request, String... reportMessagesToIgnore) {

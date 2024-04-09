@@ -37,4 +37,6 @@ class Constants {
   static final String IMAGE_CONTENT_PART_TYPE = "image_url";
 
   static final String SUBMIT_TOOL_OUTPUTS_REQUIRED_ACTION_TYPE = "submit_tool_outputs";
+
+  static final String WANDB_INTEGRATION_TYPE = "wandb";
 }

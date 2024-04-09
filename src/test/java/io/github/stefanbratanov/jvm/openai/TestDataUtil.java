@@ -2,6 +2,7 @@ package io.github.stefanbratanov.jvm.openai;
 
 import io.github.stefanbratanov.jvm.openai.ChatMessage.UserMessage.UserMessageWithContentParts.ContentPart;
 import io.github.stefanbratanov.jvm.openai.CreateChatCompletionRequest.ResponseFormat;
+import io.github.stefanbratanov.jvm.openai.CreateFineTuningJobRequest.Integration;
 import io.github.stefanbratanov.jvm.openai.ThreadMessage.Content.ImageFileContent;
 import io.github.stefanbratanov.jvm.openai.ThreadMessage.Content.TextContent;
 import io.github.stefanbratanov.jvm.openai.ThreadMessage.Content.TextContent.Text.Annotation;
@@ -107,6 +108,8 @@ public class TestDataUtil {
                 Optional.of(oneOf("auto", randomInt(1, 50)))))
         .suffix(randomString(1, 40))
         .validationFile(randomString(10))
+        .integrations(listOf(randomInt(1, 5), this::randomIntegration))
+        .seed(randomInt())
         .build();
   }
 
@@ -398,6 +401,16 @@ public class TestDataUtil {
         .build();
   }
 
+  private Integration randomIntegration() {
+    return oneOf(
+        Integration.Wandb.newBuilder()
+            .project(randomString(5, 20))
+            .name(randomString(5, 20))
+            .entity(randomString(5, 20))
+            .tags(randomKeyValueMap(randomInt(1, 10), () -> randomString(5), () -> randomString(6)))
+            .build());
+  }
+
   private StepDetails randomStepDetails() {
     return oneOf(
         new MessageCreationStepDetails(
@@ -474,12 +487,17 @@ public class TestDataUtil {
   }
 
   private Map<String, String> randomMetadata() {
-    int length = randomInt(1, 16);
-    Map<String, String> metadata = new HashMap<>();
+    return randomKeyValueMap(
+        randomInt(1, 16), () -> randomString(3, 64), () -> randomString(10, 512));
+  }
+
+  private Map<String, String> randomKeyValueMap(
+      int length, Supplier<String> keyGenerator, Supplier<String> valueGenerator) {
+    Map<String, String> keyValueMap = new HashMap<>();
     for (int i = 0; i < length; i++) {
-      metadata.put(randomString(3, 64), randomString(10, 512));
+      keyValueMap.put(keyGenerator.get(), valueGenerator.get());
     }
-    return metadata;
+    return keyValueMap;
   }
 
   private ChatCompletion.Choice randomChatCompletionChoice() {
