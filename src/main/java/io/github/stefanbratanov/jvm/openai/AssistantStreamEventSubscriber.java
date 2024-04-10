@@ -1,6 +1,12 @@
 package io.github.stefanbratanov.jvm.openai;
 
-/** An interface which is used to subscribe to assistant events emitted when streaming a Run. */
+/**
+ * An interface which is used to subscribe to assistant events emitted when streaming a Run.
+ *
+ * @see <a
+ *     href="https://platform.openai.com/docs/api-reference/assistants-streaming/events">Assistant
+ *     stream events</a>
+ */
 public interface AssistantStreamEventSubscriber {
 
   /** Will be called when the event data is {@link Thread} */

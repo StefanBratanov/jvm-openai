@@ -41,11 +41,7 @@ public final class RunsClient extends OpenAIAssistantsClient {
    * @throws OpenAIException in case of API errors
    */
   public ThreadRun createRun(String threadId, CreateRunRequest request) {
-    HttpRequest httpRequest =
-        newHttpRequestBuilder()
-            .uri(baseUrl.resolve(Endpoint.THREADS.getPath() + "/" + threadId + RUNS_SEGMENT))
-            .POST(createBodyPublisher(request))
-            .build();
+    HttpRequest httpRequest = createRunPostRequest(threadId, request);
     HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
     return deserializeResponse(httpResponse.body(), ThreadRun.class);
   }
@@ -53,18 +49,26 @@ public final class RunsClient extends OpenAIAssistantsClient {
   /**
    * Create a run and stream the result of executing it.
    *
-   * @param subscriber an implementation of {@link AssistantStreamEventSubscriber} which will handle
-   *     the incoming events
+   * @throws OpenAIException in case of API errors
+   */
+  public Stream<AssistantStreamEvent> createRunAndStream(
+      String threadId, CreateRunRequest request) {
+    validateStreamRequest(request::stream);
+    HttpRequest httpRequest = createRunPostRequest(threadId, request);
+    return getAssistantStreamEvents(httpRequest);
+  }
+
+  /**
+   * Same as {@link #createRunAndStream(String, CreateRunRequest)} but can pass a {@link
+   * AssistantStreamEventSubscriber} implementation instead of using a {@link
+   * Stream<AssistantStreamEvent>}
+   *
    * @throws OpenAIException in case of API errors
    */
   public void createRunAndStream(
       String threadId, CreateRunRequest request, AssistantStreamEventSubscriber subscriber) {
     validateStreamRequest(request::stream);
-    HttpRequest httpRequest =
-        newHttpRequestBuilder()
-            .uri(baseUrl.resolve(Endpoint.THREADS.getPath() + "/" + threadId + RUNS_SEGMENT))
-            .POST(createBodyPublisher(request))
-            .build();
+    HttpRequest httpRequest = createRunPostRequest(threadId, request);
     streamAndHandleAssistantEvents(httpRequest, subscriber);
   }
 
@@ -74,11 +78,7 @@ public final class RunsClient extends OpenAIAssistantsClient {
    * @throws OpenAIException in case of API errors
    */
   public ThreadRun createThreadAndRun(CreateThreadAndRunRequest request) {
-    HttpRequest httpRequest =
-        newHttpRequestBuilder()
-            .uri(baseUrl.resolve(Endpoint.THREADS.getPath() + RUNS_SEGMENT))
-            .POST(createBodyPublisher(request))
-            .build();
+    HttpRequest httpRequest = createThreadAndRunPostRequest(request);
     HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
     return deserializeResponse(httpResponse.body(), ThreadRun.class);
   }
@@ -86,18 +86,26 @@ public final class RunsClient extends OpenAIAssistantsClient {
   /**
    * Create a thread and run it in one request and stream the result of executing it.
    *
-   * @param subscriber an implementation of {@link AssistantStreamEventSubscriber} which will handle
-   *     the incoming events
+   * @throws OpenAIException in case of API errors
+   */
+  public Stream<AssistantStreamEvent> createThreadAndRunAndStream(
+      CreateThreadAndRunRequest request) {
+    validateStreamRequest(request::stream);
+    HttpRequest httpRequest = createThreadAndRunPostRequest(request);
+    return getAssistantStreamEvents(httpRequest);
+  }
+
+  /**
+   * Same as {@link #createThreadAndRunAndStream(CreateThreadAndRunRequest)} but can pass a {@link
+   * AssistantStreamEventSubscriber} implementation instead of using a {@link
+   * Stream<AssistantStreamEvent>}
+   *
    * @throws OpenAIException in case of API errors
    */
   public void createThreadAndRunAndStream(
       CreateThreadAndRunRequest request, AssistantStreamEventSubscriber subscriber) {
     validateStreamRequest(request::stream);
-    HttpRequest httpRequest =
-        newHttpRequestBuilder()
-            .uri(baseUrl.resolve(Endpoint.THREADS.getPath() + RUNS_SEGMENT))
-            .POST(createBodyPublisher(request))
-            .build();
+    HttpRequest httpRequest = createThreadAndRunPostRequest(request);
     streamAndHandleAssistantEvents(httpRequest, subscriber);
   }
 
@@ -222,19 +230,7 @@ public final class RunsClient extends OpenAIAssistantsClient {
    */
   public ThreadRun submitToolOutputs(
       String threadId, String runId, SubmitToolOutputsRequest request) {
-    HttpRequest httpRequest =
-        newHttpRequestBuilder()
-            .uri(
-                baseUrl.resolve(
-                    Endpoint.THREADS.getPath()
-                        + "/"
-                        + threadId
-                        + RUNS_SEGMENT
-                        + "/"
-                        + runId
-                        + "/submit_tool_outputs"))
-            .POST(createBodyPublisher(request))
-            .build();
+    HttpRequest httpRequest = createSubmitToolOutputsPostRequest(threadId, runId, request);
     HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
     return deserializeResponse(httpResponse.body(), ThreadRun.class);
   }
@@ -243,8 +239,20 @@ public final class RunsClient extends OpenAIAssistantsClient {
    * Same as {@link #submitToolOutputs(String, String, SubmitToolOutputsRequest)} but the result of
    * executing the thread run will be streamed
    *
-   * @param subscriber an implementation of {@link AssistantStreamEventSubscriber} which will handle
-   *     the incoming events
+   * @throws OpenAIException in case of API errors
+   */
+  public Stream<AssistantStreamEvent> submitToolOutputsAndStream(
+      String threadId, String runId, SubmitToolOutputsRequest request) {
+    validateStreamRequest(request::stream);
+    HttpRequest httpRequest = createSubmitToolOutputsPostRequest(threadId, runId, request);
+    return getAssistantStreamEvents(httpRequest);
+  }
+
+  /**
+   * Same as {@link #submitToolOutputsAndStream(String, String, SubmitToolOutputsRequest)} but can
+   * pass a {@link AssistantStreamEventSubscriber} implementation instead of using a {@link
+   * Stream<AssistantStreamEvent>}
+   *
    * @throws OpenAIException in case of API errors
    */
   public void submitToolOutputsAndStream(
@@ -253,19 +261,7 @@ public final class RunsClient extends OpenAIAssistantsClient {
       SubmitToolOutputsRequest request,
       AssistantStreamEventSubscriber subscriber) {
     validateStreamRequest(request::stream);
-    HttpRequest httpRequest =
-        newHttpRequestBuilder()
-            .uri(
-                baseUrl.resolve(
-                    Endpoint.THREADS.getPath()
-                        + "/"
-                        + threadId
-                        + RUNS_SEGMENT
-                        + "/"
-                        + runId
-                        + "/submit_tool_outputs"))
-            .POST(createBodyPublisher(request))
-            .build();
+    HttpRequest httpRequest = createSubmitToolOutputsPostRequest(threadId, runId, request);
     streamAndHandleAssistantEvents(httpRequest, subscriber);
   }
 
@@ -292,16 +288,70 @@ public final class RunsClient extends OpenAIAssistantsClient {
     return deserializeResponse(httpResponse.body(), ThreadRun.class);
   }
 
-  private record AssistantStreamEvent(String event, String data) {}
+  private HttpRequest createRunPostRequest(String threadId, CreateRunRequest request) {
+    return newHttpRequestBuilder()
+        .uri(baseUrl.resolve(Endpoint.THREADS.getPath() + "/" + threadId + RUNS_SEGMENT))
+        .POST(createBodyPublisher(request))
+        .build();
+  }
+
+  private HttpRequest createThreadAndRunPostRequest(CreateThreadAndRunRequest request) {
+    return newHttpRequestBuilder()
+        .uri(baseUrl.resolve(Endpoint.THREADS.getPath() + RUNS_SEGMENT))
+        .POST(createBodyPublisher(request))
+        .build();
+  }
+
+  private HttpRequest createSubmitToolOutputsPostRequest(
+      String threadId, String runId, SubmitToolOutputsRequest request) {
+    return newHttpRequestBuilder()
+        .uri(
+            baseUrl.resolve(
+                Endpoint.THREADS.getPath()
+                    + "/"
+                    + threadId
+                    + RUNS_SEGMENT
+                    + "/"
+                    + runId
+                    + "/submit_tool_outputs"))
+        .POST(createBodyPublisher(request))
+        .build();
+  }
+
+  private record RawAssistantStreamEvent(String event, String data) {}
+
+  private Stream<AssistantStreamEvent> getAssistantStreamEvents(HttpRequest httpRequest) {
+    return streamRawAssistantEvents(httpRequest)
+        .map(
+            rawAssistantStreamEvent -> {
+              String event = rawAssistantStreamEvent.event;
+              String rawData = rawAssistantStreamEvent.data;
+              AssistantStreamEvent.Data data = null;
+              if (event.startsWith("thread.run.step.delta")) {
+                data = deserializeData(rawData, ThreadRunStepDelta.class);
+              } else if (event.startsWith("thread.run.step")) {
+                data = deserializeData(rawData, ThreadRunStep.class);
+              } else if (event.startsWith("thread.run")) {
+                data = deserializeData(rawData, ThreadRun.class);
+              } else if (event.startsWith("thread.message.delta")) {
+                data = deserializeData(rawData, ThreadMessageDelta.class);
+              } else if (event.startsWith("thread.message")) {
+                data = deserializeData(rawData, ThreadMessage.class);
+              } else if (event.startsWith("thread")) {
+                data = deserializeData(rawData, Thread.class);
+              }
+              return new AssistantStreamEvent(event, data);
+            });
+  }
 
   private void streamAndHandleAssistantEvents(
       HttpRequest httpRequest, AssistantStreamEventSubscriber subscriber) {
-    CompletableFuture.supplyAsync(() -> streamAssistantEvents(httpRequest))
+    CompletableFuture.supplyAsync(() -> streamRawAssistantEvents(httpRequest))
         .thenAccept(
-            assistantStreamEvents ->
-                assistantStreamEvents.forEach(
-                    assistantStreamEvent ->
-                        handleAssistantStreamEvent(assistantStreamEvent, subscriber)))
+            rawAssistantStreamEvents ->
+                rawAssistantStreamEvents.forEach(
+                    rawAssistantStreamEvent ->
+                        handleRawAssistantStreamEvent(rawAssistantStreamEvent, subscriber)))
         .whenComplete(
             (result, ex) -> {
               if (ex != null) {
@@ -311,15 +361,15 @@ public final class RunsClient extends OpenAIAssistantsClient {
             });
   }
 
-  private Stream<AssistantStreamEvent> streamAssistantEvents(HttpRequest httpRequest) {
+  private Stream<RawAssistantStreamEvent> streamRawAssistantEvents(HttpRequest httpRequest) {
     Stream<String> sseEvents = streamServerSentEvents(httpRequest);
-    return StreamSupport.stream(new AssistantStreamEventSpliterator(sseEvents), false);
+    return StreamSupport.stream(new RawAssistantStreamEventSpliterator(sseEvents), false);
   }
 
-  private void handleAssistantStreamEvent(
-      AssistantStreamEvent assistantStreamEvent, AssistantStreamEventSubscriber subscriber) {
-    String event = assistantStreamEvent.event;
-    String data = assistantStreamEvent.data;
+  private void handleRawAssistantStreamEvent(
+      RawAssistantStreamEvent rawAssistantStreamEvent, AssistantStreamEventSubscriber subscriber) {
+    String event = rawAssistantStreamEvent.event;
+    String data = rawAssistantStreamEvent.data;
     if (event.startsWith("thread.run.step.delta")) {
       subscriber.onThreadRunStepDelta(event, deserializeData(data, ThreadRunStepDelta.class));
     } else if (event.startsWith("thread.run.step")) {
@@ -337,17 +387,17 @@ public final class RunsClient extends OpenAIAssistantsClient {
     }
   }
 
-  private static class AssistantStreamEventSpliterator
-      implements Spliterator<AssistantStreamEvent> {
+  private static class RawAssistantStreamEventSpliterator
+      implements Spliterator<RawAssistantStreamEvent> {
 
     private final Iterator<String> sseEventsIterator;
 
-    AssistantStreamEventSpliterator(Stream<String> sseEvents) {
+    RawAssistantStreamEventSpliterator(Stream<String> sseEvents) {
       this.sseEventsIterator = sseEvents.iterator();
     }
 
     @Override
-    public boolean tryAdvance(Consumer<? super AssistantStreamEvent> action) {
+    public boolean tryAdvance(Consumer<? super RawAssistantStreamEvent> action) {
       String event = getNextValue();
       if (event == null) {
         return false;
@@ -356,12 +406,12 @@ public final class RunsClient extends OpenAIAssistantsClient {
       if (data == null) {
         return false;
       }
-      action.accept(new AssistantStreamEvent(event, data));
+      action.accept(new RawAssistantStreamEvent(event, data));
       return true;
     }
 
     @Override
-    public Spliterator<AssistantStreamEvent> trySplit() {
+    public Spliterator<RawAssistantStreamEvent> trySplit() {
       return null;
     }
 

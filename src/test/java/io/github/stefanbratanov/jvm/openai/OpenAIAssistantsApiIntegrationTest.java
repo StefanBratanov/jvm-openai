@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
@@ -215,10 +216,10 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
     Assistant assistant = assistantsClient.createAssistant(createAssistantRequest);
 
     // create run
-    CreateRunRequest createRequest =
+    CreateRunRequest createRunRequest =
         CreateRunRequest.newBuilder().assistantId(assistant.id()).build();
 
-    ThreadRun run = runsClient.createRun(threadId, createRequest);
+    ThreadRun run = runsClient.createRun(threadId, createRunRequest);
     String runId = run.id();
 
     assertThat(run.threadId()).isEqualTo(threadId);
@@ -243,8 +244,46 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
         Duration.ofSeconds(5),
         Duration.ofMinutes(1));
 
+    // create run with streaming
+    CreateRunRequest createRunStreamRequest =
+        CreateRunRequest.newBuilder().assistantId(assistant.id()).stream(true).build();
+
+    runsClient
+        .createRunAndStream(thread.id(), createRunRequest)
+        .forEach(
+            assistantStreamEvent -> {
+              System.out.println(assistantStreamEvent.event());
+              System.out.println(assistantStreamEvent.data());
+            });
+
+    // test with java.util.stream.Stream
+    Set<String> emittedEvents =
+        runsClient
+            .createRunAndStream(threadId, createRunStreamRequest)
+            .map(
+                assistantStreamEvent -> {
+                  assertThat(assistantStreamEvent.data()).isNotNull();
+                  return assistantStreamEvent.event();
+                })
+            // using a LinkedHashSet to preserve the order
+            .collect(Collectors.toCollection(LinkedHashSet::new));
+
+    assertThat(emittedEvents)
+        .containsExactly(
+            "thread.run.created",
+            "thread.run.queued",
+            "thread.run.in_progress",
+            "thread.run.step.created",
+            "thread.run.step.in_progress",
+            "thread.message.created",
+            "thread.message.in_progress",
+            "thread.message.delta",
+            "thread.message.completed",
+            "thread.run.step.completed",
+            "thread.run.completed");
+
     // create thread and run in one request and test streaming with a subscriber
-    CreateThreadAndRunRequest createThreadAndRunRequest =
+    CreateThreadAndRunRequest createThreadAndRunStreamRequest =
         CreateThreadAndRunRequest.newBuilder()
             .assistantId(assistant.id())
             .thread(
@@ -263,7 +302,7 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
     CompletableFuture<String> threadIdToDeleteFuture = new CompletableFuture<>();
 
     runsClient.createThreadAndRunAndStream(
-        createThreadAndRunRequest,
+        createThreadAndRunStreamRequest,
         new AssistantStreamEventSubscriber() {
           private final Set<String> emittedEvents = new LinkedHashSet<>();
 
@@ -327,8 +366,8 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
     assertThat(emittedEventsFuture)
         .succeedsWithin(Duration.ofMinutes(1))
         .satisfies(
-            emittedEvents ->
-                assertThat(emittedEvents)
+            events ->
+                assertThat(events)
                     .containsExactly(
                         "thread.created",
                         "thread.run.created",
@@ -349,10 +388,13 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
             threadIdToDelete -> threadsClient.deleteThread(threadIdToDelete).deleted());
 
     // retrieve runs
-    List<ThreadRun> runs = runsClient.listRuns(threadId, PaginationQueryParameters.none()).data();
+    List<ThreadRun> runs =
+        runsClient
+            .listRuns(threadId, PaginationQueryParameters.newBuilder().order("asc").build())
+            .data();
 
     assertThat(runs)
-        .hasSize(1)
+        .hasSize(2)
         .first()
         .usingRecursiveComparison()
         .ignoringFields(runFieldsToIgnore)

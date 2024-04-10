@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import java.util.List;
 
 /** Represents a message delta i.e. any changed fields on a message during streaming. */
-public record ThreadMessageDelta(String id, Delta delta) {
+public record ThreadMessageDelta(String id, Delta delta) implements AssistantStreamEvent.Data {
 
   /** The delta containing the fields that have changed on the Message. */
   public record Delta(String role, List<Content> content, List<String> fileIds) {

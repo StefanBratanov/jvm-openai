@@ -218,6 +218,12 @@ CreateRunRequest createRunRequest = CreateRunRequest.newBuilder()
     .instructions("Please address the user as Jane Doe. The user has a premium account.")
     .stream(true)   
     .build();
+// with java.util.stream.Stream
+runsClient.createRunAndStream(thread.id(), createRunRequest).forEach(assistantStreamEvent -> {
+    System.out.println(assistantStreamEvent.event());
+    System.out.println(assistantStreamEvent.data());
+});
+// with subscriber
 runsClient.createRunAndStream(thread.id(), createRunRequest, new AssistantStreamEventSubscriber() {
     @Override
     public void onThread(String event, Thread thread) {

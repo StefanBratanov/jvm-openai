@@ -22,7 +22,8 @@ public record ThreadRunStep(
     Long failedAt,
     Long completedAt,
     Map<String, String> metadata,
-    Usage usage) {
+    Usage usage)
+    implements AssistantStreamEvent.Data {
 
   /** The details of the run step. */
   @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")

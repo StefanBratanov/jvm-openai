@@ -20,7 +20,8 @@ public record ThreadMessage(
     String assistantId,
     String runId,
     List<String> fileIds,
-    Map<String, String> metadata) {
+    Map<String, String> metadata)
+    implements AssistantStreamEvent.Data {
 
   public record IncompleteDetails(String reason) {}
 

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import java.util.List;
 
 /** Represents a run step delta i.e. any changed fields on a run step during streaming.. */
-public record ThreadRunStepDelta(String id, Delta delta) {
+public record ThreadRunStepDelta(String id, Delta delta) implements AssistantStreamEvent.Data {
 
   /** The delta containing the fields that have changed on the run step. * */
   public record Delta(StepDetails stepDetails) {}

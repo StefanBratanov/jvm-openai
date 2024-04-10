@@ -23,7 +23,8 @@ public record ThreadRun(
     List<String> fileIds,
     Map<String, String> metadata,
     Usage usage,
-    Double temperature) {
+    Double temperature)
+    implements AssistantStreamEvent.Data {
 
   /** Details on the action required to continue the run. */
   public record RequiredAction(String type, SubmitToolOutputs submitToolOutputs) {
