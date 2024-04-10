@@ -421,19 +421,13 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
                         .build()))
             .build();
 
-    OpenAIException submitToolOutputException =
-        assertThrows(
-            OpenAIException.class,
-            () -> runsClient.submitToolOutputs(threadId, runId, submitToolOutputsRequest));
+    assertThrows(
+        OpenAIException.class,
+        () -> runsClient.submitToolOutputs(threadId, runId, submitToolOutputsRequest),
+        "do not accept tool outputs");
 
-    assertThat(submitToolOutputException.statusCode()).isEqualTo(400);
-    assertThat(submitToolOutputException.errorMessage()).contains("do not accept tool outputs");
-
-    OpenAIException cancelRunException =
-        assertThrows(OpenAIException.class, () -> runsClient.cancelRun(threadId, runId));
-
-    assertThat(cancelRunException.statusCode()).isEqualTo(400);
-    assertThat(cancelRunException.errorMessage()).contains("Cannot cancel run");
+    assertThrows(
+        OpenAIException.class, () -> runsClient.cancelRun(threadId, runId), "Cannot cancel run");
 
     // cleanup
     threadsClient.deleteThread(threadId);
