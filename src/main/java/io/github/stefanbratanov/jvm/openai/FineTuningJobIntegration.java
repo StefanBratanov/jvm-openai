@@ -62,7 +62,7 @@ public record FineTuningJobIntegration(String type, Wandb wandb) {
     }
   }
 
-  static FineTuningJobIntegration wandbIntegration(Wandb wandb) {
+  public static FineTuningJobIntegration wandbIntegration(Wandb wandb) {
     return new FineTuningJobIntegration(Constants.WANDB_INTEGRATION_TYPE, wandb);
   }
 }
