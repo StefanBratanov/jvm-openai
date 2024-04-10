@@ -244,17 +244,9 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
         Duration.ofSeconds(5),
         Duration.ofMinutes(1));
 
-    // create run with streaming
+    // create run with streaming enabled
     CreateRunRequest createRunStreamRequest =
         CreateRunRequest.newBuilder().assistantId(assistant.id()).stream(true).build();
-
-    runsClient
-        .createRunAndStream(thread.id(), createRunRequest)
-        .forEach(
-            assistantStreamEvent -> {
-              System.out.println(assistantStreamEvent.event());
-              System.out.println(assistantStreamEvent.data());
-            });
 
     // test with java.util.stream.Stream
     Set<String> emittedEvents =
@@ -282,7 +274,7 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
             "thread.run.step.completed",
             "thread.run.completed");
 
-    // create thread and run in one request and test streaming with a subscriber
+    // create thread and run in one request
     CreateThreadAndRunRequest createThreadAndRunStreamRequest =
         CreateThreadAndRunRequest.newBuilder()
             .assistantId(assistant.id())
@@ -301,6 +293,7 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
     CompletableFuture<Set<String>> emittedEventsFuture = new CompletableFuture<>();
     CompletableFuture<String> threadIdToDeleteFuture = new CompletableFuture<>();
 
+    // test with subscriber
     runsClient.createThreadAndRunAndStream(
         createThreadAndRunStreamRequest,
         new AssistantStreamEventSubscriber() {
