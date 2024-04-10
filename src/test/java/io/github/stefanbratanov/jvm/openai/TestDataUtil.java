@@ -2,7 +2,7 @@ package io.github.stefanbratanov.jvm.openai;
 
 import io.github.stefanbratanov.jvm.openai.ChatMessage.UserMessage.UserMessageWithContentParts.ContentPart;
 import io.github.stefanbratanov.jvm.openai.CreateChatCompletionRequest.ResponseFormat;
-import io.github.stefanbratanov.jvm.openai.CreateFineTuningJobRequest.Integration;
+import io.github.stefanbratanov.jvm.openai.FineTuningJobIntegration.Wandb;
 import io.github.stefanbratanov.jvm.openai.ThreadMessage.Content.ImageFileContent;
 import io.github.stefanbratanov.jvm.openai.ThreadMessage.Content.TextContent;
 import io.github.stefanbratanov.jvm.openai.ThreadMessage.Content.TextContent.Text.Annotation;
@@ -109,7 +109,7 @@ public class TestDataUtil {
         .suffix(randomString(1, 40))
         .validationFile(randomString(10))
         .integrations(listOf(randomInt(1, 5), this::randomIntegration))
-        .seed(randomInt())
+        .seed(randomInt(0, 2147483646))
         .build();
   }
 
@@ -127,7 +127,9 @@ public class TestDataUtil {
         oneOf("validating_files", "queued", "running", "succeeded", "failed", "cancelled"),
         randomInt(5, 1000),
         randomString(10),
-        randomString(12));
+        randomString(12),
+        listOf(randomInt(1, 5), this::randomIntegration),
+        randomInt(0, 2147483646));
   }
 
   public FineTuningClient.PaginatedFineTuningJobs randomPaginatedFineTuningJobs() {
@@ -140,9 +142,34 @@ public class TestDataUtil {
         randomString(12), randomLong(5, 120_000), oneOf("info", "warn", "error"), randomString(10));
   }
 
+  public FineTuningJobCheckpoint randomFineTuningJobCheckpoint() {
+    return new FineTuningJobCheckpoint(
+        randomString(5),
+        randomLong(1, 10_000),
+        randomString(5),
+        randomInt(0, 1000),
+        new FineTuningJobCheckpoint.Metrics(
+            randomDouble(),
+            randomDouble(),
+            randomDouble(),
+            randomDouble(),
+            randomDouble(),
+            randomDouble(),
+            randomDouble()),
+        randomString(5));
+  }
+
   public FineTuningClient.PaginatedFineTuningEvents randomPaginatedFineTuningEvents() {
     return new FineTuningClient.PaginatedFineTuningEvents(
         listOf(randomInt(1, 10), this::randomFineTuningJobEvent), randomBoolean());
+  }
+
+  public FineTuningClient.PaginatedFineTuningCheckpoints randomPaginatedFineTuningCheckpoints() {
+    return new FineTuningClient.PaginatedFineTuningCheckpoints(
+        listOf(randomInt(1, 10), this::randomFineTuningJobCheckpoint),
+        randomString(5),
+        randomString(5),
+        randomBoolean());
   }
 
   public File randomFile() {
@@ -225,7 +252,7 @@ public class TestDataUtil {
         .model(randomModel())
         .name(randomString(10, 256))
         .description(randomString(10, 512))
-        .instructions(randomString(15, 32768))
+        .instructions(randomString(15, 256000))
         .tools(listOf(randomInt(1, 5), this::randomTool))
         .fileIds(randomFileIds(20))
         .metadata(randomMetadata())
@@ -239,7 +266,7 @@ public class TestDataUtil {
         randomString(5, 256),
         randomString(10, 512),
         randomModel(),
-        randomString(15, 32768),
+        randomString(15, 256000),
         listOf(randomInt(1, 20), this::randomTool),
         listOf(randomInt(1, 20), () -> randomString(7)),
         randomMetadata());
@@ -271,7 +298,7 @@ public class TestDataUtil {
   public CreateMessageRequest randomCreateMessageRequest() {
     return CreateMessageRequest.newBuilder()
         .role(oneOf("user", "assistant"))
-        .content(randomString(1, 32768))
+        .content(randomString(1, 256000))
         .fileIds(randomFileIds(10))
         .metadata(randomMetadata())
         .build();
@@ -428,14 +455,17 @@ public class TestDataUtil {
         .build();
   }
 
-  private Integration randomIntegration() {
-    return oneOf(
-        Integration.Wandb.newBuilder()
-            .project(randomString(5, 20))
-            .name(randomString(5, 20))
-            .entity(randomString(5, 20))
-            .tags(randomKeyValueMap(randomInt(1, 10), () -> randomString(5), () -> randomString(6)))
-            .build());
+  private FineTuningJobIntegration randomIntegration() {
+    return oneOf(FineTuningJobIntegration.wandbIntegration(randomWandb()));
+  }
+
+  private Wandb randomWandb() {
+    return Wandb.newBuilder()
+        .project(randomString(5, 20))
+        .name(randomString(5, 20))
+        .entity(randomString(5, 20))
+        .tags(listOf(randomInt(1, 5), () -> randomString(5, 10)))
+        .build();
   }
 
   private StepDetails randomStepDetails() {
@@ -600,6 +630,10 @@ public class TestDataUtil {
 
   private String randomModel() {
     return oneOf(
+        "gpt-4-turbo",
+        "gpt-4-turbo-2024-04-09",
+        "gpt-4-0125-preview",
+        "gpt-4-turbo-preview",
         "gpt-4-1106-preview",
         "gpt-4-vision-preview",
         "gpt-4",
@@ -610,9 +644,9 @@ public class TestDataUtil {
         "gpt-4-32k-0613",
         "gpt-3.5-turbo",
         "gpt-3.5-turbo-16k",
-        "gpt-3.5-turbo-0301",
         "gpt-3.5-turbo-0613",
         "gpt-3.5-turbo-1106",
+        "gpt-3.5-turbo-0125",
         "gpt-3.5-turbo-16k-0613");
   }
 

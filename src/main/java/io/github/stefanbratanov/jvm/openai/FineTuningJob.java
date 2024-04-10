@@ -18,7 +18,9 @@ public record FineTuningJob(
     String status,
     Integer trainedTokens,
     String trainingFile,
-    String validationFile) {
+    String validationFile,
+    List<FineTuningJobIntegration> integrations,
+    int seed) {
 
   public record Error(String code, String message, String param) {}
 

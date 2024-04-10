@@ -64,7 +64,7 @@ public record ModifyAssistantRequest(
 
     /**
      * @param instructions The system instructions that the assistant uses. The maximum length is
-     *     32768 characters.
+     *     256,000 characters.
      */
     public Builder instructions(String instructions) {
       this.instructions = Optional.of(instructions);

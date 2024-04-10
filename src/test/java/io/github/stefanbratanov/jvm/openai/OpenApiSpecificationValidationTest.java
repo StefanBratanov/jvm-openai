@@ -95,11 +95,7 @@ class OpenApiSpecificationValidationTest {
 
     Response response = createResponseWithBody(serializeObject(fineTuningJob));
 
-    validate(
-        request,
-        response,
-        // https://github.com/openai/openai-openapi/issues/217
-        "Object instance has properties which are not allowed by the schema: [\"integrations\",\"seed\"]");
+    validate(request, response);
 
     FineTuningClient.PaginatedFineTuningJobs paginatedFineTuningJobs =
         testDataUtil.randomPaginatedFineTuningJobs();
@@ -120,6 +116,18 @@ class OpenApiSpecificationValidationTest {
         listEventsResponse,
         // https://github.com/openai/openai-openapi/pull/168
         "Object instance has properties which are not allowed by the schema: [\"has_more\"]");
+
+    FineTuningClient.PaginatedFineTuningCheckpoints paginatedFineTuningCheckpoints =
+        testDataUtil.randomPaginatedFineTuningCheckpoints();
+
+    Response listCheckpointsResponse =
+        createResponseWithBody(serializeObject(paginatedFineTuningCheckpoints));
+
+    validate(
+        "/" + Endpoint.FINE_TUNING.getPath() + "/{fine_tuning_job_id}/checkpoints",
+        Method.GET,
+        listCheckpointsResponse,
+        "Object has missing required properties ([\"n_epochs\"]");
   }
 
   @RepeatedTest(50)

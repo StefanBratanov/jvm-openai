@@ -9,7 +9,6 @@ public record FineTuningJobCheckpoint(
     long createdAt,
     String fineTunedModelCheckpoint,
     int stepNumber,
-    Long finishedAt,
     Metrics metrics,
     String fineTuningJobId) {
 
