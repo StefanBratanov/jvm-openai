@@ -257,7 +257,6 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
                   assertThat(assistantStreamEvent.data()).isNotNull();
                   return assistantStreamEvent.event();
                 })
-            // using a LinkedHashSet to preserve the order
             .collect(Collectors.toCollection(LinkedHashSet::new));
 
     assertThat(emittedEvents)

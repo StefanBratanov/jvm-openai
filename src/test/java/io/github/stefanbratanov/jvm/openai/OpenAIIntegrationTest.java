@@ -336,14 +336,12 @@ class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
     assertThat(fineTuningJobEvents.hasMore()).isFalse();
     assertThat(fineTuningJobEvents.data()).isNotEmpty();
 
-    // https://github.com/openai/openai-openapi/issues/217
-    //    FineTuningClient.PaginatedFineTuningCheckpoints fineTuningCheckpoints =
-    //        fineTuningClient.listFineTuningCheckpoints(
-    //            createdFineTuningJob.id(), Optional.empty(), Optional.empty());
-    //
-    //    assertThat(fineTuningCheckpoints.data()).isNotEmpty();
-    //    assertThat(fineTuningCheckpoints.firstId()).isNotNull();
-    //    assertThat(fineTuningCheckpoints.lastId()).isNotNull();
+    FineTuningClient.PaginatedFineTuningCheckpoints fineTuningCheckpoints =
+        fineTuningClient.listFineTuningCheckpoints(
+            createdFineTuningJob.id(), Optional.empty(), Optional.empty());
+
+    assertThat(fineTuningCheckpoints.hasMore()).isFalse();
+    assertThat(fineTuningCheckpoints.data()).isNotEmpty();
 
     FineTuningJob retrievedFineTuningJob =
         fineTuningClient.retrieveFineTuningJob(createdFineTuningJob.id());

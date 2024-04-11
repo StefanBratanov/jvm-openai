@@ -126,8 +126,7 @@ class OpenApiSpecificationValidationTest {
     validate(
         "/" + Endpoint.FINE_TUNING.getPath() + "/{fine_tuning_job_id}/checkpoints",
         Method.GET,
-        listCheckpointsResponse,
-        "Object has missing required properties ([\"n_epochs\"]");
+        listCheckpointsResponse);
   }
 
   @RepeatedTest(50)

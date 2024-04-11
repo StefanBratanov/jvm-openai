@@ -579,11 +579,7 @@ public class TestDataUtil {
   }
 
   private Map<Integer, Integer> randomLogitBias(int length) {
-    Map<Integer, Integer> logitBias = new HashMap<>();
-    for (int i = 0; i < length; i++) {
-      logitBias.put(randomInt(), randomInt(-100, 100));
-    }
-    return logitBias;
+    return randomKeyValueMap(length, this::randomInt, () -> randomInt(-100, 100));
   }
 
   private Map<String, String> randomMetadata() {
@@ -591,9 +587,9 @@ public class TestDataUtil {
         randomInt(1, 16), () -> randomString(3, 64), () -> randomString(10, 512));
   }
 
-  private Map<String, String> randomKeyValueMap(
-      int length, Supplier<String> keyGenerator, Supplier<String> valueGenerator) {
-    Map<String, String> keyValueMap = new HashMap<>();
+  private <K, V> Map<K, V> randomKeyValueMap(
+      int length, Supplier<K> keyGenerator, Supplier<V> valueGenerator) {
+    Map<K, V> keyValueMap = new HashMap<>();
     for (int i = 0; i < length; i++) {
       keyValueMap.put(keyGenerator.get(), valueGenerator.get());
     }
