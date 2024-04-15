@@ -1,0 +1,10 @@
+[
+  "none",
+  "auto",
+  {
+    "type": "text"
+  },
+  {
+    "type": "json_object"
+  }
+]

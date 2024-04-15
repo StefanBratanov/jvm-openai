@@ -25,16 +25,6 @@ public record CreateChatCompletionRequest(
     Optional<Object> toolChoice,
     Optional<String> user) {
 
-  public record ResponseFormat(String type) {
-    public static ResponseFormat text() {
-      return new ResponseFormat("text");
-    }
-
-    public static ResponseFormat json() {
-      return new ResponseFormat("json_object");
-    }
-  }
-
   public static Builder newBuilder() {
     return new Builder();
   }

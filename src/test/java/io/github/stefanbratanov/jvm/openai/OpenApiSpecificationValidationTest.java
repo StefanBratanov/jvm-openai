@@ -261,7 +261,12 @@ class OpenApiSpecificationValidationTest {
             serializeObject(createRunRequest));
 
     // https://github.com/openai/openai-openapi/pull/170
-    String reportMessageToIgnore = "Object has missing required properties ([\"thread_id\"]";
+    // https://github.com/openai/openai-openapi/pull/223
+    String[] reportMessageToIgnore =
+        new String[] {
+          "Object has missing required properties ([\"thread_id\"]",
+          "Object has missing required properties ([\"strategy\"]"
+        };
 
     validate(request, reportMessageToIgnore);
 
@@ -280,7 +285,12 @@ class OpenApiSpecificationValidationTest {
 
     Response response = createResponseWithBody(serializeObject(threadRun));
 
-    validate("/" + Endpoint.THREADS + "/{thread_id}/runs/{run_id}", Method.GET, response);
+    https: // github.com/openai/openai-openapi/pull/223
+    validate(
+        "/" + Endpoint.THREADS + "/{thread_id}/runs/{run_id}",
+        Method.GET,
+        response,
+        "Object has missing required properties ([\"strategy\"]");
 
     ThreadRunStep threadRunStep = testDataUtil.randomThreadRunStep();
 

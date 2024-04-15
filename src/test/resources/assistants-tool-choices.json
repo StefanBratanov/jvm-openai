@@ -1,0 +1,16 @@
+[
+  "none",
+  "auto",
+  {
+    "type": "code_interpreter"
+  },
+  {
+    "type": "retrieval"
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "foo"
+    }
+  }
+]

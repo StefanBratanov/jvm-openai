@@ -23,6 +23,7 @@ public record ThreadMessage(
     Map<String, String> metadata)
     implements AssistantStreamEvent.Data {
 
+  /** On an incomplete message, details about why the message is incomplete. */
   public record IncompleteDetails(String reason) {}
 
   @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")

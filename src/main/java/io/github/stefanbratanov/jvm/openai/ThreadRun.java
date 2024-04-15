@@ -17,13 +17,19 @@ public record ThreadRun(
     Long cancelledAt,
     Long failedAt,
     Long completedAt,
+    IncompleteDetails incompleteDetails,
     String model,
     String instructions,
     List<Tool> tools,
     List<String> fileIds,
     Map<String, String> metadata,
     Usage usage,
-    Double temperature)
+    Double temperature,
+    int maxPromptTokens,
+    int maxCompletionTokens,
+    TruncationStrategy truncationStrategy,
+    AssistantsToolChoice toolChoice,
+    AssistantsResponseFormat responseFormat)
     implements AssistantStreamEvent.Data {
 
   /** Details on the action required to continue the run. */
@@ -36,6 +42,9 @@ public record ThreadRun(
           Constants.SUBMIT_TOOL_OUTPUTS_REQUIRED_ACTION_TYPE, submitToolOutputs);
     }
   }
+
+  /** Details on why the run is incomplete. Will be `null` if the run is not incomplete. */
+  public record IncompleteDetails(String reason) {}
 
   /** The last error associated with this run. */
   public record LastError(String code, String message) {}

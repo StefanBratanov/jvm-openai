@@ -4,7 +4,9 @@ import static io.github.stefanbratanov.jvm.openai.TestUtil.getStringResource;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
@@ -51,5 +53,68 @@ class SerializationTest {
 
     assertThat(objectMapper.readValue(serialized, ThreadRunStepDelta.class))
         .isEqualTo(threadRunStepDelta);
+  }
+
+  @Test
+  void deserializesAssistantsToolChoice() throws JsonProcessingException {
+    List<AssistantsToolChoice> choices =
+        objectMapper.readValue(
+            getStringResource("/assistants-tool-choices.json"), new TypeReference<>() {});
+
+    assertThat(choices).hasSize(5);
+
+    assertThat(choices.get(0))
+        .isInstanceOfSatisfying(
+            AssistantsToolChoice.StringToolChoice.class,
+            choice -> assertThat(choice.choice()).isEqualTo("none"));
+    assertThat(choices.get(1))
+        .isInstanceOfSatisfying(
+            AssistantsToolChoice.StringToolChoice.class,
+            choice -> assertThat(choice.choice()).isEqualTo("auto"));
+    assertThat(choices.get(2))
+        .isInstanceOfSatisfying(
+            ToolChoice.class,
+            choice -> {
+              assertThat(choice.type()).isEqualTo("code_interpreter");
+              assertThat(choice.function()).isNull();
+            });
+    assertThat(choices.get(3))
+        .isInstanceOfSatisfying(
+            ToolChoice.class,
+            choice -> {
+              assertThat(choice.type()).isEqualTo("retrieval");
+              assertThat(choice.function()).isNull();
+            });
+    assertThat(choices.get(4))
+        .isInstanceOfSatisfying(
+            ToolChoice.class,
+            choice -> {
+              assertThat(choice.type()).isEqualTo("function");
+              assertThat(choice.function()).isEqualTo(new ToolChoice.Function("foo"));
+            });
+  }
+
+  @Test
+  void deserializesAssistantsResponseFormat() throws JsonProcessingException {
+    List<AssistantsResponseFormat> choices =
+        objectMapper.readValue(
+            getStringResource("/assistants-response-formats.json"), new TypeReference<>() {});
+
+    assertThat(choices).hasSize(4);
+
+    assertThat(choices.get(0))
+        .isInstanceOfSatisfying(
+            AssistantsResponseFormat.StringResponseFormat.class,
+            format -> assertThat(format.format()).isEqualTo("none"));
+    assertThat(choices.get(1))
+        .isInstanceOfSatisfying(
+            AssistantsResponseFormat.StringResponseFormat.class,
+            format -> assertThat(format.format()).isEqualTo("auto"));
+    assertThat(choices.get(2))
+        .isInstanceOfSatisfying(
+            ResponseFormat.class, format -> assertThat(format.type()).isEqualTo("text"));
+    assertThat(choices.get(3))
+        .isInstanceOfSatisfying(
+            ResponseFormat.class, format -> assertThat(format.type()).isEqualTo("json_object"));
   }
 }

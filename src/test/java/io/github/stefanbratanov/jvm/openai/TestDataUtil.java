@@ -1,7 +1,6 @@
 package io.github.stefanbratanov.jvm.openai;
 
 import io.github.stefanbratanov.jvm.openai.ChatMessage.UserMessage.UserMessageWithContentParts.ContentPart;
-import io.github.stefanbratanov.jvm.openai.CreateChatCompletionRequest.ResponseFormat;
 import io.github.stefanbratanov.jvm.openai.FineTuningJobIntegration.Wandb;
 import io.github.stefanbratanov.jvm.openai.ThreadMessage.Content.ImageFileContent;
 import io.github.stefanbratanov.jvm.openai.ThreadMessage.Content.TextContent;
@@ -41,7 +40,7 @@ public class TestDataUtil {
             .maxTokens(randomInt(0, 10_000))
             .n(randomInt(1, 128))
             .presencePenalty(randomDouble(-2.0, 2.0))
-            .responseFormat(oneOf(ResponseFormat.json(), ResponseFormat.text()))
+            .responseFormat(oneOf(ResponseFormat.text(), ResponseFormat.json()))
             .seed(randomInt())
             .stop(arrayOf(randomInt(0, 4), () -> randomString(5), String[]::new))
             .stream(randomBoolean())
@@ -366,6 +365,11 @@ public class TestDataUtil {
         .metadata(randomMetadata())
         .temperature(randomDouble(0, 2))
         .stream(randomBoolean())
+        .maxPromptTokens(randomInt(256, 10_000))
+        .maxCompletionTokens(randomInt(256, 10_000))
+        .truncationStrategy(randomTruncationStrategy())
+        .toolChoice(randomAssistantsToolChoice())
+        .responseFormat(randomAssistantsResponseFormat())
         .build();
   }
 
@@ -379,6 +383,11 @@ public class TestDataUtil {
         .metadata(randomMetadata())
         .temperature(randomDouble(0, 2))
         .stream(randomBoolean())
+        .maxPromptTokens(randomInt(256, 10_000))
+        .maxCompletionTokens(randomInt(256, 10_000))
+        .truncationStrategy(randomTruncationStrategy())
+        .toolChoice(randomAssistantsToolChoice())
+        .responseFormat(randomAssistantsResponseFormat())
         .build();
   }
 
@@ -407,13 +416,19 @@ public class TestDataUtil {
         randomLong(7, 888),
         randomLong(9, 345),
         randomLong(10, 2442),
+        new ThreadRun.IncompleteDetails(oneOf("max_completion_tokens", "max_prompt_tokens")),
         randomModel(),
         randomString(10, 200),
         listOf(randomInt(1, 20), this::randomTool),
         randomFileIds(20),
         randomMetadata(),
         randomUsage(),
-        randomDouble(0, 2));
+        randomDouble(0, 2),
+        randomInt(256, 10_000),
+        randomInt(256, 10_000),
+        randomTruncationStrategy(),
+        randomAssistantsToolChoice(),
+        randomAssistantsResponseFormat());
   }
 
   public ThreadRunStep randomThreadRunStep() {
@@ -466,6 +481,28 @@ public class TestDataUtil {
         .entity(randomString(5, 20))
         .tags(listOf(randomInt(1, 5), () -> randomString(5, 10)))
         .build();
+  }
+
+  private TruncationStrategy randomTruncationStrategy() {
+    return oneOf(TruncationStrategy.auto(), TruncationStrategy.lastMessages(randomInt(1, 100)));
+  }
+
+  private AssistantsToolChoice randomAssistantsToolChoice() {
+    return oneOf(
+        AssistantsToolChoice.none(),
+        AssistantsToolChoice.auto(),
+        AssistantsToolChoice.namedToolChoice(
+            ToolChoice.functionToolChoice(new ToolChoice.Function(randomString(5)))),
+        AssistantsToolChoice.namedToolChoice(ToolChoice.codeInterpreterToolChoice()),
+        AssistantsToolChoice.namedToolChoice(ToolChoice.retrievalToolChoice()));
+  }
+
+  private AssistantsResponseFormat randomAssistantsResponseFormat() {
+    return oneOf(
+        AssistantsResponseFormat.none(),
+        AssistantsResponseFormat.auto(),
+        AssistantsResponseFormat.responseFormat(ResponseFormat.text()),
+        AssistantsResponseFormat.responseFormat(ResponseFormat.json()));
   }
 
   private StepDetails randomStepDetails() {

@@ -13,7 +13,12 @@ public record CreateRunRequest(
     Optional<List<Tool>> tools,
     Optional<Map<String, String>> metadata,
     Optional<Double> temperature,
-    Optional<Boolean> stream) {
+    Optional<Boolean> stream,
+    Optional<Integer> maxPromptTokens,
+    Optional<Integer> maxCompletionTokens,
+    Optional<TruncationStrategy> truncationStrategy,
+    Optional<AssistantsToolChoice> toolChoice,
+    Optional<AssistantsResponseFormat> responseFormat) {
 
   public static Builder newBuilder() {
     return new Builder();
@@ -31,6 +36,11 @@ public record CreateRunRequest(
     private Optional<Map<String, String>> metadata = Optional.empty();
     private Optional<Double> temperature = Optional.empty();
     private Optional<Boolean> stream = Optional.empty();
+    private Optional<Integer> maxPromptTokens = Optional.empty();
+    private Optional<Integer> maxCompletionTokens = Optional.empty();
+    private Optional<TruncationStrategy> truncationStrategy = Optional.empty();
+    private Optional<AssistantsToolChoice> toolChoice = Optional.empty();
+    private Optional<AssistantsResponseFormat> responseFormat = Optional.empty();
 
     /**
      * @param assistantId The ID of the assistant to use to execute this run.
@@ -125,6 +135,57 @@ public record CreateRunRequest(
       return this;
     }
 
+    /**
+     * @param maxPromptTokens The maximum number of prompt tokens that may be used over the course
+     *     of the run. The run will make a best effort to use only the number of prompt tokens
+     *     specified, across multiple turns of the run. If the run exceeds the number of prompt
+     *     tokens specified, the run will end with status `complete`. See `incomplete_details` for
+     *     more info.
+     */
+    public Builder maxPromptTokens(int maxPromptTokens) {
+      this.maxPromptTokens = Optional.of(maxPromptTokens);
+      return this;
+    }
+
+    /**
+     * @param maxCompletionTokens The maximum number of completion tokens that may be used over the
+     *     course of the run. The run will make a best effort to use only the number of completion
+     *     tokens specified, across multiple turns of the run. If the run exceeds the number of
+     *     completion tokens specified, the run will end with status `complete`. See
+     *     `incomplete_details` for more info.
+     */
+    public Builder maxCompletionTokens(int maxCompletionTokens) {
+      this.maxCompletionTokens = Optional.of(maxCompletionTokens);
+      return this;
+    }
+
+    /**
+     * @param truncationStrategy The truncation strategy to use for the thread.
+     */
+    public Builder truncationStrategy(TruncationStrategy truncationStrategy) {
+      this.truncationStrategy = Optional.of(truncationStrategy);
+      return this;
+    }
+
+    /**
+     * @param toolChoice Controls which (if any) tool is called by the model.
+     */
+    public Builder toolChoice(AssistantsToolChoice toolChoice) {
+      this.toolChoice = Optional.of(toolChoice);
+      return this;
+    }
+
+    /**
+     * <b>Important:</b> when using JSON mode, you must also instruct the model to produce JSON
+     * yourself via a system or user message.
+     *
+     * @param responseFormat An object specifying the format that the model must output.
+     */
+    public Builder responseFormat(AssistantsResponseFormat responseFormat) {
+      this.responseFormat = Optional.of(responseFormat);
+      return this;
+    }
+
     public CreateRunRequest build() {
       return new CreateRunRequest(
           assistantId,
@@ -135,7 +196,12 @@ public record CreateRunRequest(
           tools,
           metadata,
           temperature,
-          stream);
+          stream,
+          maxPromptTokens,
+          maxCompletionTokens,
+          truncationStrategy,
+          toolChoice,
+          responseFormat);
     }
   }
 }
