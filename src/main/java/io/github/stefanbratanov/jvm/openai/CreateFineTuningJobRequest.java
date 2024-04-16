@@ -44,7 +44,7 @@ public record CreateFineTuningJobRequest(
        * @param batchSize (string or integer) Number of examples in each batch. A larger batch size
        *     means that model parameters are updated less frequently, but with lower variance.
        */
-      public Builder batchSize(Integer batchSize) {
+      public Builder batchSize(int batchSize) {
         this.batchSize = Optional.of(batchSize);
         return this;
       }
@@ -62,7 +62,7 @@ public record CreateFineTuningJobRequest(
        * @param learningRateMultiplier (string or integer) Scaling factor for the learning rate. A
        *     smaller learning rate may be useful to avoid overfitting.
        */
-      public Builder learningRateMultiplier(Integer learningRateMultiplier) {
+      public Builder learningRateMultiplier(double learningRateMultiplier) {
         this.learningRateMultiplier = Optional.of(learningRateMultiplier);
         return this;
       }
@@ -80,7 +80,7 @@ public record CreateFineTuningJobRequest(
        * @param nEpochs (string or integer) The number of epochs to train the model for. An epoch
        *     refers to one full cycle through the training dataset.
        */
-      public Builder nEpochs(Integer nEpochs) {
+      public Builder nEpochs(int nEpochs) {
         this.nEpochs = Optional.of(nEpochs);
         return this;
       }

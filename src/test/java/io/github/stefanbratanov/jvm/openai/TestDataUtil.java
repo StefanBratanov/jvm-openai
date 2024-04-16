@@ -103,7 +103,7 @@ public class TestDataUtil {
         .hyperparameters(
             new CreateFineTuningJobRequest.Hyperparameters(
                 Optional.of(oneOf("auto", randomInt(1, 256))),
-                Optional.of(oneOf("auto", randomInt(0, 10_000))),
+                Optional.of(oneOf("auto", randomDoubleExclusiveMin(0, 10_000))),
                 Optional.of(oneOf("auto", randomInt(1, 50)))))
         .suffix(randomString(1, 40))
         .validationFile(randomString(10))
@@ -756,6 +756,10 @@ public class TestDataUtil {
 
   private double randomDouble(double min, double max) {
     return random.doubles(1, min, max + EPSILON).findFirst().orElse(0.0);
+  }
+
+  private double randomDoubleExclusiveMin(double min, double max) {
+    return random.doubles(1, min + EPSILON, max + EPSILON).findFirst().orElse(0.0);
   }
 
   private long randomLong(long min, long max) {
