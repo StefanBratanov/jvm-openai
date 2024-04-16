@@ -59,7 +59,7 @@ public record CreateFineTuningJobRequest(
       }
 
       /**
-       * @param learningRateMultiplier (string or integer) Scaling factor for the learning rate. A
+       * @param learningRateMultiplier (string or number) Scaling factor for the learning rate. A
        *     smaller learning rate may be useful to avoid overfitting.
        */
       public Builder learningRateMultiplier(double learningRateMultiplier) {
