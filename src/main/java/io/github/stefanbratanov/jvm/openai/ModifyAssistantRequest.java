@@ -12,7 +12,10 @@ public record ModifyAssistantRequest(
     Optional<String> instructions,
     Optional<List<Tool>> tools,
     Optional<List<String>> fileIds,
-    Optional<Map<String, String>> metadata) {
+    Optional<Map<String, String>> metadata,
+    Optional<Double> temperature,
+    Optional<Double> topP,
+    Optional<AssistantsResponseFormat> responseFormat) {
 
   public static Builder newBuilder() {
     return new Builder();
@@ -29,6 +32,9 @@ public record ModifyAssistantRequest(
 
     private Optional<List<String>> fileIds = Optional.empty();
     private Optional<Map<String, String>> metadata = Optional.empty();
+    private Optional<Double> temperature = Optional.empty();
+    private Optional<Double> topP = Optional.empty();
+    private Optional<AssistantsResponseFormat> responseFormat = Optional.empty();
 
     /**
      * @param model ID of the model to use.
@@ -107,6 +113,34 @@ public record ModifyAssistantRequest(
       return this;
     }
 
+    /**
+     * @param temperature What sampling temperature to use, between 0 and 2. Higher values like 0.8
+     *     will make the output more random, while lower values like 0.2 will make it more focused
+     *     and deterministic.
+     */
+    public Builder temperature(double temperature) {
+      this.temperature = Optional.of(temperature);
+      return this;
+    }
+
+    /**
+     * @param topP An alternative to sampling with temperature, called nucleus sampling, where the
+     *     model considers the results of the tokens with top_p probability mass. So 0.1 means only
+     *     the tokens comprising the top 10% probability mass are considered.
+     */
+    public Builder topP(double topP) {
+      this.topP = Optional.of(topP);
+      return this;
+    }
+
+    /**
+     * @param responseFormat An object specifying the format that the model must output.
+     */
+    public Builder responseFormat(AssistantsResponseFormat responseFormat) {
+      this.responseFormat = Optional.of(responseFormat);
+      return this;
+    }
+
     public ModifyAssistantRequest build() {
       return new ModifyAssistantRequest(
           model,
@@ -115,7 +149,10 @@ public record ModifyAssistantRequest(
           instructions,
           tools.isEmpty() ? Optional.empty() : Optional.of(List.copyOf(tools)),
           fileIds,
-          metadata);
+          metadata,
+          temperature,
+          topP,
+          responseFormat);
     }
   }
 }

@@ -301,6 +301,24 @@ public class TestDataUtil {
         .tools(listOf(randomInt(1, 5), this::randomTool))
         .fileIds(randomFileIds(20))
         .metadata(randomMetadata())
+        .temperature(randomDouble(0, 2))
+        .topP(randomDouble(0, 1))
+        .responseFormat(randomAssistantsResponseFormat())
+        .build();
+  }
+
+  public ModifyAssistantRequest randomModifyAssistantRequest() {
+    return ModifyAssistantRequest.newBuilder()
+        .model(randomModel())
+        .name(randomString(10, 256))
+        .description(randomString(10, 512))
+        .instructions(randomString(15, 256000))
+        .tools(listOf(randomInt(1, 5), this::randomTool))
+        .fileIds(randomFileIds(20))
+        .metadata(randomMetadata())
+        .temperature(randomDouble(0, 2))
+        .topP(randomDouble(0, 1))
+        .responseFormat(randomAssistantsResponseFormat())
         .build();
   }
 
@@ -410,6 +428,7 @@ public class TestDataUtil {
         .tools(listOf(randomInt(1, 20), this::randomTool))
         .metadata(randomMetadata())
         .temperature(randomDouble(0, 2))
+        .topP(randomDouble(0, 1))
         .stream(randomBoolean())
         .maxPromptTokens(randomInt(256, 10_000))
         .maxCompletionTokens(randomInt(256, 10_000))
@@ -428,6 +447,7 @@ public class TestDataUtil {
         .tools(listOf(randomInt(1, 20), this::randomTool))
         .metadata(randomMetadata())
         .temperature(randomDouble(0, 2))
+        .topP(randomDouble(0, 1))
         .stream(randomBoolean())
         .maxPromptTokens(randomInt(256, 10_000))
         .maxCompletionTokens(randomInt(256, 10_000))
@@ -470,6 +490,7 @@ public class TestDataUtil {
         randomMetadata(),
         randomUsage(),
         randomDouble(0, 2),
+        randomDouble(0, 1),
         randomInt(256, 10_000),
         randomInt(256, 10_000),
         randomTruncationStrategy(),

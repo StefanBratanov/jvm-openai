@@ -25,6 +25,7 @@ public record ThreadRun(
     Map<String, String> metadata,
     Usage usage,
     Double temperature,
+    Double topP,
     int maxPromptTokens,
     int maxCompletionTokens,
     TruncationStrategy truncationStrategy,

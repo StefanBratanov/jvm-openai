@@ -11,7 +11,7 @@ import java.util.Optional;
 /**
  * Create large batches of API requests to run asynchronously.
  *
- * <p>Based on <a href=https://platform.openai.com/docs/api-reference/batch">Batch</a>
+ * <p>Based on <a href="https://platform.openai.com/docs/api-reference/batch">Batch</a>
  */
 public final class BatchClient extends OpenAIClient {
 

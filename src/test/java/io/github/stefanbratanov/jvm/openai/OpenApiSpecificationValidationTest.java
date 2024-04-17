@@ -215,6 +215,16 @@ class OpenApiSpecificationValidationTest {
     Response response = createResponseWithBody(serializeObject(assistant));
 
     validate(request, response);
+
+    ModifyAssistantRequest modifyAssistantRequest = testDataUtil.randomModifyAssistantRequest();
+
+    request =
+        createRequestWithBody(
+            Method.POST,
+            "/" + Endpoint.ASSISTANTS.getPath() + "/{assistant_id}",
+            serializeObject(modifyAssistantRequest));
+
+    validate(request, response);
   }
 
   @RepeatedTest(50)

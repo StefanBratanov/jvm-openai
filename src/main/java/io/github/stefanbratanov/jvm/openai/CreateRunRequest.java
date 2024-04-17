@@ -13,6 +13,7 @@ public record CreateRunRequest(
     Optional<List<Tool>> tools,
     Optional<Map<String, String>> metadata,
     Optional<Double> temperature,
+    Optional<Double> topP,
     Optional<Boolean> stream,
     Optional<Integer> maxPromptTokens,
     Optional<Integer> maxCompletionTokens,
@@ -35,6 +36,7 @@ public record CreateRunRequest(
     private Optional<List<Tool>> tools = Optional.empty();
     private Optional<Map<String, String>> metadata = Optional.empty();
     private Optional<Double> temperature = Optional.empty();
+    private Optional<Double> topP = Optional.empty();
     private Optional<Boolean> stream = Optional.empty();
     private Optional<Integer> maxPromptTokens = Optional.empty();
     private Optional<Integer> maxCompletionTokens = Optional.empty();
@@ -121,8 +123,18 @@ public record CreateRunRequest(
      *     will make the output more random, while lower values like 0.2 will make it more focused
      *     and deterministic.
      */
-    public Builder temperature(Double temperature) {
+    public Builder temperature(double temperature) {
       this.temperature = Optional.of(temperature);
+      return this;
+    }
+
+    /**
+     * @param topP An alternative to sampling with temperature, called nucleus sampling, where the
+     *     model considers the results of the tokens with top_p probability mass. So 0.1 means only
+     *     the tokens comprising the top 10% probability mass are considered.
+     */
+    public Builder topP(double topP) {
+      this.topP = Optional.of(topP);
       return this;
     }
 
@@ -130,7 +142,7 @@ public record CreateRunRequest(
      * @param stream If true, returns a stream of events that happen during the Run as server-sent
      *     events
      */
-    public Builder stream(Boolean stream) {
+    public Builder stream(boolean stream) {
       this.stream = Optional.of(stream);
       return this;
     }
@@ -196,6 +208,7 @@ public record CreateRunRequest(
           tools,
           metadata,
           temperature,
+          topP,
           stream,
           maxPromptTokens,
           maxCompletionTokens,
