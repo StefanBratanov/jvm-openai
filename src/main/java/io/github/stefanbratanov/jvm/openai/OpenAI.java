@@ -32,9 +32,10 @@ public final class OpenAI {
       URI baseUrl,
       String apiKey,
       Optional<String> organization,
+      Optional<String> project,
       HttpClient httpClient,
       Optional<Duration> requestTimeout) {
-    String[] authenticationHeaders = createAuthenticationHeaders(apiKey, organization);
+    String[] authenticationHeaders = createAuthenticationHeaders(apiKey, organization, project);
     audioClient = new AudioClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
     chatClient = new ChatClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
     embeddingsClient =
@@ -158,7 +159,8 @@ public final class OpenAI {
     return runsClient;
   }
 
-  private String[] createAuthenticationHeaders(String apiKey, Optional<String> organization) {
+  private String[] createAuthenticationHeaders(
+      String apiKey, Optional<String> organization, Optional<String> project) {
     List<String> authHeaders = new ArrayList<>();
     authHeaders.add("Authorization");
     authHeaders.add("Bearer " + apiKey);
@@ -166,6 +168,11 @@ public final class OpenAI {
         org -> {
           authHeaders.add("OpenAI-Organization");
           authHeaders.add(org);
+        });
+    project.ifPresent(
+        prj -> {
+          authHeaders.add("OpenAI-Project");
+          authHeaders.add(prj);
         });
     return authHeaders.toArray(new String[] {});
   }
@@ -186,6 +193,7 @@ public final class OpenAI {
     private String baseUrl = DEFAULT_BASE_URL;
 
     private Optional<String> organization = Optional.empty();
+    private Optional<String> project = Optional.empty();
     private Optional<HttpClient> httpClient = Optional.empty();
     private Optional<Duration> requestTimeout = Optional.empty();
 
@@ -202,11 +210,21 @@ public final class OpenAI {
     }
 
     /**
-     * @param organization for users who belong to multiple organizations specify which organization
-     *     will be used for the API requests
+     * @param organization for users who belong to multiple organizations and are accessing their
+     *     projects through their legacy user API key, specify which organization will be used for
+     *     the API requests
      */
     public Builder organization(String organization) {
       this.organization = Optional.of(organization);
+      return this;
+    }
+
+    /**
+     * @param project for users who are accessing their projects through their legacy user API key,
+     *     specify which project will be used for the API requests
+     */
+    public Builder project(String project) {
+      this.project = Optional.of(project);
       return this;
     }
 
@@ -235,6 +253,7 @@ public final class OpenAI {
           URI.create(baseUrl),
           apiKey,
           organization,
+          project,
           httpClient.orElseGet(HttpClient::newHttpClient),
           requestTimeout);
     }
