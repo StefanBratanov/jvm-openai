@@ -6,6 +6,7 @@ import static org.mockserver.mock.OpenAPIExpectation.openAPIExpectation;
 
 import java.time.Duration;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -56,10 +57,16 @@ public class OpenAIIntegrationTestBase {
       Supplier<Boolean> condition, Duration pollingInterval, Duration timeout) {
     ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
+    AtomicReference<Throwable> conditionFailure = new AtomicReference<>();
     CountDownLatch conditionSatisfiedLatch = new CountDownLatch(1);
     executor.scheduleAtFixedRate(
         () -> {
-          if (condition.get()) {
+          try {
+            if (condition.get()) {
+              conditionSatisfiedLatch.countDown();
+            }
+          } catch (Throwable ex) {
+            conditionFailure.set(ex);
             conditionSatisfiedLatch.countDown();
           }
         },
@@ -71,8 +78,12 @@ public class OpenAIIntegrationTestBase {
       if (!conditionSatisfiedLatch.await(timeout.toMillis(), TimeUnit.MILLISECONDS)) {
         Assertions.fail("The condition was not satisfied within the time limit.");
       }
+      Throwable failure = conditionFailure.get();
+      if (failure != null) {
+        Assertions.fail("Exception in condition check", failure);
+      }
     } catch (InterruptedException ex) {
-      Assertions.fail(ex);
+      Assertions.fail("The await was interrupted", ex);
     } finally {
       executor.shutdown();
     }

@@ -256,6 +256,44 @@ class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
   }
 
   @Test
+  void testBatchClient() {
+    FilesClient filesClient = openAI.filesClient();
+
+    UploadFileRequest uploadInputFileRequest =
+        UploadFileRequest.newBuilder()
+            .file(getTestResource("/batch-input-file.jsonl"))
+            .purpose("batch")
+            .build();
+
+    File inputFile = filesClient.uploadFile(uploadInputFileRequest);
+
+    BatchClient batchClient = openAI.batchClient();
+
+    CreateBatchRequest request =
+        CreateBatchRequest.newBuilder()
+            .inputFileId(inputFile.id())
+            .endpoint("/v1/chat/completions")
+            .completionWindow("24h")
+            .build();
+
+    Batch batch = batchClient.createBatch(request);
+
+    assertThat(batch.inputFileId()).isEqualTo(inputFile.id());
+    assertThat(batch.errors()).isNull();
+
+    // immediately cancel the batch, because can't wait for batch to finish in tests
+    Batch cancelledBatch = batchClient.cancelBatch(batch.id());
+
+    assertThat(cancelledBatch.id()).isEqualTo(batch.id());
+    assertThat(cancelledBatch.cancellingAt()).isNotNull();
+
+    // test retrieving
+    Batch retrievedBatch = batchClient.retrieveBatch(batch.id());
+
+    assertThat(retrievedBatch.id()).isEqualTo(batch.id());
+  }
+
+  @Test
   void testModerationsClient() {
     ModerationsClient moderationsClient = openAI.moderationsClient();
 

@@ -172,6 +172,51 @@ public class TestDataUtil {
         randomBoolean());
   }
 
+  public Batch randomBatch() {
+    return new Batch(
+        randomString(5),
+        randomString(15),
+        new Batch.Errors(
+            listOf(
+                randomInt(0, 5),
+                () ->
+                    new Batch.Errors.Data(
+                        randomString(4), randomString(10), randomString(7), randomInt(0, 1000)))),
+        randomString(6),
+        randomString(4),
+        oneOf(
+            "validating",
+            "failed",
+            "in_progress",
+            "finalizing",
+            "completed",
+            "expired",
+            "cancelling",
+            "cancelled"),
+        randomString(6),
+        randomString(6),
+        randomLong(0, 42_000),
+        randomLong(0, 42_000),
+        randomLong(0, 42_000),
+        randomLong(0, 42_000),
+        randomLong(0, 42_000),
+        randomLong(0, 42_000),
+        randomLong(0, 42_000),
+        randomLong(0, 42_000),
+        randomLong(0, 42_000),
+        new Batch.RequestCounts(randomInt(1, 20), randomInt(1, 15), randomInt(1, 5)),
+        randomMetadata());
+  }
+
+  public CreateBatchRequest randomCreateBatchRequest() {
+    return CreateBatchRequest.newBuilder()
+        .inputFileId(randomString(7))
+        .endpoint(oneOf("/v1/chat/completions"))
+        .completionWindow(oneOf("24h"))
+        .metadata(randomMetadata())
+        .build();
+  }
+
   public File randomFile() {
     return new File(
         randomString(15),

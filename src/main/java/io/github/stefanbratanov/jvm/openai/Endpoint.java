@@ -13,6 +13,7 @@ enum Endpoint {
   EMBEDDINCS("embeddings"),
   FILES("files"),
   FINE_TUNING("fine_tuning/jobs"),
+  BATCHES("batches"),
   // Beta
   THREADS("threads"),
   ASSISTANTS("assistants");

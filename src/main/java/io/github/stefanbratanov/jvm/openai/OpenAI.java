@@ -18,6 +18,7 @@ public final class OpenAI {
   private final ChatClient chatClient;
   private final EmbeddingsClient embeddingsClient;
   private final FineTuningClient fineTuningClient;
+  private final BatchClient batchClient;
   private final FilesClient filesClient;
   private final ImagesClient imagesClient;
   private final ModelsClient modelsClient;
@@ -40,6 +41,7 @@ public final class OpenAI {
         new EmbeddingsClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
     fineTuningClient =
         new FineTuningClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
+    batchClient = new BatchClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
     filesClient = new FilesClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
     imagesClient = new ImagesClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
     modelsClient = new ModelsClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
@@ -82,6 +84,14 @@ public final class OpenAI {
    */
   public FineTuningClient fineTuningClient() {
     return fineTuningClient;
+  }
+
+  /**
+   * @return a client based on <a
+   *     href="https://platform.openai.com/docs/api-reference/batch">Batch</a>
+   */
+  public BatchClient batchClient() {
+    return batchClient;
   }
 
   /**

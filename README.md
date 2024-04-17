@@ -49,6 +49,7 @@ ChatCompletion chatCompletion = chatClient.createChatCompletion(createChatComple
 | [Chat](https://platform.openai.com/docs/api-reference/chat)               |   ✔️   |
 | [Embeddings](https://platform.openai.com/docs/api-reference/embeddings)   |   ✔️   |
 | [Fine-tuning](https://platform.openai.com/docs/api-reference/fine-tuning) |   ✔️   |
+| [Batch](https://platform.openai.com/docs/api-reference/batch)             |   ✔️   |
 | [Files](https://platform.openai.com/docs/api-reference/files)             |   ✔️   |
 | [Images](https://platform.openai.com/docs/api-reference/images)           |   ✔️   |
 | [Models](https://platform.openai.com/docs/api-reference/models)           |   ✔️   |

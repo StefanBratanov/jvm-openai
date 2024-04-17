@@ -130,6 +130,24 @@ class OpenApiSpecificationValidationTest {
   }
 
   @RepeatedTest(50)
+  void validateBatch() {
+    CreateBatchRequest createBatchRequest = testDataUtil.randomCreateBatchRequest();
+
+    Request request =
+        createRequestWithBody(
+            Method.POST, "/" + Endpoint.BATCHES.getPath(), serializeObject(createBatchRequest));
+
+    Batch batch = testDataUtil.randomBatch();
+
+    Response response = createResponseWithBody(serializeObject(batch));
+
+    validate(
+        request,
+        response,
+        "Instance type (integer) does not match any allowed primitive type (allowed: [\"string\"]");
+  }
+
+  @RepeatedTest(50)
   void validateFiles() {
     File file = testDataUtil.randomFile();
 
