@@ -281,6 +281,16 @@ class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
     assertThat(batch.inputFileId()).isEqualTo(inputFile.id());
     assertThat(batch.errors()).isNull();
 
+    BatchClient.PaginatedBatches paginatedBatches =
+        batchClient.listBatches(Optional.empty(), Optional.empty());
+
+    assertThat(paginatedBatches.data()).isNotEmpty();
+    assertThat(paginatedBatches.firstId()).isNotNull();
+    assertThat(paginatedBatches.lastId()).isNotNull();
+    // assert that the batch we just created is listed
+    assertThat(paginatedBatches.data())
+        .anySatisfy(listedBatch -> assertThat(listedBatch.id()).isEqualTo(batch.id()));
+
     // immediately cancel the batch, because can't wait for batch to finish in tests
     Batch cancelledBatch = batchClient.cancelBatch(batch.id());
 

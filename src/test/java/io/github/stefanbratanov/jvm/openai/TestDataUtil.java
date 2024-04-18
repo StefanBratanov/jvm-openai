@@ -217,6 +217,14 @@ public class TestDataUtil {
         .build();
   }
 
+  public BatchClient.PaginatedBatches randomPaginatedBatches() {
+    return new BatchClient.PaginatedBatches(
+        listOf(randomInt(1, 20), this::randomBatch),
+        randomString(5),
+        randomString(5),
+        randomBoolean());
+  }
+
   public File randomFile() {
     return new File(
         randomString(15),

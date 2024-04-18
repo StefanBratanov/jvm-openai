@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.RepeatedTest;
 
 class OpenApiSpecificationValidationTest {
@@ -145,6 +146,16 @@ class OpenApiSpecificationValidationTest {
         request,
         response,
         "Instance type (integer) does not match any allowed primitive type (allowed: [\"string\"]");
+
+    BatchClient.PaginatedBatches paginatedBatches = testDataUtil.randomPaginatedBatches();
+
+    Response listBatchesResponse = createResponseWithBody(serializeObject(paginatedBatches));
+
+    validate(
+        "/" + Endpoint.BATCHES.getPath(),
+        Method.GET,
+        listBatchesResponse,
+        "Instance type (integer) does not match any allowed primitive type (allowed: [\"string\"]");
   }
 
   @RepeatedTest(50)
@@ -200,6 +211,7 @@ class OpenApiSpecificationValidationTest {
     validate(request, response);
   }
 
+  @Disabled("V1 is legacy")
   @RepeatedTest(50)
   void validateAssistants() {
     CreateAssistantRequest createAssistantRequest = testDataUtil.randomCreateAssistantRequest();
@@ -227,6 +239,7 @@ class OpenApiSpecificationValidationTest {
     validate(request, response);
   }
 
+  @Disabled("V1 is legacy")
   @RepeatedTest(50)
   void validateThreads() {
     CreateThreadRequest createThreadRequest = testDataUtil.randomCreateThreadRequest();
@@ -252,6 +265,7 @@ class OpenApiSpecificationValidationTest {
     validate(request, response);
   }
 
+  @Disabled("V1 is legacy")
   @RepeatedTest(50)
   void validateMessages() {
     CreateMessageRequest createMessageRequest = testDataUtil.randomCreateMessageRequest();
@@ -278,6 +292,7 @@ class OpenApiSpecificationValidationTest {
         response);
   }
 
+  @Disabled("V1 is legacy")
   @RepeatedTest(50)
   void validateRuns() {
     CreateRunRequest createRunRequest = testDataUtil.randomCreateRunRequest();

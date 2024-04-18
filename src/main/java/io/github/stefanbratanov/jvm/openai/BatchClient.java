@@ -6,6 +6,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -71,4 +73,28 @@ public final class BatchClient extends OpenAIClient {
     HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
     return deserializeResponse(httpResponse.body(), Batch.class);
   }
+
+  /**
+   * List your organization's batches
+   *
+   * @param after A cursor for use in pagination. after is an object ID that defines your place in
+   *     the list.
+   * @param limit A limit on the number of objects to be returned.
+   * @throws OpenAIException in case of API errors
+   */
+  public PaginatedBatches listBatches(Optional<String> after, Optional<String> limit) {
+    String queryParameters =
+        createQueryParameters(
+            Map.of(Constants.LIMIT_QUERY_PARAMETER, limit, Constants.AFTER_QUERY_PARAMETER, after));
+    HttpRequest httpRequest =
+        newHttpRequestBuilder()
+            .uri(baseUrl.resolve(Endpoint.BATCHES.getPath() + queryParameters))
+            .GET()
+            .build();
+    HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
+    return deserializeResponse(httpResponse.body(), PaginatedBatches.class);
+  }
+
+  public record PaginatedBatches(
+      List<Batch> data, String firstId, String lastId, boolean hasMore) {}
 }
