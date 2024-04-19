@@ -169,6 +169,27 @@ ModerationRequest request = ModerationRequest.newBuilder()
 Moderation moderation = moderationsClient.createModeration(request);
 boolean violence = moderation.results().get(0).categories().violence();
 ```
+- Create and execute a batch
+```java
+// Upload JSONL file containing requests for the batch
+FilesClient filesClient = openAI.filesClient();
+UploadFileRequest uploadInputFileRequest = UploadFileRequest.newBuilder()
+    .file(Paths.get("/tmp/batch-requests.jsonl"))
+    .purpose("batch")
+    .build();
+File inputFile = filesClient.uploadFile(uploadInputFileRequest);
+
+BatchClient batchClient = openAI.batchClient();
+CreateBatchRequest request = CreateBatchRequest.newBuilder()
+    .inputFileId(inputFile.id())
+    .endpoint("/v1/chat/completions")
+    .completionWindow("24h")
+    .build();
+Batch batch = batchClient.createBatch(request);
+// check status of the batch
+Batch retrievedBatch = batchClient.retrieveBatch(batch.id());
+System.out.println(retrievedBatch.status());      
+```
 - Build AI Assistant
 ```java
 AssistantsClient assistantsClient = openAI.assistantsClient();
