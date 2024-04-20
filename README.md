@@ -6,7 +6,7 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=StefanBratanov_jvm-openai&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=StefanBratanov_jvm-openai)
 
 A minimalistic unofficial [OpenAI API](https://platform.openai.com/docs/api-reference) client for the JVM, written in
-Java
+Java. The only dependency used is [Jackson](https://github.com/FasterXML/jackson) for JSON parsing.
 
 ## Add dependency
 
