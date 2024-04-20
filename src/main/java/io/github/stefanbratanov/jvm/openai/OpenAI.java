@@ -162,16 +162,16 @@ public final class OpenAI {
   private String[] createAuthenticationHeaders(
       String apiKey, Optional<String> organization, Optional<String> project) {
     List<String> authHeaders = new ArrayList<>();
-    authHeaders.add("Authorization");
+    authHeaders.add(Constants.AUTHORIZATION_HEADER);
     authHeaders.add("Bearer " + apiKey);
     organization.ifPresent(
         org -> {
-          authHeaders.add("OpenAI-Organization");
+          authHeaders.add(Constants.OPENAI_ORGANIZATION_HEADER);
           authHeaders.add(org);
         });
     project.ifPresent(
         prj -> {
-          authHeaders.add("OpenAI-Project");
+          authHeaders.add(Constants.OPENAI_PROJECT_HEADER);
           authHeaders.add(prj);
         });
     return authHeaders.toArray(new String[] {});

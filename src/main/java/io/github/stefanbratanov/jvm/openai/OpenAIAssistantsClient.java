@@ -14,14 +14,18 @@ import java.util.Optional;
  */
 class OpenAIAssistantsClient extends OpenAIClient {
 
+  private final String openAIBetaHeaderValue;
+
   OpenAIAssistantsClient(
       String[] authenticationHeaders, HttpClient httpClient, Optional<Duration> requestTimeout) {
     super(authenticationHeaders, httpClient, requestTimeout);
+    this.openAIBetaHeaderValue = "assistants=v1";
   }
 
   @Override
   HttpRequest.Builder newHttpRequestBuilder(String... headers) {
-    return super.newHttpRequestBuilder(headers).header("OpenAI-Beta", "assistants=v1");
+    return super.newHttpRequestBuilder(headers)
+        .header(Constants.OPENAI_BETA_HEADER, openAIBetaHeaderValue);
   }
 
   String createQueryParameters(PaginationQueryParameters paginationQueryParameters) {

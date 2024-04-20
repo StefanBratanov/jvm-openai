@@ -7,6 +7,11 @@ class Constants {
   static final String JSON_MEDIA_TYPE = "application/json";
   static final String CONTENT_TYPE_HEADER = "Content-Type";
   static final String ACCEPT_HEADER = "Accept";
+  static final String AUTHORIZATION_HEADER = "Authorization";
+
+  static final String OPENAI_ORGANIZATION_HEADER = "OpenAI-Organization";
+  static final String OPENAI_PROJECT_HEADER = "OpenAI-Project";
+  static final String OPENAI_BETA_HEADER = "OpenAI-Beta";
 
   static final String SYSTEM_MESSAGE_ROLE = "system";
   static final String USER_MESSAGE_ROLE = "user";

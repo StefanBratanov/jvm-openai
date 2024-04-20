@@ -66,10 +66,11 @@ ChatCompletion chatCompletion = chatClient.createChatCompletion(createChatComple
 
 ## More examples
 
-- Configure an organization
+- Configure an organization and project
 ```java
 OpenAI openAI = OpenAI.newBuilder(System.getenv("OPENAI_API_KEY"))
     .organization("org-zweLLamVlP6c5n66zY334ivs")
+    .project(System.getenv("PROJECT_ID"))        
     .build();
 ```
 - Configure a custom Java's `HttpClient`
