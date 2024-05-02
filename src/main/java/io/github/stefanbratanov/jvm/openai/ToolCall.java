@@ -16,15 +16,15 @@ import java.util.Map;
       value = ToolCall.CodeInterpreterToolCall.class,
       name = Constants.CODE_INTERPRETER_TOOL_CALL_TYPE),
   @JsonSubTypes.Type(
-      value = ToolCall.RetrievalToolCall.class,
-      name = Constants.RETRIEVAL_TOOL_CALL_TYPE),
+      value = ToolCall.FileSearchToolCall.class,
+      name = Constants.FILE_SEARCH_TOOL_CALL_TYPE),
   @JsonSubTypes.Type(
       value = ToolCall.FunctionToolCall.class,
       name = Constants.FUNCTION_TOOL_CALL_TYPE)
 })
 public sealed interface ToolCall
     permits ToolCall.CodeInterpreterToolCall,
-        ToolCall.RetrievalToolCall,
+        ToolCall.FileSearchToolCall,
         ToolCall.FunctionToolCall {
 
   /** The ID of the tool call. */
@@ -90,10 +90,10 @@ public sealed interface ToolCall
     }
   }
 
-  record RetrievalToolCall(String id, Map<String, Object> retrieval) implements ToolCall {
+  record FileSearchToolCall(String id, Map<String, Object> fileSearch) implements ToolCall {
     @Override
     public String type() {
-      return Constants.RETRIEVAL_TOOL_CALL_TYPE;
+      return Constants.FILE_SEARCH_TOOL_CALL_TYPE;
     }
   }
 
@@ -117,8 +117,8 @@ public sealed interface ToolCall
     return new CodeInterpreterToolCall(id, codeInterpreter);
   }
 
-  static RetrievalToolCall retrievalToolCall(String id) {
-    return new RetrievalToolCall(id, Collections.emptyMap());
+  static FileSearchToolCall fileSearchToolCall(String id) {
+    return new FileSearchToolCall(id, Collections.emptyMap());
   }
 
   static FunctionToolCall functionToolCall(String id, Function function) {

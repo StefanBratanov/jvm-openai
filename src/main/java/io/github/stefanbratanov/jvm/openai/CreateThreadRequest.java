@@ -6,12 +6,14 @@ import java.util.Map;
 import java.util.Optional;
 
 public record CreateThreadRequest(
-    Optional<List<Message>> messages, Optional<Map<String, String>> metadata) {
+    Optional<List<Message>> messages,
+    Optional<ToolResources> toolResources,
+    Optional<Map<String, String>> metadata) {
 
   public record Message(
       String role,
       String content,
-      Optional<List<String>> fileIds,
+      Optional<List<Attachment>> attachments,
       Optional<Map<String, String>> metadata) {
 
     public static Builder newBuilder() {
@@ -23,7 +25,7 @@ public record CreateThreadRequest(
       private String role = Constants.USER_MESSAGE_ROLE;
 
       private String content;
-      private Optional<List<String>> fileIds = Optional.empty();
+      private Optional<List<Attachment>> attachments = Optional.empty();
       private Optional<Map<String, String>> metadata = Optional.empty();
 
       /**
@@ -44,12 +46,11 @@ public record CreateThreadRequest(
       }
 
       /**
-       * @param fileIds A list of File IDs that the message should use. There can be a maximum of 10
-       *     files attached to a message. Useful for tools like retrieval and code_interpreter that
-       *     can access and use files.
+       * @param attachments A list of files attached to the message, and the tools they should be
+       *     added to.
        */
-      public Builder fileIds(List<String> fileIds) {
-        this.fileIds = Optional.of(fileIds);
+      public Builder attachments(List<Attachment> attachments) {
+        this.attachments = Optional.of(attachments);
         return this;
       }
 
@@ -65,7 +66,7 @@ public record CreateThreadRequest(
       }
 
       public Message build() {
-        return new Message(role, content, fileIds, metadata);
+        return new Message(role, content, attachments, metadata);
       }
     }
   }
@@ -78,6 +79,7 @@ public record CreateThreadRequest(
 
     private final List<Message> messages = new LinkedList<>();
 
+    private Optional<ToolResources> toolResources = Optional.empty();
     private Optional<Map<String, String>> metadata = Optional.empty();
 
     /**
@@ -97,6 +99,17 @@ public record CreateThreadRequest(
     }
 
     /**
+     * @param toolResources A set of resources that are made available to the assistant's tools in
+     *     this thread. The resources are specific to the type of tool. For example, the
+     *     code_interpreter tool requires a list of file IDs, while the file_search tool requires a
+     *     list of vector store IDs.
+     */
+    public Builder toolResources(ToolResources toolResources) {
+      this.toolResources = Optional.of(toolResources);
+      return this;
+    }
+
+    /**
      * @param metadata Set of 16 key-value pairs that can be attached to an object. This can be
      *     useful for storing additional information about the object in a structured format. Keys
      *     can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
@@ -108,7 +121,9 @@ public record CreateThreadRequest(
 
     public CreateThreadRequest build() {
       return new CreateThreadRequest(
-          messages.isEmpty() ? Optional.empty() : Optional.of(List.copyOf(messages)), metadata);
+          messages.isEmpty() ? Optional.empty() : Optional.of(List.copyOf(messages)),
+          toolResources,
+          metadata);
     }
   }
 }

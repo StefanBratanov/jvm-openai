@@ -17,15 +17,15 @@ import java.util.Map;
       value = DeltaToolCall.CodeInterpreterToolCall.class,
       name = Constants.CODE_INTERPRETER_TOOL_CALL_TYPE),
   @JsonSubTypes.Type(
-      value = DeltaToolCall.RetrievalToolCall.class,
-      name = Constants.RETRIEVAL_TOOL_CALL_TYPE),
+      value = DeltaToolCall.FileSearchToolCall.class,
+      name = Constants.FILE_SEARCH_TOOL_CALL_TYPE),
   @JsonSubTypes.Type(
       value = DeltaToolCall.FunctionToolCall.class,
       name = Constants.FUNCTION_TOOL_CALL_TYPE)
 })
 public sealed interface DeltaToolCall
     permits DeltaToolCall.CodeInterpreterToolCall,
-        DeltaToolCall.RetrievalToolCall,
+        DeltaToolCall.FileSearchToolCall,
         DeltaToolCall.FunctionToolCall {
 
   /** The index of the tool call in the tool calls array. */
@@ -98,11 +98,11 @@ public sealed interface DeltaToolCall
     }
   }
 
-  record RetrievalToolCall(int index, String id, Map<String, Object> retrieval)
+  record FileSearchToolCall(int index, String id, Map<String, Object> fileSearch)
       implements DeltaToolCall {
     @Override
     public String type() {
-      return Constants.RETRIEVAL_TOOL_CALL_TYPE;
+      return Constants.FILE_SEARCH_TOOL_CALL_TYPE;
     }
   }
 
@@ -127,8 +127,8 @@ public sealed interface DeltaToolCall
     return new CodeInterpreterToolCall(index, id, codeInterpreter);
   }
 
-  static RetrievalToolCall retrievalToolCall(int index, String id) {
-    return new RetrievalToolCall(index, id, Collections.emptyMap());
+  static FileSearchToolCall fileSearchToolCall(int index, String id) {
+    return new FileSearchToolCall(index, id, Collections.emptyMap());
   }
 
   static FunctionToolCall functionToolCall(int index, String id, Function function) {

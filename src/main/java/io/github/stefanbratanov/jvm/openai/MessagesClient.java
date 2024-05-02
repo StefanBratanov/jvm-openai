@@ -17,7 +17,6 @@ import java.util.Optional;
 public final class MessagesClient extends OpenAIAssistantsClient {
 
   private static final String MESSAGES_SEGMENT = "/messages";
-  private static final String FILES_SEGMENT = "/files";
 
   private final URI baseUrl;
 
@@ -75,34 +74,6 @@ public final class MessagesClient extends OpenAIAssistantsClient {
       List<ThreadMessage> data, String firstId, String lastId, boolean hasMore) {}
 
   /**
-   * Returns a list of message files.
-   *
-   * @throws OpenAIException in case of API errors
-   */
-  public PaginatedThreadMessageFiles listMessageFiles(
-      String threadId, String messageId, PaginationQueryParameters paginationQueryParameters) {
-    HttpRequest httpRequest =
-        newHttpRequestBuilder()
-            .uri(
-                baseUrl.resolve(
-                    Endpoint.THREADS.getPath()
-                        + "/"
-                        + threadId
-                        + MESSAGES_SEGMENT
-                        + "/"
-                        + messageId
-                        + FILES_SEGMENT
-                        + createQueryParameters(paginationQueryParameters)))
-            .GET()
-            .build();
-    HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
-    return deserializeResponse(httpResponse.body(), PaginatedThreadMessageFiles.class);
-  }
-
-  public record PaginatedThreadMessageFiles(
-      List<ThreadMessageFile> data, String firstId, String lastId, boolean hasMore) {}
-
-  /**
    * Retrieve a message.
    *
    * @throws OpenAIException in case of API errors
@@ -122,31 +93,6 @@ public final class MessagesClient extends OpenAIAssistantsClient {
             .build();
     HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
     return deserializeResponse(httpResponse.body(), ThreadMessage.class);
-  }
-
-  /**
-   * Retrieves a message file.
-   *
-   * @throws OpenAIException in case of API errors
-   */
-  public ThreadMessageFile retrieveMessageFile(String threadId, String messageId, String fileId) {
-    HttpRequest httpRequest =
-        newHttpRequestBuilder()
-            .uri(
-                baseUrl.resolve(
-                    Endpoint.THREADS.getPath()
-                        + "/"
-                        + threadId
-                        + MESSAGES_SEGMENT
-                        + "/"
-                        + messageId
-                        + FILES_SEGMENT
-                        + "/"
-                        + fileId))
-            .GET()
-            .build();
-    HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
-    return deserializeResponse(httpResponse.body(), ThreadMessageFile.class);
   }
 
   /**

@@ -7,7 +7,7 @@ import java.util.Optional;
 public record CreateMessageRequest(
     String role,
     String content,
-    Optional<List<String>> fileIds,
+    Optional<List<Attachment>> attachments,
     Optional<Map<String, String>> metadata) {
 
   public static Builder newBuilder() {
@@ -21,7 +21,7 @@ public record CreateMessageRequest(
     private String role = DEFAULT_ROLE;
 
     private String content;
-    private Optional<List<String>> fileIds = Optional.empty();
+    private Optional<List<Attachment>> attachments = Optional.empty();
     private Optional<Map<String, String>> metadata = Optional.empty();
 
     /**
@@ -47,12 +47,11 @@ public record CreateMessageRequest(
     }
 
     /**
-     * @param fileIds A list of File IDs that the message should use. There can be a maximum of 10
-     *     files attached to a message. Useful for tools like retrieval and code_interpreter that
-     *     can access and use files.
+     * @param attachments A list of files attached to the message, and the tools they should be
+     *     added to.
      */
-    public Builder fileIds(List<String> fileIds) {
-      this.fileIds = Optional.of(fileIds);
+    public Builder attachments(List<Attachment> attachments) {
+      this.attachments = Optional.of(attachments);
       return this;
     }
 
@@ -67,7 +66,7 @@ public record CreateMessageRequest(
     }
 
     public CreateMessageRequest build() {
-      return new CreateMessageRequest(role, content, fileIds, metadata);
+      return new CreateMessageRequest(role, content, attachments, metadata);
     }
   }
 }

@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.RepeatedTest;
 
 class OpenApiSpecificationValidationTest {
@@ -211,7 +210,6 @@ class OpenApiSpecificationValidationTest {
     validate(request, response);
   }
 
-  @Disabled("V1 is legacy")
   @RepeatedTest(50)
   void validateAssistants() {
     CreateAssistantRequest createAssistantRequest = testDataUtil.randomCreateAssistantRequest();
@@ -239,7 +237,6 @@ class OpenApiSpecificationValidationTest {
     validate(request, response);
   }
 
-  @Disabled("V1 is legacy")
   @RepeatedTest(50)
   void validateThreads() {
     CreateThreadRequest createThreadRequest = testDataUtil.randomCreateThreadRequest();
@@ -265,7 +262,6 @@ class OpenApiSpecificationValidationTest {
     validate(request, response);
   }
 
-  @Disabled("V1 is legacy")
   @RepeatedTest(50)
   void validateMessages() {
     CreateMessageRequest createMessageRequest = testDataUtil.randomCreateMessageRequest();
@@ -281,18 +277,8 @@ class OpenApiSpecificationValidationTest {
     Response response = createResponseWithBody(serializeObject(threadMessage));
 
     validate(request, response);
-
-    ThreadMessageFile threadMessageFile = testDataUtil.randomThreadMessageFile();
-
-    response = createResponseWithBody(serializeObject(threadMessageFile));
-
-    validate(
-        "/" + Endpoint.THREADS + "/{thread_id}/messages/{message_id}/files/{file_id}",
-        Method.GET,
-        response);
   }
 
-  @Disabled("V1 is legacy")
   @RepeatedTest(50)
   void validateRuns() {
     CreateRunRequest createRunRequest = testDataUtil.randomCreateRunRequest();

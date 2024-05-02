@@ -19,7 +19,7 @@ public record ThreadMessage(
     List<Content> content,
     String assistantId,
     String runId,
-    List<String> fileIds,
+    List<Attachment> attachments,
     Map<String, String> metadata)
     implements AssistantStreamEvent.Data {
 

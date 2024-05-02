@@ -16,7 +16,7 @@ public record ToolChoice(String type, Function function) implements AssistantsTo
     return new ToolChoice(Constants.CODE_INTERPRETER_TOOL_TYPE, null);
   }
 
-  public static ToolChoice retrievalToolChoice() {
-    return new ToolChoice(Constants.RETRIEVAL_TOOL_TYPE, null);
+  public static ToolChoice fileSearchToolChoice() {
+    return new ToolChoice(Constants.FILE_SEARCH_TOOL_TYPE, null);
   }
 }

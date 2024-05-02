@@ -11,7 +11,7 @@ public record CreateAssistantRequest(
     Optional<String> description,
     Optional<String> instructions,
     Optional<List<Tool>> tools,
-    Optional<List<String>> fileIds,
+    Optional<ToolResources> toolResources,
     Optional<Map<String, String>> metadata,
     Optional<Double> temperature,
     Optional<Double> topP,
@@ -33,7 +33,7 @@ public record CreateAssistantRequest(
 
     private final List<Tool> tools = new LinkedList<>();
 
-    private Optional<List<String>> fileIds = Optional.empty();
+    private Optional<ToolResources> toolResources = Optional.empty();
     private Optional<Map<String, String>> metadata = Optional.empty();
     private Optional<Double> temperature = Optional.empty();
     private Optional<Double> topP = Optional.empty();
@@ -97,12 +97,12 @@ public record CreateAssistantRequest(
     }
 
     /**
-     * @param fileIds A list of file IDs attached to this assistant. There can be a maximum of 20
-     *     files attached to the assistant. Files are ordered by their creation date in ascending
-     *     order.
+     * @param toolResources A set of resources that are used by the assistant's tools. The resources
+     *     are specific to the type of tool. For example, the code_interpreter tool requires a list
+     *     of file IDs, while the file_search tool requires a list of vector store IDs.
      */
-    public Builder fileIds(List<String> fileIds) {
-      this.fileIds = Optional.of(fileIds);
+    public Builder toolResources(ToolResources toolResources) {
+      this.toolResources = Optional.of(toolResources);
       return this;
     }
 
@@ -151,7 +151,7 @@ public record CreateAssistantRequest(
           description,
           instructions,
           tools.isEmpty() ? Optional.empty() : Optional.of(List.copyOf(tools)),
-          fileIds,
+          toolResources,
           metadata,
           temperature,
           topP,

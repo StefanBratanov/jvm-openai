@@ -12,11 +12,11 @@ import java.util.Optional;
   @JsonSubTypes.Type(
       value = Tool.CodeInterpreterTool.class,
       name = Constants.CODE_INTERPRETER_TOOL_TYPE),
-  @JsonSubTypes.Type(value = Tool.RetrievalTool.class, name = Constants.RETRIEVAL_TOOL_TYPE),
+  @JsonSubTypes.Type(value = Tool.FileSearchTool.class, name = Constants.FILE_SEARCH_TOOL_TYPE),
   @JsonSubTypes.Type(value = Tool.FunctionTool.class, name = Constants.FUNCTION_TOOL_TYPE)
 })
 public sealed interface Tool
-    permits Tool.CodeInterpreterTool, Tool.RetrievalTool, Tool.FunctionTool {
+    permits Tool.CodeInterpreterTool, Tool.FileSearchTool, Tool.FunctionTool {
   @JsonProperty(access = JsonProperty.Access.READ_ONLY)
   String type();
 
@@ -28,11 +28,11 @@ public sealed interface Tool
     }
   }
 
-  record RetrievalTool() implements Tool {
+  record FileSearchTool() implements Tool {
 
     @Override
     public String type() {
-      return Constants.RETRIEVAL_TOOL_TYPE;
+      return Constants.FILE_SEARCH_TOOL_TYPE;
     }
   }
 
@@ -94,8 +94,8 @@ public sealed interface Tool
     return new CodeInterpreterTool();
   }
 
-  static RetrievalTool retrievalTool() {
-    return new RetrievalTool();
+  static FileSearchTool fileSearchTool() {
+    return new FileSearchTool();
   }
 
   static FunctionTool functionTool(Function function) {

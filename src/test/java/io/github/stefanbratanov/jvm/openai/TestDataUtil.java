@@ -14,6 +14,7 @@ import io.github.stefanbratanov.jvm.openai.Tool.FunctionTool;
 import io.github.stefanbratanov.jvm.openai.ToolCall.CodeInterpreterToolCall.CodeInterpreter;
 import io.github.stefanbratanov.jvm.openai.ToolCall.CodeInterpreterToolCall.CodeInterpreter.Output.ImageOutput;
 import io.github.stefanbratanov.jvm.openai.ToolCall.FunctionToolCall;
+import io.github.stefanbratanov.jvm.openai.ToolResources.FileSearch.VectorStores;
 import java.util.*;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
@@ -307,7 +308,7 @@ public class TestDataUtil {
         .description(randomString(10, 512))
         .instructions(randomString(15, 256000))
         .tools(listOf(randomInt(1, 5), this::randomTool))
-        .fileIds(randomFileIds(20))
+        .toolResources(randomToolResources(true))
         .metadata(randomMetadata())
         .temperature(randomDouble(0, 2))
         .topP(randomDouble(0, 1))
@@ -322,7 +323,7 @@ public class TestDataUtil {
         .description(randomString(10, 512))
         .instructions(randomString(15, 256000))
         .tools(listOf(randomInt(1, 5), this::randomTool))
-        .fileIds(randomFileIds(20))
+        .toolResources(randomToolResources(false))
         .metadata(randomMetadata())
         .temperature(randomDouble(0, 2))
         .topP(randomDouble(0, 1))
@@ -339,8 +340,11 @@ public class TestDataUtil {
         randomModel(),
         randomString(15, 256000),
         listOf(randomInt(1, 20), this::randomTool),
-        listOf(randomInt(1, 20), () -> randomString(7)),
-        randomMetadata());
+        randomToolResources(false),
+        randomMetadata(),
+        randomDouble(0, 2),
+        randomDouble(0, 1),
+        randomAssistantsResponseFormat());
   }
 
   public CreateThreadRequest randomCreateThreadRequest() {
@@ -351,26 +355,37 @@ public class TestDataUtil {
                 () ->
                     CreateThreadRequest.Message.newBuilder()
                         .content(randomString(1, 32768))
-                        .fileIds(randomFileIds(10))
+                        .attachments(listOf(randomInt(1, 5), this::randomAttachment))
                         .metadata(randomMetadata())
                         .build()))
+        .toolResources(randomToolResources(true))
         .metadata(randomMetadata())
         .build();
   }
 
+  public Attachment randomAttachment() {
+    return new Attachment(
+        randomString(5),
+        listOf(randomInt(1, 2), () -> oneOf(Tool.codeInterpreterTool(), Tool.fileSearchTool())));
+  }
+
   public Thread randomThread() {
-    return new Thread(randomString(7), randomLong(1, 42_000), randomMetadata());
+    return new Thread(
+        randomString(7), randomLong(1, 42_000), randomToolResources(false), randomMetadata());
   }
 
   public ModifyThreadRequest randomModifyThreadRequest() {
-    return ModifyThreadRequest.newBuilder().metadata(randomMetadata()).build();
+    return ModifyThreadRequest.newBuilder()
+        .toolResources(randomToolResources(false))
+        .metadata(randomMetadata())
+        .build();
   }
 
   public CreateMessageRequest randomCreateMessageRequest() {
     return CreateMessageRequest.newBuilder()
         .role(oneOf("user", "assistant"))
         .content(randomString(1, 256000))
-        .fileIds(randomFileIds(10))
+        .attachments(listOf(randomInt(1, 3), this::randomAttachment))
         .metadata(randomMetadata())
         .build();
   }
@@ -397,7 +412,7 @@ public class TestDataUtil {
                     new ImageFileContent(new ImageFileContent.ImageFile(randomString(4))))),
         randomString(8),
         randomString(5),
-        randomFileIds(10),
+        listOf(randomInt(1, 3), this::randomAttachment),
         randomMetadata());
   }
 
@@ -418,12 +433,7 @@ public class TestDataUtil {
                         new ThreadMessageDelta.Delta.Content.ImageFileContent(
                             randomInt(0, 25),
                             new ThreadMessageDelta.Delta.Content.ImageFileContent.ImageFile(
-                                randomString(4))))),
-            randomFileIds(10)));
-  }
-
-  public ThreadMessageFile randomThreadMessageFile() {
-    return new ThreadMessageFile(randomString(7), randomLong(1, 9999), randomString(6));
+                                randomString(4)))))));
   }
 
   public CreateRunRequest randomCreateRunRequest() {
@@ -494,7 +504,6 @@ public class TestDataUtil {
         randomModel(),
         randomString(10, 200),
         listOf(randomInt(1, 20), this::randomTool),
-        randomFileIds(20),
         randomMetadata(),
         randomUsage(),
         randomDouble(0, 2),
@@ -569,7 +578,7 @@ public class TestDataUtil {
         AssistantsToolChoice.namedToolChoice(
             ToolChoice.functionToolChoice(new ToolChoice.Function(randomString(5)))),
         AssistantsToolChoice.namedToolChoice(ToolChoice.codeInterpreterToolChoice()),
-        AssistantsToolChoice.namedToolChoice(ToolChoice.retrievalToolChoice()));
+        AssistantsToolChoice.namedToolChoice(ToolChoice.fileSearchToolChoice()));
   }
 
   private AssistantsResponseFormat randomAssistantsResponseFormat() {
@@ -598,7 +607,7 @@ public class TestDataUtil {
 
   private DeltaToolCall randomDeltaToolCall() {
     return oneOf(
-        DeltaToolCall.retrievalToolCall(randomDeltaIndex(), randomString(5)),
+        DeltaToolCall.fileSearchToolCall(randomDeltaIndex(), randomString(5)),
         DeltaToolCall.functionToolCall(
             randomDeltaIndex(),
             randomString(5),
@@ -615,7 +624,7 @@ public class TestDataUtil {
     return oneOf(
         randomFunctionToolCall(true),
         randomCodeInterpreterToolCall(),
-        ToolCall.retrievalToolCall(randomString(5)));
+        ToolCall.fileSearchToolCall(randomString(5)));
   }
 
   private Usage randomUsage() {
@@ -666,8 +675,28 @@ public class TestDataUtil {
         new Images.Image(null, randomString(7), randomString(10)));
   }
 
-  private List<String> randomFileIds(int max) {
-    return listOf(randomInt(1, max), () -> randomString(7));
+  private ToolResources randomToolResources(boolean includeVectorStores) {
+    List<String> fileIds = listOf(randomInt(1, 20), () -> randomString(7));
+    String[] vectorStoreIds = arrayOf(1, () -> randomString(7), String[]::new);
+    VectorStores[] vectorStores =
+        arrayOf(
+            1,
+            () ->
+                new VectorStores(
+                    listOf(randomInt(1, 10_000), () -> randomString(7)), randomMetadata()),
+            VectorStores[]::new);
+    if (includeVectorStores) {
+      return oneOf(
+          ToolResources.codeInterpreterToolResources(fileIds),
+          ToolResources.fileSearchToolResources(vectorStoreIds),
+          ToolResources.fileSearchToolResources(vectorStores),
+          ToolResources.codeInterpreterAndFileSearchToolResources(fileIds, vectorStoreIds),
+          ToolResources.codeInterpreterAndFileSearchToolResources(fileIds, vectorStores));
+    }
+    return oneOf(
+        ToolResources.codeInterpreterToolResources(fileIds),
+        ToolResources.fileSearchToolResources(vectorStoreIds),
+        ToolResources.codeInterpreterAndFileSearchToolResources(fileIds, vectorStoreIds));
   }
 
   private ChatMessage randomChatMessage() {
@@ -767,7 +796,7 @@ public class TestDataUtil {
   }
 
   private Tool randomTool() {
-    return oneOf(randomFunctionTool(), Tool.retrievalTool(), Tool.codeInterpreterTool());
+    return oneOf(randomFunctionTool(), Tool.fileSearchTool(), Tool.codeInterpreterTool());
   }
 
   private DeltaToolCall randomCodeInterpreterDeltaToolCall() {

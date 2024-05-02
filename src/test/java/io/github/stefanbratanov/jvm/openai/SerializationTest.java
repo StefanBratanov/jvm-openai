@@ -82,7 +82,7 @@ class SerializationTest {
         .isInstanceOfSatisfying(
             ToolChoice.class,
             choice -> {
-              assertThat(choice.type()).isEqualTo("retrieval");
+              assertThat(choice.type()).isEqualTo("file_search");
               assertThat(choice.function()).isNull();
             });
     assertThat(choices.get(4))

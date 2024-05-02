@@ -9,7 +9,7 @@ import java.util.List;
 public record ThreadMessageDelta(String id, Delta delta) implements AssistantStreamEvent.Data {
 
   /** The delta containing the fields that have changed on the Message. */
-  public record Delta(String role, List<Content> content, List<String> fileIds) {
+  public record Delta(String role, List<Content> content) {
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
     @JsonSubTypes({

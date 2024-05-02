@@ -12,5 +12,8 @@ public record Assistant(
     String model,
     String instructions,
     List<Tool> tools,
-    List<String> fileIds,
-    Map<String, String> metadata) {}
+    ToolResources toolResources,
+    Map<String, String> metadata,
+    Double temperature,
+    Double topP,
+    AssistantsResponseFormat responseFormat) {}

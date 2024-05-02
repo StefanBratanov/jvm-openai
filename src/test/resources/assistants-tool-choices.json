@@ -5,7 +5,7 @@
     "type": "code_interpreter"
   },
   {
-    "type": "retrieval"
+    "type": "file_search"
   },
   {
     "type": "function",

@@ -21,7 +21,6 @@ public record ThreadRun(
     String model,
     String instructions,
     List<Tool> tools,
-    List<String> fileIds,
     Map<String, String> metadata,
     Usage usage,
     Double temperature,
