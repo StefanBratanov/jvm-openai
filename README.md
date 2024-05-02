@@ -57,12 +57,16 @@ ChatCompletion chatCompletion = chatClient.createChatCompletion(createChatComple
 
 #### Beta APIs
 
-| API                                                                     | Status |
-|-------------------------------------------------------------------------|:------:|
-| [Assistants](https://platform.openai.com/docs/api-reference/assistants) |   ✔️   |
-| [Threads](https://platform.openai.com/docs/api-reference/threads)       |   ✔️   |
-| [Messages](https://platform.openai.com/docs/api-reference/messages)     |   ✔️   |
-| [Runs](https://platform.openai.com/docs/api-reference/runs)             |   ✔️   |
+| API                                                                                                    | Status |
+|--------------------------------------------------------------------------------------------------------|:------:|
+| [Assistants](https://platform.openai.com/docs/api-reference/assistants)                                |   ✔️   |
+| [Threads](https://platform.openai.com/docs/api-reference/threads)                                      |   ✔️   |
+| [Messages](https://platform.openai.com/docs/api-reference/messages)                                    |   ✔️   |
+| [Runs](https://platform.openai.com/docs/api-reference/runs)                                            |   ✔️   |
+| [Run Steps](https://platform.openai.com/docs/api-reference/run-steps)                                  |   ✔️   |
+| [Vector Stores](https://platform.openai.com/docs/api-reference/vector-stores)                          |        |
+| [Vector Store Files](https://platform.openai.com/docs/api-reference/vector-stores-files)               |        |
+| [Vector Store File Batches](https://platform.openai.com/docs/api-reference/vector-stores-file-batches) |        |
 
 ## More examples
 
