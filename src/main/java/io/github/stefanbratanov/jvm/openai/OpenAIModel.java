@@ -34,7 +34,7 @@ public enum OpenAIModel {
   TTS_1("tts-1"),
   TTS_1_HD("tts-1-hd"),
 
-  // whisper (https://platform.openai.com/docs/models/whisper)
+  // Whisper (https://platform.openai.com/docs/models/whisper)
   WHISPER_1("whisper-1"),
 
   // Embeddings (https://platform.openai.com/docs/models/embeddings)

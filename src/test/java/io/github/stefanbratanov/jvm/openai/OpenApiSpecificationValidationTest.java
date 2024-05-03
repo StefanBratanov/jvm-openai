@@ -13,6 +13,7 @@ import com.atlassian.oai.validator.report.ValidationReport;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.github.stefanbratanov.jvm.openai.RunStepsClient.PaginatedThreadRunSteps;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.parser.OpenAPIV3Parser;
 import java.io.UncheckedIOException;
@@ -312,15 +313,6 @@ class OpenApiSpecificationValidationTest {
 
     validate("/" + Endpoint.THREADS + "/{thread_id}/runs/{run_id}", Method.GET, response);
 
-    ThreadRunStep threadRunStep = testDataUtil.randomThreadRunStep();
-
-    response = createResponseWithBody(serializeObject(threadRunStep));
-
-    validate(
-        "/" + Endpoint.THREADS + "/{thread_id}/runs/{run_id}/steps/{step_id}",
-        Method.GET,
-        response);
-
     SubmitToolOutputsRequest submitToolOutputsRequest =
         testDataUtil.randomSubmitToolOutputsRequest();
 
@@ -331,6 +323,24 @@ class OpenApiSpecificationValidationTest {
             serializeObject(submitToolOutputsRequest));
 
     validate(request);
+  }
+
+  @RepeatedTest(50)
+  void validateRunSteps() {
+    PaginatedThreadRunSteps paginatedThreadRunSteps = testDataUtil.randomPaginatedThreadRunSteps();
+
+    Response response = createResponseWithBody(serializeObject(paginatedThreadRunSteps));
+
+    validate("/" + Endpoint.THREADS + "/{thread_id}/runs/{run_id}/steps", Method.GET, response);
+
+    ThreadRunStep threadRunStep = testDataUtil.randomThreadRunStep();
+
+    response = createResponseWithBody(serializeObject(threadRunStep));
+
+    validate(
+        "/" + Endpoint.THREADS + "/{thread_id}/runs/{run_id}/steps/{step_id}",
+        Method.GET,
+        response);
   }
 
   private void validate(Request request, Response response, String... reportMessagesToIgnore) {

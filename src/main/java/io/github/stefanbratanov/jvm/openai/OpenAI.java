@@ -27,6 +27,7 @@ public final class OpenAI {
   private final ThreadsClient threadsClient;
   private final MessagesClient messagesClient;
   private final RunsClient runsClient;
+  private final RunStepsClient runStepsClient;
 
   private OpenAI(
       URI baseUrl,
@@ -53,6 +54,7 @@ public final class OpenAI {
     threadsClient = new ThreadsClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
     messagesClient = new MessagesClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
     runsClient = new RunsClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
+    runStepsClient = new RunStepsClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
   }
 
   /**
@@ -157,6 +159,14 @@ public final class OpenAI {
    */
   public RunsClient runsClient() {
     return runsClient;
+  }
+
+  /**
+   * @return a client based on <a
+   *     href="https://platform.openai.com/docs/api-reference/run-steps">Run Steps</a>
+   */
+  public RunStepsClient runStepsClient() {
+    return runStepsClient;
   }
 
   private String[] createAuthenticationHeaders(

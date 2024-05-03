@@ -2,6 +2,7 @@ package io.github.stefanbratanov.jvm.openai;
 
 import io.github.stefanbratanov.jvm.openai.ChatMessage.UserMessage.UserMessageWithContentParts.ContentPart;
 import io.github.stefanbratanov.jvm.openai.FineTuningJobIntegration.Wandb;
+import io.github.stefanbratanov.jvm.openai.RunStepsClient.PaginatedThreadRunSteps;
 import io.github.stefanbratanov.jvm.openai.ThreadMessage.Content.ImageFileContent;
 import io.github.stefanbratanov.jvm.openai.ThreadMessage.Content.TextContent;
 import io.github.stefanbratanov.jvm.openai.ThreadMessage.Content.TextContent.Text.Annotation;
@@ -513,6 +514,14 @@ public class TestDataUtil {
         randomTruncationStrategy(),
         randomAssistantsToolChoice(),
         randomAssistantsResponseFormat());
+  }
+
+  public PaginatedThreadRunSteps randomPaginatedThreadRunSteps() {
+    return new PaginatedThreadRunSteps(
+        listOf(randomInt(1, 20), this::randomThreadRunStep),
+        randomString(5),
+        randomString(5),
+        randomBoolean());
   }
 
   public ThreadRunStep randomThreadRunStep() {

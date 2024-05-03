@@ -22,7 +22,6 @@ import java.util.stream.StreamSupport;
 public final class RunsClient extends OpenAIAssistantsClient {
 
   private static final String RUNS_SEGMENT = "/runs";
-  private static final String STEPS_SEGMENT = "/steps";
 
   private final URI baseUrl;
 
@@ -135,34 +134,6 @@ public final class RunsClient extends OpenAIAssistantsClient {
       List<ThreadRun> data, String firstId, String lastId, boolean hasMore) {}
 
   /**
-   * Returns a list of run steps belonging to a run.
-   *
-   * @throws OpenAIException in case of API errors
-   */
-  public PaginatedThreadRunSteps listRunSteps(
-      String threadId, String runId, PaginationQueryParameters paginationQueryParameters) {
-    HttpRequest httpRequest =
-        newHttpRequestBuilder()
-            .uri(
-                baseUrl.resolve(
-                    Endpoint.THREADS.getPath()
-                        + "/"
-                        + threadId
-                        + RUNS_SEGMENT
-                        + "/"
-                        + runId
-                        + STEPS_SEGMENT
-                        + createQueryParameters(paginationQueryParameters)))
-            .GET()
-            .build();
-    HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
-    return deserializeResponse(httpResponse.body(), PaginatedThreadRunSteps.class);
-  }
-
-  public record PaginatedThreadRunSteps(
-      List<ThreadRunStep> data, String firstId, String lastId, boolean hasMore) {}
-
-  /**
    * Retrieves a run.
    *
    * @throws OpenAIException in case of API errors
@@ -177,31 +148,6 @@ public final class RunsClient extends OpenAIAssistantsClient {
             .build();
     HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
     return deserializeResponse(httpResponse.body(), ThreadRun.class);
-  }
-
-  /**
-   * Retrieves a run step.
-   *
-   * @throws OpenAIException in case of API errors
-   */
-  public ThreadRunStep retrieveRunStep(String threadId, String runId, String stepId) {
-    HttpRequest httpRequest =
-        newHttpRequestBuilder()
-            .uri(
-                baseUrl.resolve(
-                    Endpoint.THREADS.getPath()
-                        + "/"
-                        + threadId
-                        + RUNS_SEGMENT
-                        + "/"
-                        + runId
-                        + STEPS_SEGMENT
-                        + "/"
-                        + stepId))
-            .GET()
-            .build();
-    HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
-    return deserializeResponse(httpResponse.body(), ThreadRunStep.class);
   }
 
   /**

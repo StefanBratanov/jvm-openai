@@ -172,11 +172,12 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
 
   @Disabled("Enable when adapted for v2")
   @Test
-  void testRunsClient() {
+  void testRunsAndRunStepsClients() {
     ThreadsClient threadsClient = openAI.threadsClient();
     AssistantsClient assistantsClient = openAI.assistantsClient();
 
     RunsClient runsClient = openAI.runsClient();
+    RunStepsClient runStepsClient = openAI.runStepsClient();
 
     // create thread
     CreateThreadRequest createThreadRequest =
@@ -382,14 +383,14 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
 
     // retrieve run steps
     List<ThreadRunStep> runSteps =
-        runsClient.listRunSteps(threadId, runId, PaginationQueryParameters.none()).data();
+        runStepsClient.listRunSteps(threadId, runId, PaginationQueryParameters.none()).data();
 
     assertThat(runSteps)
         .first()
         .satisfies(
             runStep ->
                 assertThat(runStep)
-                    .isEqualTo(runsClient.retrieveRunStep(threadId, runId, runStep.id())));
+                    .isEqualTo(runStepsClient.retrieveRunStep(threadId, runId, runStep.id())));
 
     // modify run
     ThreadRun modifiedRun =
