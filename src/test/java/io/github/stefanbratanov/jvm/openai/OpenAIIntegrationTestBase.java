@@ -50,6 +50,17 @@ public class OpenAIIntegrationTestBase {
                     .isEqualTo("File is still processing. Check back later.");
               }
             });
+    // Cleanup of vector stores
+    VectorStoresClient vectorStoresClient = openAI.vectorStoresClient();
+    vectorStoresClient
+        .listVectorStores(PaginationQueryParameters.newBuilder().limit(100).build())
+        .data()
+        .forEach(
+            vectorStore -> {
+              DeletionStatus deletionStatus =
+                  vectorStoresClient.deleteVectorStore(vectorStore.id());
+              assertThat(deletionStatus.deleted()).isTrue();
+            });
     mockServer.stop();
   }
 

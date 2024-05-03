@@ -343,6 +343,24 @@ class OpenApiSpecificationValidationTest {
         response);
   }
 
+  @RepeatedTest(50)
+  void validateVectorStores() {
+    CreateVectorStoreRequest createVectorStoreRequest =
+        testDataUtil.randomCreateVectorStoreRequest();
+
+    Request request =
+        createRequestWithBody(
+            Method.POST,
+            "/" + Endpoint.VECTOR_STORES.getPath(),
+            serializeObject(createVectorStoreRequest));
+
+    VectorStore vectorStore = testDataUtil.randomVectorStore();
+
+    Response response = createResponseWithBody(serializeObject(vectorStore));
+
+    validate(request, response);
+  }
+
   private void validate(Request request, Response response, String... reportMessagesToIgnore) {
     ValidationReport report = validator.validate(request, response);
     validateReport(report, reportMessagesToIgnore);

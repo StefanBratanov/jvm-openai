@@ -16,7 +16,8 @@ enum Endpoint {
   BATCHES("batches"),
   // Beta
   THREADS("threads"),
-  ASSISTANTS("assistants");
+  ASSISTANTS("assistants"),
+  VECTOR_STORES("vector_stores");
 
   private final String path;
 

@@ -28,6 +28,7 @@ public final class OpenAI {
   private final MessagesClient messagesClient;
   private final RunsClient runsClient;
   private final RunStepsClient runStepsClient;
+  private final VectorStoresClient vectorStoresClient;
 
   private OpenAI(
       URI baseUrl,
@@ -55,6 +56,8 @@ public final class OpenAI {
     messagesClient = new MessagesClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
     runsClient = new RunsClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
     runStepsClient = new RunStepsClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
+    vectorStoresClient =
+        new VectorStoresClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
   }
 
   /**
@@ -167,6 +170,15 @@ public final class OpenAI {
    */
   public RunStepsClient runStepsClient() {
     return runStepsClient;
+  }
+
+  /**
+   * @return a client based on <a
+   *     href="https://platform.openai.com/docs/api-reference/vector-stores/create">Vector
+   *     Stores</a>
+   */
+  public VectorStoresClient vectorStoresClient() {
+    return vectorStoresClient;
   }
 
   private String[] createAuthenticationHeaders(

@@ -563,6 +563,38 @@ public class TestDataUtil {
         .build();
   }
 
+  public CreateVectorStoreRequest randomCreateVectorStoreRequest() {
+    return CreateVectorStoreRequest.newBuilder()
+        .fileIds(listOf(randomInt(0, 20), () -> randomString(4)))
+        .name(randomString(7))
+        .expiresAfter(randomExpiresAfter())
+        .metadata(randomMetadata())
+        .build();
+  }
+
+  public VectorStore randomVectorStore() {
+    return new VectorStore(
+        randomString(5),
+        randomLong(5, 10_000),
+        randomString(7),
+        randomLong(100, 100_000),
+        new VectorStore.FileCounts(
+            randomInt(0, 10),
+            randomInt(0, 10),
+            randomInt(0, 10),
+            randomInt(0, 10),
+            randomInt(0, 40)),
+        oneOf("expired", "in_progress", "completed"),
+        randomExpiresAfter(),
+        randomLong(7000, 100_000),
+        randomLong(10, 9999),
+        randomMetadata());
+  }
+
+  private ExpiresAfter randomExpiresAfter() {
+    return oneOf(ExpiresAfter.lastActiveAt(randomInt(1, 365)));
+  }
+
   private FineTuningJobIntegration randomIntegration() {
     return oneOf(FineTuningJobIntegration.wandbIntegration(randomWandb()));
   }

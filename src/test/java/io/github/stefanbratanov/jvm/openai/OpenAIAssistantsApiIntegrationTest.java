@@ -408,6 +408,41 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
     assistantsClient.deleteAssistant(assistant.id());
   }
 
+  @Test
+  void testVectorStoresClient() {
+    VectorStoresClient vectorStoresClient = openAI.vectorStoresClient();
+
+    File assistantFile = uploadRealEstateAgentAssistantFile();
+
+    // create vector store
+    CreateVectorStoreRequest createVectorStoreRequest =
+        CreateVectorStoreRequest.newBuilder().fileIds(List.of(assistantFile.id())).build();
+
+    VectorStore vectorStore = vectorStoresClient.createVectorStore(createVectorStoreRequest);
+
+    VectorStoresClient.PaginatedVectorStores paginatedVectorStores =
+        vectorStoresClient.listVectorStores(PaginationQueryParameters.none());
+
+    assertThat(paginatedVectorStores.data())
+        .isNotEmpty()
+        .anySatisfy(vc -> assertThat(vc.id()).isEqualTo(vectorStore.id()));
+
+    VectorStore retrievedVectorStore = vectorStoresClient.retrieveVectorStore(vectorStore.id());
+
+    assertThat(retrievedVectorStore.id()).isEqualTo(vectorStore.id());
+    assertThat(retrievedVectorStore.name()).isEqualTo(vectorStore.name());
+
+    // modify vector store
+    ExpiresAfter expiresAfter = ExpiresAfter.lastActiveAt(30);
+    ModifyVectorStoreRequest modifyVectorStoreRequest =
+        ModifyVectorStoreRequest.newBuilder().expiresAfter(expiresAfter).build();
+
+    VectorStore modifiedVectorStore =
+        vectorStoresClient.modifyVectorStore(vectorStore.id(), modifyVectorStoreRequest);
+
+    assertThat(modifiedVectorStore.expiresAfter()).isEqualTo(expiresAfter);
+  }
+
   private File uploadRealEstateAgentAssistantFile() {
     UploadFileRequest uploadFileRequest =
         UploadFileRequest.newBuilder()
