@@ -18,7 +18,6 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
 
   private static final Map<String, String> METADATA = Map.of("modified", "true", "user", "abc123");
 
-  @Disabled("Enable when adapted for v2")
   @Test
   void testThreadsClient() {
     ThreadsClient threadsClient = openAI.threadsClient();
@@ -33,7 +32,10 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
 
     Thread retrievedThread = threadsClient.retrieveThread(createdThread.id());
 
-    assertThat(createdThread).isEqualTo(retrievedThread);
+    assertThat(createdThread)
+        .usingRecursiveComparison()
+        .ignoringFields("toolResources")
+        .isEqualTo(retrievedThread);
 
     ModifyThreadRequest modifyRequest = ModifyThreadRequest.newBuilder().metadata(METADATA).build();
 
@@ -47,7 +49,6 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
     assertThat(deletionStatus.deleted()).isTrue();
   }
 
-  @Disabled("Enable when adapted for v2")
   @Test
   void testMessagesClient() {
     ThreadsClient threadsClient = openAI.threadsClient();
@@ -67,7 +68,7 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
     CreateMessageRequest createRequest =
         CreateMessageRequest.newBuilder()
             .content("How does AI work? Explain it in simple terms.")
-            .attachments(List.of(Attachment.of(file.id(), Tool.fileSearchTool())))
+            .attachments(List.of(Attachment.of(file.id(), Tool.codeInterpreterTool())))
             .build();
 
     ThreadMessage createdMessage = messagesClient.createMessage(thread.id(), createRequest);
@@ -101,6 +102,13 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
             ModifyMessageRequest.newBuilder().metadata(METADATA).build());
 
     assertThat(modifiedMessage.metadata()).isEqualTo(METADATA);
+
+    // cleanup
+    DeletionStatus deletionStatus = messagesClient.deleteMessage(thread.id(), createdMessage.id());
+    assertThat(deletionStatus.id()).isEqualTo(createdMessage.id());
+    assertThat(deletionStatus.deleted()).isTrue();
+
+    assertThat(threadsClient.deleteThread(thread.id()).deleted()).isTrue();
   }
 
   @Disabled("Enable when adapted for v2")

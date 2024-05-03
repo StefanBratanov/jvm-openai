@@ -117,4 +117,26 @@ public final class MessagesClient extends OpenAIAssistantsClient {
     HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
     return deserializeResponse(httpResponse.body(), ThreadMessage.class);
   }
+
+  /**
+   * Deletes a message.
+   *
+   * @throws OpenAIException in case of API errors
+   */
+  public DeletionStatus deleteMessage(String threadId, String messageId) {
+    HttpRequest httpRequest =
+        newHttpRequestBuilder()
+            .uri(
+                baseUrl.resolve(
+                    Endpoint.THREADS.getPath()
+                        + "/"
+                        + threadId
+                        + MESSAGES_SEGMENT
+                        + "/"
+                        + messageId))
+            .DELETE()
+            .build();
+    HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
+    return deserializeResponse(httpResponse.body(), DeletionStatus.class);
+  }
 }
