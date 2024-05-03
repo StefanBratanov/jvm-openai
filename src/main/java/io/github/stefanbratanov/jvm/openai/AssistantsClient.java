@@ -15,8 +15,6 @@ import java.util.Optional;
  */
 public final class AssistantsClient extends OpenAIAssistantsClient {
 
-  private static final String FILES_SEGMENT = "/files";
-
   private final URI baseUrl;
 
   AssistantsClient(
@@ -44,21 +42,6 @@ public final class AssistantsClient extends OpenAIAssistantsClient {
   }
 
   /**
-   * Create an assistant file by attaching a File to an assistant.
-   *
-   * @throws OpenAIException in case of API errors
-   */
-  public AssistantFile createAssistantFile(String assistantId, String fileId) {
-    HttpRequest httpRequest =
-        newHttpRequestBuilder()
-            .uri(baseUrl.resolve(Endpoint.ASSISTANTS.getPath() + "/" + assistantId + FILES_SEGMENT))
-            .POST(HttpRequest.BodyPublishers.ofString("{\"file_id\":\"" + fileId + "\"}"))
-            .build();
-    HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
-    return deserializeResponse(httpResponse.body(), AssistantFile.class);
-  }
-
-  /**
    * Returns a list of assistants.
    *
    * @throws OpenAIException in case of API errors
@@ -80,31 +63,6 @@ public final class AssistantsClient extends OpenAIAssistantsClient {
       List<Assistant> data, String firstId, String lastId, boolean hasMore) {}
 
   /**
-   * Returns a list of assistant files.
-   *
-   * @throws OpenAIException in case of API errors
-   */
-  public PaginatedAssistantFiles listAssistantFiles(
-      String assistantId, PaginationQueryParameters paginationQueryParameters) {
-    HttpRequest httpRequest =
-        newHttpRequestBuilder()
-            .uri(
-                baseUrl.resolve(
-                    Endpoint.ASSISTANTS.getPath()
-                        + "/"
-                        + assistantId
-                        + FILES_SEGMENT
-                        + createQueryParameters(paginationQueryParameters)))
-            .GET()
-            .build();
-    HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
-    return deserializeResponse(httpResponse.body(), PaginatedAssistantFiles.class);
-  }
-
-  public record PaginatedAssistantFiles(
-      List<AssistantFile> data, String firstId, String lastId, boolean hasMore) {}
-
-  /**
    * Retrieves an assistant.
    *
    * @throws OpenAIException in case of API errors
@@ -117,28 +75,6 @@ public final class AssistantsClient extends OpenAIAssistantsClient {
             .build();
     HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
     return deserializeResponse(httpResponse.body(), Assistant.class);
-  }
-
-  /**
-   * Retrieves an AssistantFile.
-   *
-   * @throws OpenAIException in case of API errors
-   */
-  public AssistantFile retrieveAssistantFile(String assistantId, String fileId) {
-    HttpRequest httpRequest =
-        newHttpRequestBuilder()
-            .uri(
-                baseUrl.resolve(
-                    Endpoint.ASSISTANTS.getPath()
-                        + "/"
-                        + assistantId
-                        + FILES_SEGMENT
-                        + "/"
-                        + fileId))
-            .GET()
-            .build();
-    HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
-    return deserializeResponse(httpResponse.body(), AssistantFile.class);
   }
 
   /**
@@ -165,28 +101,6 @@ public final class AssistantsClient extends OpenAIAssistantsClient {
     HttpRequest httpRequest =
         newHttpRequestBuilder()
             .uri(baseUrl.resolve(Endpoint.ASSISTANTS.getPath() + "/" + assistantId))
-            .DELETE()
-            .build();
-    HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
-    return deserializeResponse(httpResponse.body(), DeletionStatus.class);
-  }
-
-  /**
-   * Delete an assistant file.
-   *
-   * @throws OpenAIException in case of API errors
-   */
-  public DeletionStatus deleteAssistantFile(String assistantId, String fileId) {
-    HttpRequest httpRequest =
-        newHttpRequestBuilder()
-            .uri(
-                baseUrl.resolve(
-                    Endpoint.ASSISTANTS.getPath()
-                        + "/"
-                        + assistantId
-                        + FILES_SEGMENT
-                        + "/"
-                        + fileId))
             .DELETE()
             .build();
     HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);

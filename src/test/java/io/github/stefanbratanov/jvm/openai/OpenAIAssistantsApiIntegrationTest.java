@@ -43,8 +43,8 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
 
     assertThat(modifiedThread.metadata()).isEqualTo(METADATA);
 
+    // cleanup
     DeletionStatus deletionStatus = threadsClient.deleteThread(createdThread.id());
-
     assertThat(deletionStatus.id()).isEqualTo(createdThread.id());
     assertThat(deletionStatus.deleted()).isTrue();
   }
@@ -107,11 +107,10 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
     DeletionStatus deletionStatus = messagesClient.deleteMessage(thread.id(), createdMessage.id());
     assertThat(deletionStatus.id()).isEqualTo(createdMessage.id());
     assertThat(deletionStatus.deleted()).isTrue();
-
-    assertThat(threadsClient.deleteThread(thread.id()).deleted()).isTrue();
+    deletionStatus = threadsClient.deleteThread(thread.id());
+    assertThat(deletionStatus.deleted()).isTrue();
   }
 
-  @Disabled("Enable when adapted for v2")
   @Test
   void testAssistantsClient() {
     AssistantsClient assistantsClient = openAI.assistantsClient();
@@ -124,40 +123,22 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
             .model("gpt-3.5-turbo-1106")
             .instructions(
                 "You are a real estate agent bot, who has access to the house the user is willing to buy.")
-            .tool(Tool.fileSearchTool())
+            .tool(Tool.codeInterpreterTool())
+            .toolResources(ToolResources.codeInterpreterToolResources(List.of(file.id())))
             .build();
 
     Assistant createdAssistant = assistantsClient.createAssistant(createRequest);
 
     assertThat(createdAssistant).isNotNull();
 
-    AssistantFile createdAssistantFile =
-        assistantsClient.createAssistantFile(createdAssistant.id(), file.id());
-
-    assertThat(createdAssistantFile).isNotNull();
-
-    AssistantFile retrievedAssistantFile =
-        assistantsClient.retrieveAssistantFile(createdAssistant.id(), createdAssistantFile.id());
-
-    assertThat(retrievedAssistantFile).isEqualTo(createdAssistantFile);
-
     Assistant retrievedAssistant = assistantsClient.retrieveAssistant(createdAssistant.id());
 
-    assertThat(retrievedAssistant)
-        .usingRecursiveComparison()
-        .ignoringFields("toolResources")
-        .isEqualTo(createdAssistant);
+    assertThat(retrievedAssistant).isEqualTo(createdAssistant);
 
     AssistantsClient.PaginatedAssistants assistants =
         assistantsClient.listAssistants(PaginationQueryParameters.none());
 
     assertThat(assistants.data()).contains(retrievedAssistant);
-
-    AssistantsClient.PaginatedAssistantFiles assistantFiles =
-        assistantsClient.listAssistantFiles(
-            createdAssistant.id(), PaginationQueryParameters.none());
-
-    assertThat(assistantFiles.data()).contains(retrievedAssistantFile);
 
     Assistant modifiedAssistant =
         assistantsClient.modifyAssistant(
@@ -171,10 +152,7 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
     assertThat(modifiedAssistant.metadata()).isEqualTo(METADATA);
 
     // cleanup
-    DeletionStatus deletionStatus =
-        assistantsClient.deleteAssistantFile(createdAssistant.id(), createdAssistantFile.id());
-    assertThat(deletionStatus.deleted()).isTrue();
-    deletionStatus = assistantsClient.deleteAssistant(createdAssistant.id());
+    DeletionStatus deletionStatus = assistantsClient.deleteAssistant(createdAssistant.id());
     assertThat(deletionStatus.deleted()).isTrue();
   }
 
@@ -207,7 +185,7 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
             .instructions(
                 "You are a real estate agent bot, who has access to the house the user is willing to buy.")
             .toolResources(ToolResources.codeInterpreterToolResources(List.of(assistantFile.id())))
-            .tool(Tool.fileSearchTool())
+            .tool(Tool.codeInterpreterTool())
             .build();
 
     Assistant assistant = assistantsClient.createAssistant(createAssistantRequest);
@@ -427,7 +405,6 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
 
     // cleanup
     threadsClient.deleteThread(threadId);
-    assistantsClient.deleteAssistantFile(assistant.id(), assistantFile.id());
     assistantsClient.deleteAssistant(assistant.id());
   }
 
