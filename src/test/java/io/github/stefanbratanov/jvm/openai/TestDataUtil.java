@@ -494,7 +494,7 @@ public class TestDataUtil {
         ThreadRun.RequiredAction.submitToolOutputsRequiredAction(
             new ThreadRun.RequiredAction.SubmitToolOutputs(
                 listOf(randomInt(1, 5), () -> randomFunctionToolCall(false)))),
-        new ThreadRun.LastError(
+        new LastError(
             oneOf("server_error", "rate_limit_exceeded", "invalid_prompt"), randomString(5, 20)),
         randomLong(5, 999),
         randomLong(4, 333),
@@ -534,8 +534,7 @@ public class TestDataUtil {
         oneOf("message_creation", "tool_calls"),
         oneOf("in_progress", "cancelled", "failed", "completed", "expired"),
         randomStepDetails(),
-        new ThreadRunStep.LastError(
-            oneOf("server_error", "rate_limit_exceeded"), randomString(5, 20)),
+        new LastError(oneOf("server_error", "rate_limit_exceeded"), randomString(5, 20)),
         randomLong(5, 999),
         randomLong(4, 333),
         randomLong(7, 888),
@@ -589,6 +588,22 @@ public class TestDataUtil {
         randomLong(7000, 100_000),
         randomLong(10, 9999),
         randomMetadata());
+  }
+
+  public VectorStoreFile randomVectorStoreFile() {
+    return new VectorStoreFile(
+        randomString(5),
+        randomLong(5, 10_000),
+        randomLong(900, 9999),
+        randomString(5),
+        oneOf("in_progress", "completed", "cancelled", "failed"),
+        new LastError(
+            oneOf("internal_error", "file_not_found", "parsing_error", "unhandled_mime_type"),
+            randomString(10)));
+  }
+
+  public CreateVectorStoreFileRequest randomCreateVectorStoreFileRequest() {
+    return CreateVectorStoreFileRequest.newBuilder().fileId(randomString(5)).build();
   }
 
   private ExpiresAfter randomExpiresAfter() {

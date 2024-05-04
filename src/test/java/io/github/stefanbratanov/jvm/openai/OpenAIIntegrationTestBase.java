@@ -35,6 +35,17 @@ public class OpenAIIntegrationTestBase {
 
   @AfterAll
   public static void cleanUp() {
+    // Cleanup of vector stores
+    VectorStoresClient vectorStoresClient = openAI.vectorStoresClient();
+    vectorStoresClient
+        .listVectorStores(PaginationQueryParameters.none())
+        .data()
+        .forEach(
+            vectorStore -> {
+              DeletionStatus deletionStatus =
+                  vectorStoresClient.deleteVectorStore(vectorStore.id());
+              assertThat(deletionStatus.deleted()).isTrue();
+            });
     // Cleanup of files uploads
     FilesClient filesClient = openAI.filesClient();
     filesClient
@@ -49,17 +60,6 @@ public class OpenAIIntegrationTestBase {
                 assertThat(ex.errorMessage())
                     .isEqualTo("File is still processing. Check back later.");
               }
-            });
-    // Cleanup of vector stores
-    VectorStoresClient vectorStoresClient = openAI.vectorStoresClient();
-    vectorStoresClient
-        .listVectorStores(PaginationQueryParameters.newBuilder().limit(100).build())
-        .data()
-        .forEach(
-            vectorStore -> {
-              DeletionStatus deletionStatus =
-                  vectorStoresClient.deleteVectorStore(vectorStore.id());
-              assertThat(deletionStatus.deleted()).isTrue();
             });
     mockServer.stop();
   }

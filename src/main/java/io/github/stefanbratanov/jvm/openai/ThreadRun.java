@@ -45,7 +45,4 @@ public record ThreadRun(
 
   /** Details on why the run is incomplete. Will be `null` if the run is not incomplete. */
   public record IncompleteDetails(String reason) {}
-
-  /** The last error associated with this run. */
-  public record LastError(String code, String message) {}
 }

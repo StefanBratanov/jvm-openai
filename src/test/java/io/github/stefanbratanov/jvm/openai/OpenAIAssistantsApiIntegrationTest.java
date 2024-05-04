@@ -409,14 +409,13 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
   }
 
   @Test
-  void testVectorStoresClient() {
+  void testVectorStoresAndVectorStoreFilesClients() {
     VectorStoresClient vectorStoresClient = openAI.vectorStoresClient();
-
-    File assistantFile = uploadRealEstateAgentAssistantFile();
+    VectorStoreFilesClient vectorStoreFilesClient = openAI.vectorStoreFilesClient();
 
     // create vector store
     CreateVectorStoreRequest createVectorStoreRequest =
-        CreateVectorStoreRequest.newBuilder().fileIds(List.of(assistantFile.id())).build();
+        CreateVectorStoreRequest.newBuilder().build();
 
     VectorStore vectorStore = vectorStoresClient.createVectorStore(createVectorStoreRequest);
 
@@ -441,6 +440,37 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
         vectorStoresClient.modifyVectorStore(vectorStore.id(), modifyVectorStoreRequest);
 
     assertThat(modifiedVectorStore.expiresAfter()).isEqualTo(expiresAfter);
+
+    File assistantFile = uploadRealEstateAgentAssistantFile();
+
+    // create vector store file and attach it to the vector store
+    CreateVectorStoreFileRequest createVectorStoreFileRequest =
+        CreateVectorStoreFileRequest.newBuilder().fileId(assistantFile.id()).build();
+
+    VectorStoreFile vectorStoreFile =
+        vectorStoreFilesClient.createVectorStoreFile(
+            vectorStore.id(), createVectorStoreFileRequest);
+
+    VectorStoreFilesClient.PaginatedVectorStoreFiles paginatedVectorStoreFiles =
+        vectorStoreFilesClient.listVectorStoreFiles(
+            vectorStore.id(), PaginationQueryParameters.none());
+
+    assertThat(paginatedVectorStoreFiles.data())
+        .isNotEmpty()
+        .anySatisfy(vcf -> assertThat(vcf.id()).isEqualTo(vectorStoreFile.id()));
+
+    VectorStoreFile retrievedVectorStoreFile =
+        vectorStoreFilesClient.retrieveVectorStoreFile(vectorStore.id(), vectorStoreFile.id());
+
+    assertThat(retrievedVectorStoreFile.id()).isEqualTo(vectorStoreFile.id());
+    assertThat(retrievedVectorStoreFile.createdAt()).isEqualTo(vectorStoreFile.createdAt());
+
+    DeletionStatus deletionStatus =
+        vectorStoreFilesClient.deleteVectorStoreFile(vectorStore.id(), vectorStoreFile.id());
+
+    // cleanup
+    assertThat(deletionStatus.deleted()).isTrue();
+    assertThat(deletionStatus.id()).isEqualTo(vectorStoreFile.id());
   }
 
   private File uploadRealEstateAgentAssistantFile() {

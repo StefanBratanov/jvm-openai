@@ -65,7 +65,7 @@ ChatCompletion chatCompletion = chatClient.createChatCompletion(createChatComple
 | [Runs](https://platform.openai.com/docs/api-reference/runs)                                            |   ✔️   |
 | [Run Steps](https://platform.openai.com/docs/api-reference/run-steps)                                  |   ✔️   |
 | [Vector Stores](https://platform.openai.com/docs/api-reference/vector-stores)                          |   ✔️     |
-| [Vector Store Files](https://platform.openai.com/docs/api-reference/vector-stores-files)               |        |
+| [Vector Store Files](https://platform.openai.com/docs/api-reference/vector-stores-files)               |   ✔️     |
 | [Vector Store File Batches](https://platform.openai.com/docs/api-reference/vector-stores-file-batches) |        |
 
 > **_NOTE:_** Legacy APIs are not supported

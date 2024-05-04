@@ -56,7 +56,4 @@ public record ThreadRunStep(
       }
     }
   }
-
-  /** The last error associated with this run step. */
-  public record LastError(String code, String message) {}
 }
