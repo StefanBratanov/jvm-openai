@@ -57,10 +57,9 @@ public record Function(
       return parameters.entrySet().stream()
           .map(
               entry -> {
-                Object value = entry.getValue();
-                if (value instanceof String) {
+                if (entry.getValue() instanceof String value) {
                   try {
-                    JsonNode node = ObjectMapperSingleton.getInstance().readTree((String) value);
+                    JsonNode node = ObjectMapperSingleton.getInstance().readTree(value);
                     if (node != null && !node.isNull()) {
                       return new AbstractMap.SimpleEntry<>(entry.getKey(), node);
                     }
