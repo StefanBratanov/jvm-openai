@@ -46,6 +46,7 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.25.3")
     testImplementation("org.mock-server:mockserver-netty-no-dependencies:5.15.0")
     testImplementation("com.atlassian.oai:swagger-request-validator-core:2.40.0")
+    testImplementation("org.skyscreamer:jsonassert:1.5.1")
 }
 
 publishing {

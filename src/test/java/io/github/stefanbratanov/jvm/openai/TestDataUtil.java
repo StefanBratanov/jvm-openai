@@ -881,9 +881,17 @@ public class TestDataUtil {
 
   private FunctionTool randomFunctionTool() {
     return Tool.functionTool(
-        FunctionTool.Function.newBuilder()
+        Function.newBuilder()
             .name(randomString(10))
             .description(randomString(15))
+            .parameters(
+                Map.of(
+                    "type",
+                    "object",
+                    "properties",
+                    "{\"person_name\":{\"type\":\"string\", \"description\":\"the persons name, in lower case\"}}",
+                    "required",
+                    "[\"person_name\"]"))
             .build());
   }
 

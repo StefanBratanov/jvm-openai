@@ -7,8 +7,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import java.util.Map;
+import org.json.JSONException;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 
 class SerializationTest {
 
@@ -116,5 +120,27 @@ class SerializationTest {
     assertThat(choices.get(3))
         .isInstanceOfSatisfying(
             ResponseFormat.class, format -> assertThat(format.type()).isEqualTo("json_object"));
+  }
+
+  @Test
+  void serializesFunction() throws JsonProcessingException, JSONException {
+    Function function =
+        Function.newBuilder()
+            .name("getFriends")
+            .description("Returns the friends of the person")
+            .parameters(
+                Map.of(
+                    "type",
+                    "object",
+                    "properties",
+                    "{\"person_name\":{\"type\":\"string\", \"description\":\"the persons name, in lower case\"}}",
+                    "required",
+                    "[\"person_name\"]"))
+            .build();
+
+    JSONAssert.assertEquals(
+        getStringResource("/function.json"),
+        objectMapper.writeValueAsString(function),
+        JSONCompareMode.STRICT);
   }
 }

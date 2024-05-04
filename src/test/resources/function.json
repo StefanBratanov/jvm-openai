@@ -1,0 +1,16 @@
+{
+  "name": "getFriends",
+  "description": "Returns the friends of the person",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "person_name": {
+        "type": "string",
+        "description": "the persons name, in lower case"
+      }
+    },
+    "required": [
+      "person_name"
+    ]
+  }
+}
