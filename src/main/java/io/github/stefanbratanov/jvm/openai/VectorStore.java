@@ -2,6 +2,7 @@ package io.github.stefanbratanov.jvm.openai;
 
 import java.util.Map;
 
+/** A vector store is a collection of processed files can be used by the file_search tool. */
 public record VectorStore(
     String id,
     long createdAt,

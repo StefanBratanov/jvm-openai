@@ -379,6 +379,24 @@ class OpenApiSpecificationValidationTest {
     validate(request, response);
   }
 
+  @RepeatedTest(50)
+  void validateVectorStoreFileBatches() {
+    CreateVectorStoreFileBatchRequest createVectorStoreFileBatchRequest =
+        testDataUtil.randomCreateVectorStoreFileBatchRequest();
+
+    Request request =
+        createRequestWithBody(
+            Method.POST,
+            "/" + Endpoint.VECTOR_STORES.getPath() + "/{vector_store_id}/file_batches",
+            serializeObject(createVectorStoreFileBatchRequest));
+
+    VectorStoreFileBatch vectorStoreFileBatch = testDataUtil.randomVectorStoreFileBatch();
+
+    Response response = createResponseWithBody(serializeObject(vectorStoreFileBatch));
+
+    validate(request, response);
+  }
+
   private void validate(Request request, Response response, String... reportMessagesToIgnore) {
     ValidationReport report = validator.validate(request, response);
     validateReport(report, reportMessagesToIgnore);

@@ -7,6 +7,7 @@ public record CreateVectorStoreFileRequest(String fileId) {
   }
 
   public static class Builder {
+
     private String fileId;
 
     /**

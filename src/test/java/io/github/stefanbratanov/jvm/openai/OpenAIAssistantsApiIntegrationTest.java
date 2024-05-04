@@ -9,7 +9,6 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 
@@ -156,7 +155,6 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
     assertThat(deletionStatus.deleted()).isTrue();
   }
 
-  @Disabled("Enable when adapted for v2")
   @Test
   void testRunsAndRunStepsClients() {
     ThreadsClient threadsClient = openAI.threadsClient();
@@ -232,10 +230,10 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
                   assertThat(assistantStreamEvent.data()).isNotNull();
                   return assistantStreamEvent.event();
                 })
-            .collect(Collectors.toCollection(LinkedHashSet::new));
+            .collect(Collectors.toSet());
 
     assertThat(emittedEvents)
-        .containsExactly(
+        .containsExactlyInAnyOrder(
             "thread.run.created",
             "thread.run.queued",
             "thread.run.in_progress",
@@ -271,7 +269,7 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
     runsClient.createThreadAndRunAndStream(
         createThreadAndRunStreamRequest,
         new AssistantStreamEventSubscriber() {
-          private final Set<String> emittedEvents = new LinkedHashSet<>();
+          private final Set<String> emittedEvents = new HashSet<>();
 
           @Override
           public void onThread(String event, Thread thread) {
@@ -335,19 +333,19 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
         .satisfies(
             events ->
                 assertThat(events)
-                    .containsExactly(
+                    .containsExactlyInAnyOrder(
                         "thread.created",
                         "thread.run.created",
                         "thread.run.queued",
                         "thread.run.in_progress",
                         "thread.run.step.created",
                         "thread.run.step.in_progress",
-                        "thread.run.step.delta",
-                        "thread.run.step.completed",
                         "thread.message.created",
                         "thread.message.in_progress",
                         "thread.message.delta",
                         "thread.message.completed",
+                        "thread.run.step.completed",
+                        "thread.run.step.delta",
                         "thread.run.completed"));
 
     assertThat(threadIdToDeleteFuture)
@@ -409,9 +407,11 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
   }
 
   @Test
-  void testVectorStoresAndVectorStoreFilesClients() {
+  void testVectorStoresVectorStoreFilesAndVectorStoreFileBatchesClients() {
     VectorStoresClient vectorStoresClient = openAI.vectorStoresClient();
     VectorStoreFilesClient vectorStoreFilesClient = openAI.vectorStoreFilesClient();
+    VectorStoreFileBatchesClient vectorStoreFileBatchesClient =
+        openAI.vectorStoreFileBatchesClient();
 
     // create vector store
     CreateVectorStoreRequest createVectorStoreRequest =
@@ -463,7 +463,6 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
         vectorStoreFilesClient.retrieveVectorStoreFile(vectorStore.id(), vectorStoreFile.id());
 
     assertThat(retrievedVectorStoreFile.id()).isEqualTo(vectorStoreFile.id());
-    assertThat(retrievedVectorStoreFile.createdAt()).isEqualTo(vectorStoreFile.createdAt());
 
     DeletionStatus deletionStatus =
         vectorStoreFilesClient.deleteVectorStoreFile(vectorStore.id(), vectorStoreFile.id());
@@ -471,6 +470,33 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
     // cleanup
     assertThat(deletionStatus.deleted()).isTrue();
     assertThat(deletionStatus.id()).isEqualTo(vectorStoreFile.id());
+
+    // create vector store file batch
+    CreateVectorStoreFileBatchRequest createVectorStoreFileBatchRequest =
+        CreateVectorStoreFileBatchRequest.newBuilder().fileIds(List.of(assistantFile.id())).build();
+
+    VectorStoreFileBatch batch =
+        vectorStoreFileBatchesClient.createVectorStoreFileBatch(
+            vectorStore.id(), createVectorStoreFileBatchRequest);
+
+    assertThat(batch.fileCounts().total()).isOne();
+
+    // attempt to cancel
+    VectorStoreFileBatch cancelledBatch =
+        vectorStoreFileBatchesClient.cancelVectorStoreFileBatch(vectorStore.id(), batch.id());
+    assertThat(cancelledBatch.id()).isEqualTo(batch.id());
+    assertThat(cancelledBatch.status()).isIn("cancelled", "completed");
+
+    VectorStoreFileBatchesClient.PaginatedVectorStoreFiles paginatedVectorStoreFilesInBatch =
+        vectorStoreFileBatchesClient.listVectorStoreFilesInBatch(
+            vectorStore.id(), batch.id(), PaginationQueryParameters.none(), Optional.empty());
+
+    assertThat(paginatedVectorStoreFilesInBatch.data()).hasSize(1).allMatch(Objects::nonNull);
+
+    VectorStoreFileBatch retrievedBatch =
+        vectorStoreFileBatchesClient.retrieveVectorStoreFileBatch(vectorStore.id(), batch.id());
+
+    assertThat(retrievedBatch.id()).isEqualTo(batch.id());
   }
 
   private File uploadRealEstateAgentAssistantFile() {

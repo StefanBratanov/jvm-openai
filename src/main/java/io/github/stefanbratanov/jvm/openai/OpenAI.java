@@ -30,6 +30,7 @@ public final class OpenAI {
   private final RunStepsClient runStepsClient;
   private final VectorStoresClient vectorStoresClient;
   private final VectorStoreFilesClient vectorStoreFilesClient;
+  private final VectorStoreFileBatchesClient vectorStoreFileBatchesClient;
 
   private OpenAI(
       URI baseUrl,
@@ -61,6 +62,9 @@ public final class OpenAI {
         new VectorStoresClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
     vectorStoreFilesClient =
         new VectorStoreFilesClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
+    vectorStoreFileBatchesClient =
+        new VectorStoreFileBatchesClient(
+            baseUrl, authenticationHeaders, httpClient, requestTimeout);
   }
 
   /**
@@ -191,6 +195,15 @@ public final class OpenAI {
    */
   public VectorStoreFilesClient vectorStoreFilesClient() {
     return vectorStoreFilesClient;
+  }
+
+  /**
+   * @return a client based on <a
+   *     href="https://platform.openai.com/docs/api-reference/vector-stores-file-batches">Vector
+   *     Store File Batches</a>
+   */
+  public VectorStoreFileBatchesClient vectorStoreFileBatchesClient() {
+    return vectorStoreFileBatchesClient;
   }
 
   private String[] createAuthenticationHeaders(

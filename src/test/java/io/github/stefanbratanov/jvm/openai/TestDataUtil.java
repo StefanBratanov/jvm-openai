@@ -590,6 +590,10 @@ public class TestDataUtil {
         randomMetadata());
   }
 
+  public CreateVectorStoreFileRequest randomCreateVectorStoreFileRequest() {
+    return CreateVectorStoreFileRequest.newBuilder().fileId(randomString(5)).build();
+  }
+
   public VectorStoreFile randomVectorStoreFile() {
     return new VectorStoreFile(
         randomString(5),
@@ -602,8 +606,24 @@ public class TestDataUtil {
             randomString(10)));
   }
 
-  public CreateVectorStoreFileRequest randomCreateVectorStoreFileRequest() {
-    return CreateVectorStoreFileRequest.newBuilder().fileId(randomString(5)).build();
+  public CreateVectorStoreFileBatchRequest randomCreateVectorStoreFileBatchRequest() {
+    return CreateVectorStoreFileBatchRequest.newBuilder()
+        .fileIds(listOf(randomInt(1, 20), () -> randomString(5)))
+        .build();
+  }
+
+  public VectorStoreFileBatch randomVectorStoreFileBatch() {
+    return new VectorStoreFileBatch(
+        randomString(5),
+        randomLong(100, 9898),
+        randomString(5),
+        oneOf("in_progress", "completed", "cancelled", "failed"),
+        new VectorStoreFileBatch.FileCounts(
+            randomInt(0, 10),
+            randomInt(0, 10),
+            randomInt(0, 10),
+            randomInt(0, 10),
+            randomInt(0, 40)));
   }
 
   private ExpiresAfter randomExpiresAfter() {

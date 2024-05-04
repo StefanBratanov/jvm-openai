@@ -43,6 +43,8 @@ ChatCompletion chatCompletion = chatClient.createChatCompletion(createChatComple
 
 ## Supported APIs
 
+> **_NOTE:_** Legacy APIs are not supported
+
 | API                                                                       | Status |
 |---------------------------------------------------------------------------|:------:|
 | [Audio](https://platform.openai.com/docs/api-reference/audio)             |   ✔️   |
@@ -66,9 +68,7 @@ ChatCompletion chatCompletion = chatClient.createChatCompletion(createChatComple
 | [Run Steps](https://platform.openai.com/docs/api-reference/run-steps)                                  |   ✔️   |
 | [Vector Stores](https://platform.openai.com/docs/api-reference/vector-stores)                          |   ✔️     |
 | [Vector Store Files](https://platform.openai.com/docs/api-reference/vector-stores-files)               |   ✔️     |
-| [Vector Store File Batches](https://platform.openai.com/docs/api-reference/vector-stores-file-batches) |        |
-
-> **_NOTE:_** Legacy APIs are not supported
+| [Vector Store File Batches](https://platform.openai.com/docs/api-reference/vector-stores-file-batches) |   ✔️     |
 
 ## More examples
 
