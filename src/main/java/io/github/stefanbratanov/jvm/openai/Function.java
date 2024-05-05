@@ -12,7 +12,26 @@ public record Function(
     String name, Optional<String> description, Optional<Map<String, Object>> parameters) {
 
   public Function {
-    parameters = parameters.map(Function::parametersWithoutJsonEscaping);
+    parameters = parameters.map(this::parametersWithoutJsonEscaping);
+  }
+
+  private Map<String, Object> parametersWithoutJsonEscaping(Map<String, Object> parameters) {
+    return parameters.entrySet().stream()
+        .map(
+            entry -> {
+              if (entry.getValue() instanceof String value) {
+                try {
+                  JsonNode node = ObjectMapperSingleton.getInstance().readTree(value);
+                  if (node != null && !node.isNull()) {
+                    return new AbstractMap.SimpleEntry<>(entry.getKey(), node);
+                  }
+                } catch (IOException ex) {
+                  return entry;
+                }
+              }
+              return entry;
+            })
+        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
   }
 
   public static Builder newBuilder() {
@@ -56,24 +75,5 @@ public record Function(
     public Function build() {
       return new Function(name, description, parameters);
     }
-  }
-
-  private static Map<String, Object> parametersWithoutJsonEscaping(Map<String, Object> parameters) {
-    return parameters.entrySet().stream()
-        .map(
-            entry -> {
-              if (entry.getValue() instanceof String value) {
-                try {
-                  JsonNode node = ObjectMapperSingleton.getInstance().readTree(value);
-                  if (node != null && !node.isNull()) {
-                    return new AbstractMap.SimpleEntry<>(entry.getKey(), node);
-                  }
-                } catch (IOException ex) {
-                  return entry;
-                }
-              }
-              return entry;
-            })
-        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
   }
 }

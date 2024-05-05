@@ -236,7 +236,77 @@ ThreadRun retrievedRun = runsClient.retrieveRun(thread.id(), run.id());
 String status = retrievedRun.status();
 
 // Step 6: Display the Assistant's Response
-PaginatedThreadMessages paginatedMessages = messagesClient.listMessages(thread.id(), PaginationQueryParameters.none());
+PaginatedThreadMessages paginatedMessages = messagesClient.listMessages(thread.id(), PaginationQueryParameters.none(), Optional.empty());
+List<ThreadMessage> messages = paginatedMessages.data();
+```
+- Build AI Assistant with File Search Enabled
+```java
+AssistantsClient assistantsClient = openAI.assistantsClient();
+ThreadsClient threadsClient = openAI.threadsClient();
+MessagesClient messagesClient = openAI.messagesClient();
+RunsClient runsClient = openAI.runsClient();
+VectorStoresClient vectorStoresClient = openAI.vectorStoresClient();
+FilesClient filesClient = openAI.filesClient();
+VectorStoreFileBatchesClient vectorStoreFileBatchesClient = openAI.vectorStoreFileBatchesClient();
+
+// Step 1: Create a new Assistant with File Search Enabled
+CreateAssistantRequest createAssistantRequest = CreateAssistantRequest.newBuilder()
+    .name("Financial Analyst Assistant")
+    .model(OpenAIModel.GPT_4_TURBO)
+    .instructions("You are an expert financial analyst. Use you knowledge base to answer questions about audited financial statements.")
+    .tool(Tool.fileSearchTool())
+    .build();
+Assistant assistant = assistantsClient.createAssistant(createAssistantRequest);
+
+// Step 2: Upload files and add them to a Vector Store
+CreateVectorStoreRequest createVectorStoreRequest = CreateVectorStoreRequest.newBuilder()
+    .name("Financial Statements")
+    .build();
+VectorStore vectorStore = vectorStoresClient.createVectorStore(createVectorStoreRequest);
+UploadFileRequest uploadFileRequest1 = UploadFileRequest.newBuilder()
+    .file(Paths.get("edgar/goog-10k.pdf"))
+    .purpose("assistants")
+    .build();
+File file1 = filesClient.uploadFile(uploadFileRequest1);
+UploadFileRequest uploadFileRequest2 = UploadFileRequest.newBuilder()
+    .file(Paths.get("edgar/brka-10k.txt"))
+    .purpose("assistants")
+    .build();
+File file2 = filesClient.uploadFile(uploadFileRequest2);
+CreateVectorStoreFileBatchRequest createVectorStoreFileBatchRequest = CreateVectorStoreFileBatchRequest.newBuilder()
+    .fileIds(List.of(file1.id(), file2.id()))
+    .build();
+VectorStoreFileBatch batch = vectorStoreFileBatchesClient.createVectorStoreFileBatch(vectorStore.id(), createVectorStoreFileBatchRequest);
+// need to query the status of the file batch for completion
+vectorStoreFileBatchesClient.retrieveVectorStoreFileBatch(vectorStore.id(), batch.id());
+
+// Step 3: Update the assistant to use the new Vector Store
+ModifyAssistantRequest modifyAssistantRequest = ModifyAssistantRequest.newBuilder()
+    .toolResources(ToolResources.fileSearchToolResources(vectorStore.id()))
+    .build();
+assistantsClient.modifyAssistant(assistant.id(), modifyAssistantRequest);
+
+// Step 4: Create a thread
+Message message = Message.newBuilder()
+    .role("user")
+    .content("How many shares of AAPL were outstanding at the end of of October 2023?")
+    .build();
+CreateThreadRequest createThreadRequest = CreateThreadRequest.newBuilder()
+    .message(message)
+    .build();
+Thread thread = threadsClient.createThread(createThreadRequest);
+
+// Step 5: Create a run and check the output
+CreateRunRequest createRunRequest = CreateRunRequest.newBuilder()
+    .assistantId(assistant.id())
+    .instructions("Please address the user as Jane Doe. The user has a premium account.")
+    .build();
+ThreadRun run = runsClient.createRun(thread.id(), createRunRequest);
+// check the run status
+ThreadRun retrievedRun = runsClient.retrieveRun(thread.id(), run.id());
+String status = retrievedRun.status();
+// display the Assistant's Response
+PaginatedThreadMessages paginatedMessages = messagesClient.listMessages(thread.id(), PaginationQueryParameters.none(), Optional.empty());
 List<ThreadMessage> messages = paginatedMessages.data();
 ```
 - Create a run and stream the result of executing the run ([Assistants Streaming](https://platform.openai.com/docs/api-reference/assistants-streaming))
