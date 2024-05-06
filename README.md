@@ -79,6 +79,12 @@ OpenAI openAI = OpenAI.newBuilder(System.getenv("OPENAI_API_KEY"))
     .project(System.getenv("PROJECT_ID"))        
     .build();
 ```
+- Configure a custom base url
+```java
+OpenAI openAI = OpenAI.newBuilder(System.getenv("OPENAI_API_KEY"))
+    .baseUrl("https://api.foobar.com/v1/")     
+    .build();
+```
 - Configure a custom Java's `HttpClient`
 ```java
 HttpClient httpClient = HttpClient.newBuilder()
