@@ -20,6 +20,25 @@ class SerializationTest {
   private final TestDataUtil testDataUtil = new TestDataUtil();
 
   @Test
+  void deserializesChatCompletion() throws JsonProcessingException {
+    ChatCompletion result =
+        objectMapper.readValue(getStringResource("/chat-completion.json"), ChatCompletion.class);
+
+    assertThat(result.choices())
+        .hasSize(1)
+        .first()
+        .satisfies(
+            choice -> {
+              List<ToolCall> toolCalls = choice.message().toolCalls();
+              assertThat(toolCalls).hasSize(1);
+              ToolCall toolCall = toolCalls.get(0);
+              assertThat(toolCall).isInstanceOf(ToolCall.FunctionToolCall.class);
+              assertThat(((ToolCall.FunctionToolCall) toolCall).function().arguments())
+                  .isEqualTo("{\"person_name\":\"ran\"}");
+            });
+  }
+
+  @Test
   void deserializesChatCompletionChunk() throws JsonProcessingException {
     ChatCompletionChunk result =
         objectMapper.readValue(

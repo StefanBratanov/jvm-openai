@@ -1,0 +1,33 @@
+{
+  "id": "chatcmpl-9LvJxqTCecmF4cqiT7gK0zz0F95ch",
+  "object": "chat.completion",
+  "created": 1715012257,
+  "model": "gpt-3.5-turbo-0125",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_Wu4tEmwbUVYWScrFe7iN9NXy",
+            "type": "function",
+            "function": {
+              "name": "getFriends",
+              "arguments": "{\"person_name\":\"ran\"}"
+            }
+          }
+        ]
+      },
+      "logprobs": null,
+      "finish_reason": "tool_calls"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 67,
+    "completion_tokens": 15,
+    "total_tokens": 82
+  },
+  "system_fingerprint": "fp_3b956da36b"
+}
