@@ -7,7 +7,12 @@ import java.util.List;
  * provided input.
  */
 public record ChatCompletionChunk(
-    String id, List<Choice> choices, long created, String model, String systemFingerprint) {
+    String id,
+    List<Choice> choices,
+    long created,
+    String model,
+    String systemFingerprint,
+    Usage usage) {
 
   public record Choice(Delta delta, int index, Logprobs logprobs, String finishReason) {
 

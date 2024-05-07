@@ -19,6 +19,7 @@ public record CreateChatCompletionRequest(
     Optional<Integer> seed,
     Optional<List<String>> stop,
     Optional<Boolean> stream,
+    Optional<StreamOptions> streamOptions,
     Optional<Double> temperature,
     Optional<Double> topP,
     Optional<List<Tool>> tools,
@@ -27,6 +28,18 @@ public record CreateChatCompletionRequest(
 
   public static Builder newBuilder() {
     return new Builder();
+  }
+
+  /**
+   * @param includeUsage If set, an additional chunk will be streamed before the data: [DONE]
+   *     message. The usage field on this chunk shows the token usage statistics for the entire
+   *     request, and the choices field will always be an empty array. All other chunks will also
+   *     include a usage field, but with a null value.
+   */
+  public record StreamOptions(Boolean includeUsage) {
+    public static StreamOptions withUsageIncluded() {
+      return new StreamOptions(true);
+    }
   }
 
   public static class Builder {
@@ -48,6 +61,7 @@ public record CreateChatCompletionRequest(
     private Optional<Integer> seed = Optional.empty();
     private final List<String> stop = new LinkedList<>();
     private Optional<Boolean> stream = Optional.empty();
+    private Optional<StreamOptions> streamOptions = Optional.empty();
     private Optional<Double> temperature = Optional.empty();
     private Optional<Double> topP = Optional.empty();
     private final List<Tool> tools = new LinkedList<>();
@@ -196,6 +210,14 @@ public record CreateChatCompletionRequest(
     }
 
     /**
+     * @param streamOptions Options for streaming response. Only set this when you set stream: true.
+     */
+    public Builder streamOptions(StreamOptions streamOptions) {
+      this.streamOptions = Optional.of(streamOptions);
+      return this;
+    }
+
+    /**
      * @param temperature What sampling temperature to use, between 0 and 2. Higher values like 0.8
      *     will make the output more random, while lower values like 0.2 will make it more focused
      *     and deterministic.
@@ -287,6 +309,7 @@ public record CreateChatCompletionRequest(
           seed,
           stop.isEmpty() ? Optional.empty() : Optional.of(List.copyOf(stop)),
           stream,
+          streamOptions,
           temperature,
           topP,
           tools.isEmpty() ? Optional.empty() : Optional.of(List.copyOf(tools)),

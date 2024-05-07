@@ -1,6 +1,7 @@
 package io.github.stefanbratanov.jvm.openai;
 
 import io.github.stefanbratanov.jvm.openai.ChatMessage.UserMessage.UserMessageWithContentParts.ContentPart;
+import io.github.stefanbratanov.jvm.openai.CreateChatCompletionRequest.StreamOptions;
 import io.github.stefanbratanov.jvm.openai.FineTuningJobIntegration.Wandb;
 import io.github.stefanbratanov.jvm.openai.RunStepsClient.PaginatedThreadRunSteps;
 import io.github.stefanbratanov.jvm.openai.ThreadMessage.Content.ImageFileContent;
@@ -46,6 +47,7 @@ public class TestDataUtil {
             .seed(randomInt())
             .stop(arrayOf(randomInt(0, 4), () -> randomString(5), String[]::new))
             .stream(randomBoolean())
+            .streamOptions(StreamOptions.withUsageIncluded())
             .temperature(randomDouble(0.0, 2.0))
             .topP(randomDouble(0.0, 1.0))
             .tools(listOf(randomInt(0, 5), this::randomFunctionTool));

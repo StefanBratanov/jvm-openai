@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.github.stefanbratanov.jvm.openai.ChatMessage.UserMessage.UserMessageWithContentParts.ContentPart.TextContentPart;
+import io.github.stefanbratanov.jvm.openai.CreateChatCompletionRequest.StreamOptions;
 import java.io.UncheckedIOException;
 import java.net.http.HttpTimeoutException;
 import java.nio.file.Path;
@@ -107,11 +108,21 @@ class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
             // test sending content part
             .message(ChatMessage.userMessage(new TextContentPart("Say this is a test")))
             .stream(true)
+            // test usage stats
+            .streamOptions(StreamOptions.withUsageIncluded())
             .build();
 
     String joinedContent =
         chatClient
             .streamChatCompletion(streamRequest)
+            .filter(
+                chunk -> {
+                  if (chunk.choices().isEmpty()) {
+                    assertThat(chunk.usage()).isNotNull();
+                    return false;
+                  }
+                  return true;
+                })
             .map(ChatCompletionChunk::choices)
             .map(
                 choices -> {
@@ -122,6 +133,12 @@ class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
             .collect(Collectors.joining());
 
     assertThat(joinedContent).containsPattern("(?i)this is (a|the) test");
+
+    streamRequest =
+        CreateChatCompletionRequest.newBuilder()
+            .message(ChatMessage.userMessage("Say this is a test"))
+            .stream(true)
+            .build();
 
     // test streaming with a subscriber
     CompletableFuture<String> joinedContentFuture = new CompletableFuture<>();

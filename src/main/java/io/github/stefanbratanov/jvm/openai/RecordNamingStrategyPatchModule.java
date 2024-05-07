@@ -22,9 +22,11 @@ class RecordNamingStrategyPatchModule extends SimpleModule {
   }
 
   /**
-   * Remove when the following issue is resolved: <a
+   * Remove when the following issues are resolved: <a
    * href="https://github.com/FasterXML/jackson-databind/issues/2992">Properties naming strategy do
-   * not work with Record #2992</a>
+   * not work with Record #2992</a> and <a
+   * href="https://github.com/FasterXML/jackson-databind/issues/4515">Rewrite Bean Property
+   * Introspection logic in Jackson 2.x (ideally for 2.18) #4515</a>
    */
   private static class ValueInstantiatorsModifier extends ValueInstantiators.Base {
 
