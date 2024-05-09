@@ -52,7 +52,7 @@ public class TestDataUtil {
             .topP(randomDouble(0.0, 1.0))
             .tools(listOf(randomInt(0, 5), this::randomFunctionTool));
     runOne(
-        () -> builder.toolChoice(oneOf("none", "auto")),
+        () -> builder.toolChoice(oneOf("none", "auto", "required")),
         () ->
             builder.toolChoice(
                 ToolChoice.functionToolChoice(new ToolChoice.Function(randomString(5)))));
@@ -235,7 +235,13 @@ public class TestDataUtil {
         randomInt(1, 1000),
         randomLong(1, 42_000),
         randomString(7),
-        oneOf("fine-tune", "fine-tune-results", "assistants", "assistants_output"));
+        oneOf(
+            "assistants",
+            "assistants_output",
+            "batch",
+            "batch_output",
+            "fine-tune",
+            "fine-tune-results"));
   }
 
   public CreateImageRequest randomCreateImageRequest() {
