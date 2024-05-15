@@ -26,7 +26,10 @@ public record ThreadRunStep(
     implements AssistantStreamEvent.Data {
 
   /** The details of the run step. */
-  @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+  @JsonTypeInfo(
+      use = JsonTypeInfo.Id.NAME,
+      property = "type",
+      include = JsonTypeInfo.As.EXISTING_PROPERTY)
   @JsonSubTypes({
     @JsonSubTypes.Type(
         value = StepDetails.MessageCreationStepDetails.class,

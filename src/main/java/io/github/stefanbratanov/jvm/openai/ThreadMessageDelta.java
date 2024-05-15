@@ -11,7 +11,10 @@ public record ThreadMessageDelta(String id, Delta delta) implements AssistantStr
   /** The delta containing the fields that have changed on the Message. */
   public record Delta(String role, List<Content> content) {
 
-    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+    @JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        property = "type",
+        include = JsonTypeInfo.As.EXISTING_PROPERTY)
     @JsonSubTypes({
       @JsonSubTypes.Type(
           value = Content.ImageFileContent.class,
@@ -44,7 +47,10 @@ public record ThreadMessageDelta(String id, Delta delta) implements AssistantStr
 
         public record Text(String value, List<Annotation> annotations) {
 
-          @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+          @JsonTypeInfo(
+              use = JsonTypeInfo.Id.NAME,
+              property = "type",
+              include = JsonTypeInfo.As.EXISTING_PROPERTY)
           @JsonSubTypes({
             @JsonSubTypes.Type(
                 value = Annotation.FileCitationAnnotation.class,

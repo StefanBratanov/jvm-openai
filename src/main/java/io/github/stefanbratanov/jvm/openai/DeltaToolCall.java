@@ -11,7 +11,10 @@ import java.util.List;
 import java.util.Map;
 
 /** Details of the tool call the {@link ThreadRunStepDelta} was involved in. */
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    property = "type",
+    include = JsonTypeInfo.As.EXISTING_PROPERTY)
 @JsonSubTypes({
   @JsonSubTypes.Type(
       value = DeltaToolCall.CodeInterpreterToolCall.class,
@@ -53,7 +56,10 @@ public sealed interface DeltaToolCall
      */
     public record CodeInterpreter(String input, List<Output> outputs) {
 
-      @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+      @JsonTypeInfo(
+          use = JsonTypeInfo.Id.NAME,
+          property = "type",
+          include = JsonTypeInfo.As.EXISTING_PROPERTY)
       @JsonSubTypes({
         @JsonSubTypes.Type(
             value = Output.LogOutput.class,

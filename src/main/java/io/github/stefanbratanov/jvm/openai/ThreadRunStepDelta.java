@@ -12,7 +12,10 @@ public record ThreadRunStepDelta(String id, Delta delta) implements AssistantStr
   public record Delta(StepDetails stepDetails) {}
 
   /** The details of the run step. */
-  @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+  @JsonTypeInfo(
+      use = JsonTypeInfo.Id.NAME,
+      property = "type",
+      include = JsonTypeInfo.As.EXISTING_PROPERTY)
   @JsonSubTypes({
     @JsonSubTypes.Type(
         value = StepDetails.MessageCreationStepDetails.class,

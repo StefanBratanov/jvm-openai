@@ -6,6 +6,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.stefanbratanov.jvm.openai.DeltaToolCall.CodeInterpreterToolCall.CodeInterpreter;
+import io.github.stefanbratanov.jvm.openai.ThreadMessage.Content.TextContent;
+import io.github.stefanbratanov.jvm.openai.ThreadMessage.Content.TextContent.Text.Annotation;
+import io.github.stefanbratanov.jvm.openai.ThreadMessage.Content.TextContent.Text.Annotation.FileCitationAnnotation.FileCitation;
+import io.github.stefanbratanov.jvm.openai.ThreadMessageDelta.Delta;
+import io.github.stefanbratanov.jvm.openai.ThreadMessageDelta.Delta.Content.TextContent.Text;
+import io.github.stefanbratanov.jvm.openai.ThreadMessageDelta.Delta.Content.TextContent.Text.Annotation.FilePathAnnotation.FilePath;
+import io.github.stefanbratanov.jvm.openai.ThreadRunStep.StepDetails;
+import io.github.stefanbratanov.jvm.openai.ThreadRunStepDelta.StepDetails.MessageCreationStepDetails;
+import io.github.stefanbratanov.jvm.openai.ThreadRunStepDelta.StepDetails.MessageCreationStepDetails.MessageCreation;
+import io.github.stefanbratanov.jvm.openai.ToolCall.CodeInterpreterToolCall.CodeInterpreter.Output;
 import java.util.List;
 import java.util.Map;
 import org.json.JSONException;
@@ -161,5 +172,76 @@ class SerializationTest {
         getStringResource("/function.json"),
         objectMapper.writeValueAsString(function),
         JSONCompareMode.STRICT);
+  }
+
+  @Test
+  void doesNotSerializeTypeTwiceForJsonSubTypesAnnotatedClasses() throws JsonProcessingException {
+    Tool.FileSearchTool fileSearchTool = Tool.fileSearchTool();
+
+    assertThat(objectMapper.writeValueAsString(fileSearchTool))
+        .isEqualTo("{\"type\":\"file_search\"}");
+
+    ToolCall.FileSearchToolCall fileSearchToolCall = ToolCall.fileSearchToolCall("foobar");
+
+    assertThat(objectMapper.writeValueAsString(fileSearchToolCall))
+        .isEqualTo("{\"id\":\"foobar\",\"file_search\":{},\"type\":\"file_search\"}");
+
+    DeltaToolCall.FileSearchToolCall deltaFileSearchToolCall =
+        DeltaToolCall.fileSearchToolCall(0, "foobar");
+
+    assertThat(objectMapper.writeValueAsString(deltaFileSearchToolCall))
+        .isEqualTo("{\"index\":0,\"id\":\"foobar\",\"file_search\":{},\"type\":\"file_search\"}");
+
+    TextContent textContent = new TextContent(new TextContent.Text("foobar", List.of()));
+
+    assertThat(objectMapper.writeValueAsString(textContent))
+        .isEqualTo("{\"text\":{\"value\":\"foobar\",\"annotations\":[]},\"type\":\"text\"}");
+
+    MessageCreationStepDetails messageCreationStepDetails =
+        new MessageCreationStepDetails(new MessageCreation("foobar"));
+
+    assertThat(objectMapper.writeValueAsString(messageCreationStepDetails))
+        .isEqualTo(
+            "{\"message_creation\":{\"message_id\":\"foobar\"},\"type\":\"message_creation\"}");
+
+    Delta.Content.TextContent deltaTextContent =
+        new Delta.Content.TextContent(0, new Text("foobar", List.of()));
+
+    assertThat(objectMapper.writeValueAsString(deltaTextContent))
+        .isEqualTo(
+            "{\"index\":0,\"text\":{\"value\":\"foobar\",\"annotations\":[]},\"type\":\"text\"}");
+
+    StepDetails.MessageCreationStepDetails runMessageCreationStepDetails =
+        new StepDetails.MessageCreationStepDetails(
+            new StepDetails.MessageCreationStepDetails.MessageCreation("foobar"));
+
+    assertThat(objectMapper.writeValueAsString(runMessageCreationStepDetails))
+        .isEqualTo(
+            "{\"message_creation\":{\"message_id\":\"foobar\"},\"type\":\"message_creation\"}");
+
+    Output.LogOutput logOutput = Output.logOutput("foobar");
+
+    assertThat(objectMapper.writeValueAsString(logOutput))
+        .isEqualTo("{\"logs\":\"foobar\",\"type\":\"logs\"}");
+
+    DeltaToolCall.CodeInterpreterToolCall.CodeInterpreter.Output.LogOutput deltaLogOutput =
+        CodeInterpreter.Output.logOutput(0, "foobar");
+
+    assertThat(objectMapper.writeValueAsString(deltaLogOutput))
+        .isEqualTo("{\"index\":0,\"logs\":\"foobar\",\"type\":\"logs\"}");
+
+    Annotation annotation =
+        new Annotation.FileCitationAnnotation("foobar", new FileCitation("foobar", "foobar"), 0, 0);
+
+    assertThat(objectMapper.writeValueAsString(annotation))
+        .isEqualTo(
+            "{\"text\":\"foobar\",\"file_citation\":{\"file_id\":\"foobar\",\"quote\":\"foobar\"},\"start_index\":0,\"end_index\":0,\"type\":\"file_citation\"}");
+
+    Delta.Content.TextContent.Text.Annotation.FilePathAnnotation deltaAnnotation =
+        new Text.Annotation.FilePathAnnotation(0, "foobar", new FilePath("foobar"), 0, 0);
+
+    assertThat(objectMapper.writeValueAsString(deltaAnnotation))
+        .isEqualTo(
+            "{\"index\":0,\"text\":\"foobar\",\"file_path\":{\"file_id\":\"foobar\"},\"start_index\":0,\"end_index\":0,\"type\":\"file_path\"}");
   }
 }

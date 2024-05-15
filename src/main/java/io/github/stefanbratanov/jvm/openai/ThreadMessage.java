@@ -26,7 +26,10 @@ public record ThreadMessage(
   /** On an incomplete message, details about why the message is incomplete. */
   public record IncompleteDetails(String reason) {}
 
-  @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+  @JsonTypeInfo(
+      use = JsonTypeInfo.Id.NAME,
+      property = "type",
+      include = JsonTypeInfo.As.EXISTING_PROPERTY)
   @JsonSubTypes({
     @JsonSubTypes.Type(
         value = Content.ImageFileContent.class,
@@ -56,7 +59,10 @@ public record ThreadMessage(
 
       public record Text(String value, List<Annotation> annotations) {
 
-        @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+        @JsonTypeInfo(
+            use = JsonTypeInfo.Id.NAME,
+            property = "type",
+            include = JsonTypeInfo.As.EXISTING_PROPERTY)
         @JsonSubTypes({
           @JsonSubTypes.Type(
               value = Annotation.FileCitationAnnotation.class,

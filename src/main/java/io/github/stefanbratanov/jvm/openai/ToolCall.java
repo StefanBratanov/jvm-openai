@@ -10,7 +10,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    property = "type",
+    include = JsonTypeInfo.As.EXISTING_PROPERTY)
 @JsonSubTypes({
   @JsonSubTypes.Type(
       value = ToolCall.CodeInterpreterToolCall.class,
@@ -48,7 +51,10 @@ public sealed interface ToolCall
      */
     public record CodeInterpreter(String input, List<Output> outputs) {
 
-      @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+      @JsonTypeInfo(
+          use = JsonTypeInfo.Id.NAME,
+          property = "type",
+          include = JsonTypeInfo.As.EXISTING_PROPERTY)
       @JsonSubTypes({
         @JsonSubTypes.Type(
             value = Output.LogOutput.class,
