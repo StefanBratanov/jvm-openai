@@ -14,6 +14,9 @@ package io.github.stefanbratanov.jvm.openai;
  */
 public enum OpenAIModel {
 
+  // GPT-4o https://platform.openai.com/docs/models/gpt-4o
+  GPT_4o("gpt-4o"),
+
   // GPT-4 and GPT-4 Turbo (https://platform.openai.com/docs/models/gpt-4-and-gpt-4-turbo)
   GPT_4("gpt-4"),
   GPT_4_TURBO("gpt-4-turbo"),
