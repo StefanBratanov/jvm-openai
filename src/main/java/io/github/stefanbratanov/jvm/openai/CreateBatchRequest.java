@@ -23,7 +23,7 @@ public record CreateBatchRequest(
     /**
      * @param inputFileId The ID of an uploaded file that contains requests for the new batch. Your
      *     input file must be formatted as a JSONL file, and must be uploaded with the purpose
-     *     batch.
+     *     `batch`.
      */
     public Builder inputFileId(String inputFileId) {
       this.inputFileId = inputFileId;

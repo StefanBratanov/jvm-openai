@@ -1,10 +1,10 @@
 package io.github.stefanbratanov.jvm.openai;
 
-import io.github.stefanbratanov.jvm.openai.ChatMessage.UserMessage.UserMessageWithContentParts.ContentPart;
 import io.github.stefanbratanov.jvm.openai.CreateChatCompletionRequest.StreamOptions;
 import io.github.stefanbratanov.jvm.openai.FineTuningJobIntegration.Wandb;
 import io.github.stefanbratanov.jvm.openai.RunStepsClient.PaginatedThreadRunSteps;
 import io.github.stefanbratanov.jvm.openai.ThreadMessage.Content.ImageFileContent;
+import io.github.stefanbratanov.jvm.openai.ThreadMessage.Content.ImageUrlContent;
 import io.github.stefanbratanov.jvm.openai.ThreadMessage.Content.TextContent;
 import io.github.stefanbratanov.jvm.openai.ThreadMessage.Content.TextContent.Text.Annotation;
 import io.github.stefanbratanov.jvm.openai.ThreadMessage.Content.TextContent.Text.Annotation.FileCitationAnnotation;
@@ -215,7 +215,7 @@ public class TestDataUtil {
   public CreateBatchRequest randomCreateBatchRequest() {
     return CreateBatchRequest.newBuilder()
         .inputFileId(randomString(7))
-        .endpoint(oneOf("/v1/chat/completions"))
+        .endpoint(oneOf("/v1/chat/completions", "/v1/embeddings", "/v1/completions"))
         .completionWindow(oneOf("24h"))
         .metadata(randomMetadata())
         .build();
@@ -241,7 +241,8 @@ public class TestDataUtil {
             "batch",
             "batch_output",
             "fine-tune",
-            "fine-tune-results"));
+            "fine-tune-results",
+            "vision"));
   }
 
   public CreateImageRequest randomCreateImageRequest() {
@@ -391,9 +392,26 @@ public class TestDataUtil {
   }
 
   public CreateMessageRequest randomCreateMessageRequest() {
-    return CreateMessageRequest.newBuilder()
-        .role(oneOf("user", "assistant"))
-        .content(randomString(1, 256000))
+    CreateMessageRequest.Builder builder =
+        CreateMessageRequest.newBuilder().role(oneOf("user", "assistant"));
+    runOne(
+        () -> builder.content(randomString(1, 256000)),
+        () -> {
+          List<ContentPart> content =
+              listOf(
+                  randomInt(1, 5),
+                  () ->
+                      oneOf(
+                          ContentPart.textContentPart(randomString(15)),
+                          ContentPart.imageUrlContentPart(randomString(7)),
+                          ContentPart.imageUrlContentPart(
+                              randomString(7), oneOf("auto", "low", "high")),
+                          ContentPart.imageFileContentPart(randomString(7)),
+                          ContentPart.imageFileContentPart(
+                              randomString(7), oneOf("auto", "low", "high"))));
+          builder.content(content);
+        });
+    return builder
         .attachments(listOf(randomInt(1, 3), this::randomAttachment))
         .metadata(randomMetadata())
         .build();
@@ -418,7 +436,12 @@ public class TestDataUtil {
                         new TextContent.Text(
                             randomString(10),
                             listOf(randomInt(1, 8), this::randomThreadMessageAnnotation))),
-                    new ImageFileContent(new ImageFileContent.ImageFile(randomString(4))))),
+                    new ImageFileContent(
+                        new ImageFileContent.ImageFile(
+                            randomString(4), Optional.of(oneOf("auto", "low", "high")))),
+                    new ImageUrlContent(
+                        new ImageUrlContent.ImageUrl(
+                            randomString(7), Optional.of(oneOf("auto", "low", "high")))))),
         randomString(8),
         randomString(5),
         listOf(randomInt(1, 3), this::randomAttachment),
@@ -442,7 +465,11 @@ public class TestDataUtil {
                         new ThreadMessageDelta.Delta.Content.ImageFileContent(
                             randomInt(0, 25),
                             new ThreadMessageDelta.Delta.Content.ImageFileContent.ImageFile(
-                                randomString(4)))))));
+                                randomString(4), Optional.of(oneOf("auto", "low", "high")))),
+                        new ThreadMessageDelta.Delta.Content.ImageUrlContent(
+                            randomInt(0, 25),
+                            new ThreadMessageDelta.Delta.Content.ImageUrlContent.ImageUrl(
+                                randomString(4), Optional.of(oneOf("auto", "low", "high"))))))));
   }
 
   public CreateRunRequest randomCreateRunRequest() {
@@ -498,6 +525,7 @@ public class TestDataUtil {
             "cancelled",
             "failed",
             "completed",
+            "incomplete",
             "expired"),
         ThreadRun.RequiredAction.submitToolOutputsRequiredAction(
             new ThreadRun.RequiredAction.SubmitToolOutputs(
@@ -793,8 +821,8 @@ public class TestDataUtil {
                 () ->
                     oneOf(
                         ContentPart.textContentPart(randomString(15)),
-                        ContentPart.imageContentPart(randomString(7)),
-                        ContentPart.imageContentPart(
+                        ContentPart.imageUrlContentPart(randomString(7)),
+                        ContentPart.imageUrlContentPart(
                             randomString(7), oneOf("auto", "low", "high"))),
                 ContentPart[]::new)),
         ChatMessage.assistantMessage(randomString(10)),

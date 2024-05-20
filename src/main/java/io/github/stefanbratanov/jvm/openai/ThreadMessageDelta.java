@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import java.util.List;
+import java.util.Optional;
 
 /** Represents a message delta i.e. any changed fields on a message during streaming. */
 public record ThreadMessageDelta(String id, Delta delta) implements AssistantStreamEvent.Data {
@@ -20,10 +21,14 @@ public record ThreadMessageDelta(String id, Delta delta) implements AssistantStr
           value = Content.ImageFileContent.class,
           name = Constants.IMAGE_FILE_MESSAGE_CONTENT_TYPE),
       @JsonSubTypes.Type(
+          value = Content.ImageUrlContent.class,
+          name = Constants.IMAGE_URL_MESSAGE_CONTENT_TYPE),
+      @JsonSubTypes.Type(
           value = Content.TextContent.class,
           name = Constants.TEXT_MESSAGE_CONTENT_TYPE),
     })
-    public sealed interface Content permits Content.ImageFileContent, Content.TextContent {
+    public sealed interface Content
+        permits Content.ImageFileContent, Content.ImageUrlContent, Content.TextContent {
       /** The index of the content part in the message. */
       int index();
 
@@ -36,7 +41,16 @@ public record ThreadMessageDelta(String id, Delta delta) implements AssistantStr
           return Constants.IMAGE_FILE_MESSAGE_CONTENT_TYPE;
         }
 
-        public record ImageFile(String fileId) {}
+        public record ImageFile(String fileId, Optional<String> detail) {}
+      }
+
+      record ImageUrlContent(int index, ImageUrl imageUrl) implements Content {
+        @Override
+        public String type() {
+          return Constants.IMAGE_URL_MESSAGE_CONTENT_TYPE;
+        }
+
+        public record ImageUrl(String url, Optional<String> detail) {}
       }
 
       record TextContent(int index, Text text) implements Content {

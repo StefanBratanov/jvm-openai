@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /** Represents a message within a thread. */
 public record ThreadMessage(
@@ -35,10 +36,14 @@ public record ThreadMessage(
         value = Content.ImageFileContent.class,
         name = Constants.IMAGE_FILE_MESSAGE_CONTENT_TYPE),
     @JsonSubTypes.Type(
+        value = Content.ImageUrlContent.class,
+        name = Constants.IMAGE_URL_MESSAGE_CONTENT_TYPE),
+    @JsonSubTypes.Type(
         value = Content.TextContent.class,
         name = Constants.TEXT_MESSAGE_CONTENT_TYPE),
   })
-  public sealed interface Content permits Content.ImageFileContent, Content.TextContent {
+  public sealed interface Content
+      permits Content.ImageFileContent, Content.ImageUrlContent, Content.TextContent {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     String type();
 
@@ -48,7 +53,16 @@ public record ThreadMessage(
         return Constants.IMAGE_FILE_MESSAGE_CONTENT_TYPE;
       }
 
-      public record ImageFile(String fileId) {}
+      public record ImageFile(String fileId, Optional<String> detail) {}
+    }
+
+    record ImageUrlContent(ImageUrl imageUrl) implements Content {
+      @Override
+      public String type() {
+        return Constants.IMAGE_URL_MESSAGE_CONTENT_TYPE;
+      }
+
+      public record ImageUrl(String url, Optional<String> detail) {}
     }
 
     record TextContent(Text text) implements Content {

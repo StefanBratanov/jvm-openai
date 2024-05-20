@@ -28,8 +28,8 @@ public final class FilesClient extends OpenAIClient {
   }
 
   /**
-   * Upload a file that can be used across various endpoints. The size of all the files uploaded by
-   * one organization can be up to 100 GB.
+   * Upload a file that can be used across various endpoints. Individual files can be up to 512 MB,
+   * and the size of all files uploaded by one organization can be up to 100 GB.
    *
    * @throws OpenAIException in case of API errors
    */

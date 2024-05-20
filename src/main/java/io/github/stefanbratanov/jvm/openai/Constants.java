@@ -19,6 +19,7 @@ class Constants {
   static final String TOOL_MESSAGE_ROLE = "tool";
 
   static final String IMAGE_FILE_MESSAGE_CONTENT_TYPE = "image_file";
+  static final String IMAGE_URL_MESSAGE_CONTENT_TYPE = "image_url";
   static final String TEXT_MESSAGE_CONTENT_TYPE = "text";
 
   static final String FILE_CITATION_ANNOTATION_TYPE = "file_citation";
@@ -39,7 +40,8 @@ class Constants {
   static final String CODE_INTERPRETER_IMAGE_OUTPUT_TYPE = "image";
 
   static final String TEXT_CONTENT_PART_TYPE = "text";
-  static final String IMAGE_CONTENT_PART_TYPE = "image_url";
+  static final String IMAGE_URL_CONTENT_PART_TYPE = "image_url";
+  static final String IMAGE_FILE_CONTENT_PART_TYPE = "image_file";
 
   static final String SUBMIT_TOOL_OUTPUTS_REQUIRED_ACTION_TYPE = "submit_tool_outputs";
 

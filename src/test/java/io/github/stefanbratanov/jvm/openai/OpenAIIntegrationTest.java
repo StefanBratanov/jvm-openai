@@ -4,7 +4,7 @@ import static io.github.stefanbratanov.jvm.openai.TestUtil.getTestResource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import io.github.stefanbratanov.jvm.openai.ChatMessage.UserMessage.UserMessageWithContentParts.ContentPart.TextContentPart;
+import io.github.stefanbratanov.jvm.openai.ContentPart.TextContentPart;
 import io.github.stefanbratanov.jvm.openai.CreateChatCompletionRequest.StreamOptions;
 import java.io.UncheckedIOException;
 import java.net.http.HttpTimeoutException;

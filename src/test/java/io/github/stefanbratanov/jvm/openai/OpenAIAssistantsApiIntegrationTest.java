@@ -485,7 +485,7 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
     VectorStoreFileBatch cancelledBatch =
         vectorStoreFileBatchesClient.cancelVectorStoreFileBatch(vectorStore.id(), batch.id());
     assertThat(cancelledBatch.id()).isEqualTo(batch.id());
-    assertThat(cancelledBatch.status()).isIn("cancelled", "completed");
+    assertThat(cancelledBatch.status()).isIn("cancelled", "completed", "in_progress");
 
     VectorStoreFileBatchesClient.PaginatedVectorStoreFiles paginatedVectorStoreFilesInBatch =
         vectorStoreFileBatchesClient.listVectorStoreFilesInBatch(

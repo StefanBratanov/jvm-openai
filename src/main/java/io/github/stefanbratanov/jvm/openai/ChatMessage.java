@@ -2,7 +2,6 @@ package io.github.stefanbratanov.jvm.openai;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.stefanbratanov.jvm.openai.ChatMessage.UserMessage.UserMessageWithContentParts;
-import io.github.stefanbratanov.jvm.openai.ChatMessage.UserMessage.UserMessageWithContentParts.ContentPart;
 import io.github.stefanbratanov.jvm.openai.ChatMessage.UserMessage.UserMessageWithTextContent;
 import java.util.Arrays;
 import java.util.List;
@@ -37,42 +36,7 @@ public sealed interface ChatMessage
         implements UserMessage<String> {}
 
     record UserMessageWithContentParts(List<ContentPart> content, Optional<String> name)
-        implements UserMessage<List<ContentPart>> {
-
-      public sealed interface ContentPart
-          permits ContentPart.TextContentPart, ContentPart.ImageContentPart {
-        @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-        String type();
-
-        record TextContentPart(String text) implements ContentPart {
-          @Override
-          public String type() {
-            return Constants.TEXT_CONTENT_PART_TYPE;
-          }
-        }
-
-        record ImageContentPart(ImageUrl imageUrl) implements ContentPart {
-          @Override
-          public String type() {
-            return Constants.IMAGE_CONTENT_PART_TYPE;
-          }
-
-          public record ImageUrl(String url, Optional<String> detail) {}
-        }
-
-        static TextContentPart textContentPart(String text) {
-          return new TextContentPart(text);
-        }
-
-        static ImageContentPart imageContentPart(String url) {
-          return new ImageContentPart(new ImageContentPart.ImageUrl(url, Optional.empty()));
-        }
-
-        static ImageContentPart imageContentPart(String url, String detail) {
-          return new ImageContentPart(new ImageContentPart.ImageUrl(url, Optional.of(detail)));
-        }
-      }
-    }
+        implements UserMessage<List<ContentPart>> {}
   }
 
   record AssistantMessage(String content, Optional<String> name, Optional<List<ToolCall>> toolCalls)

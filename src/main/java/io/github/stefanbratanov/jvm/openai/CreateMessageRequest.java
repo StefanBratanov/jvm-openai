@@ -4,9 +4,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * @param content {@link String} or a {@link List<ContentPart>}
+ */
 public record CreateMessageRequest(
     String role,
-    String content,
+    Object content,
     Optional<List<Attachment>> attachments,
     Optional<Map<String, String>> metadata) {
 
@@ -20,7 +23,7 @@ public record CreateMessageRequest(
 
     private String role = DEFAULT_ROLE;
 
-    private String content;
+    private Object content;
     private Optional<List<Attachment>> attachments = Optional.empty();
     private Optional<Map<String, String>> metadata = Optional.empty();
 
@@ -42,6 +45,14 @@ public record CreateMessageRequest(
      * @param content The content of the message.
      */
     public Builder content(String content) {
+      this.content = content;
+      return this;
+    }
+
+    /**
+     * @param content An array of content parts with a defined type
+     */
+    public Builder content(List<ContentPart> content) {
       this.content = content;
       return this;
     }
