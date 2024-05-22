@@ -143,7 +143,7 @@ chatClient.streamChatCompletion(request, new ChatCompletionStreamSubscriber() {
 ```java
 ImagesClient imagesClient = openAI.imagesClient();
 CreateImageRequest createImageRequest = CreateImageRequest.newBuilder()
-    .model("dall-e-3")
+    .model(OpenAIModel.DALL_E_3)
     .prompt("A cute baby sea otter")
     .build();
 Images images = imagesClient.createImage(createImageRequest);
@@ -152,9 +152,9 @@ Images images = imagesClient.createImage(createImageRequest);
 ```java
 AudioClient audioClient = openAI.audioClient();
 SpeechRequest request = SpeechRequest.newBuilder()
-    .model("ttl-1")
+    .model(OpenAIModel.TTS_1)
     .input("The quick brown fox jumped over the lazy dog.")
-    .voice("alloy")
+    .voice(Voice.ALLOY)
     .build();
 Path output = Paths.get("/tmp/speech.mp3");
 audioClient.createSpeech(request, output);
@@ -163,7 +163,7 @@ audioClient.createSpeech(request, output);
 ```java
 AudioClient audioClient = openAI.audioClient();
 TranslationRequest request = TranslationRequest.newBuilder()
-    .model("whisper-1")
+    .model(OpenAIModel.WHISPER_1)
     .file(Paths.get("/tmp/german.m4a"))
     .build();
 String translatedText = audioClient.createTranslation(request);
@@ -188,7 +188,7 @@ boolean violence = moderation.results().get(0).categories().violence();
 FilesClient filesClient = openAI.filesClient();
 UploadFileRequest uploadInputFileRequest = UploadFileRequest.newBuilder()
     .file(Paths.get("/tmp/batch-requests.jsonl"))
-    .purpose("batch")
+    .purpose(Purpose.BATCH)
     .build();
 File inputFile = filesClient.uploadFile(uploadInputFileRequest);
 
@@ -213,7 +213,7 @@ RunsClient runsClient = openAI.runsClient();
 // Step 1: Create an Assistant
 CreateAssistantRequest createAssistantRequest = CreateAssistantRequest.newBuilder()
     .name("Math Tutor")
-    .model("gpt-3.5-turbo-1106")
+    .model(OpenAIModel.GPT_3_5_TURBO_1106)
     .instructions("You are a personal math tutor. Write and run code to answer math questions.")
     .tool(Tool.codeInterpreterTool())
     .build();
@@ -225,7 +225,7 @@ Thread thread = threadsClient.createThread(createThreadRequest);
 
 // Step 3: Add a Message to a Thread
 CreateMessageRequest createMessageRequest = CreateMessageRequest.newBuilder()
-    .role("user")
+    .role(Role.USER)
     .content("I need to solve the equation `3x + 11 = 14`. Can you help me?")
     .build();
 ThreadMessage message = messagesClient.createMessage(thread.id(), createMessageRequest);
@@ -242,7 +242,7 @@ ThreadRun retrievedRun = runsClient.retrieveRun(thread.id(), run.id());
 String status = retrievedRun.status();
 
 // Step 6: Display the Assistant's Response
-PaginatedThreadMessages paginatedMessages = messagesClient.listMessages(thread.id(), PaginationQueryParameters.none(), Optional.empty());
+MessagesClient.PaginatedThreadMessages paginatedMessages = messagesClient.listMessages(thread.id(), PaginationQueryParameters.none(), Optional.empty());
 List<ThreadMessage> messages = paginatedMessages.data();
 ```
 - Build AI Assistant with File Search Enabled
@@ -271,12 +271,12 @@ CreateVectorStoreRequest createVectorStoreRequest = CreateVectorStoreRequest.new
 VectorStore vectorStore = vectorStoresClient.createVectorStore(createVectorStoreRequest);
 UploadFileRequest uploadFileRequest1 = UploadFileRequest.newBuilder()
     .file(Paths.get("edgar/goog-10k.pdf"))
-    .purpose("assistants")
+    .purpose(Purpose.ASSISTANTS)
     .build();
 File file1 = filesClient.uploadFile(uploadFileRequest1);
 UploadFileRequest uploadFileRequest2 = UploadFileRequest.newBuilder()
     .file(Paths.get("edgar/brka-10k.txt"))
-    .purpose("assistants")
+    .purpose(Purpose.ASSISTANTS)
     .build();
 File file2 = filesClient.uploadFile(uploadFileRequest2);
 CreateVectorStoreFileBatchRequest createVectorStoreFileBatchRequest = CreateVectorStoreFileBatchRequest.newBuilder()
@@ -293,7 +293,7 @@ ModifyAssistantRequest modifyAssistantRequest = ModifyAssistantRequest.newBuilde
 assistantsClient.modifyAssistant(assistant.id(), modifyAssistantRequest);
 
 // Step 4: Create a thread
-Message message = Message.newBuilder()
+CreateThreadRequest.Message message = CreateThreadRequest.Message.newBuilder()
     .role("user")
     .content("How many shares of AAPL were outstanding at the end of of October 2023?")
     .build();
@@ -312,7 +312,7 @@ ThreadRun run = runsClient.createRun(thread.id(), createRunRequest);
 ThreadRun retrievedRun = runsClient.retrieveRun(thread.id(), run.id());
 String status = retrievedRun.status();
 // display the Assistant's Response
-PaginatedThreadMessages paginatedMessages = messagesClient.listMessages(thread.id(), PaginationQueryParameters.none(), Optional.empty());
+MessagesClient.PaginatedThreadMessages paginatedMessages = messagesClient.listMessages(thread.id(), PaginationQueryParameters.none(), Optional.empty());
 List<ThreadMessage> messages = paginatedMessages.data();
 ```
 - Create a run and stream the result of executing the run ([Assistants Streaming](https://platform.openai.com/docs/api-reference/assistants-streaming))
