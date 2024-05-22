@@ -16,7 +16,7 @@ public record SpeechRequest(
   public static class Builder {
 
     private static final String DEFAULT_MODEL = OpenAIModel.TTS_1.getId();
-    private static final String DEFAULT_VOICE = "alloy";
+    private static final String DEFAULT_VOICE = Voice.ALLOY.getId();
 
     private String model = DEFAULT_MODEL;
     private String input;
@@ -58,6 +58,17 @@ public record SpeechRequest(
      */
     public Builder voice(String voice) {
       this.voice = voice;
+      return this;
+    }
+
+    /**
+     * @param voice The voice to use when generating the audio. Previews of the voices are available
+     *     in the <a
+     *     href="https://platform.openai.com/docs/guides/text-to-speech/voice-options">Text to
+     *     speech guide</a>.
+     */
+    public Builder voice(Voice voice) {
+      this.voice = voice.getId();
       return this;
     }
 

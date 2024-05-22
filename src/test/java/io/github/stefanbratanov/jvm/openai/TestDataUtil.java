@@ -73,7 +73,7 @@ public class TestDataUtil {
     return SpeechRequest.newBuilder()
         .model(randomTtsModel())
         .input(randomString(15))
-        .voice(oneOf("alloy", "echo", "fable", "onyx", "nova", "shimmer"))
+        .voice(oneOf(Voice.ALLOY, Voice.ECHO, Voice.FABLE, Voice.ONYX, Voice.NOVA, Voice.SHIMMER))
         .responseFormat(oneOf("mp3", "opus", "aac", "flac"))
         .speed(randomDouble(0.25, 4.0))
         .build();
@@ -855,7 +855,7 @@ public class TestDataUtil {
         new ChatCompletion.Choice.Message(
             randomString(10),
             listOf(randomInt(0, 3), () -> randomFunctionToolCall(false)),
-            Constants.ASSISTANT_MESSAGE_ROLE),
+            Role.ASSISTANT.getId()),
         randomLogprobs(),
         randomFinishReason());
   }

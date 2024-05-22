@@ -22,18 +22,25 @@ public record CreateThreadRequest(
 
     public static class Builder {
 
-      private String role = Constants.USER_MESSAGE_ROLE;
+      private String role = Role.USER.getId();
 
       private String content;
       private Optional<List<Attachment>> attachments = Optional.empty();
       private Optional<Map<String, String>> metadata = Optional.empty();
 
       /**
-       * @param role The role of the entity that is creating the message. Currently only user is
-       *     supported.
+       * @param role The role of the entity that is creating the message.
        */
       public Builder role(String role) {
         this.role = role;
+        return this;
+      }
+
+      /**
+       * @param role The role of the entity that is creating the message.
+       */
+      public Builder role(Role role) {
+        this.role = role.getId();
         return this;
       }
 

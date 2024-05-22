@@ -19,7 +19,7 @@ public sealed interface ChatMessage
   record SystemMessage(String content, Optional<String> name) implements ChatMessage {
     @Override
     public String role() {
-      return Constants.SYSTEM_MESSAGE_ROLE;
+      return Role.SYSTEM.getId();
     }
   }
 
@@ -27,7 +27,7 @@ public sealed interface ChatMessage
       permits UserMessageWithTextContent, UserMessageWithContentParts {
     @Override
     default String role() {
-      return Constants.USER_MESSAGE_ROLE;
+      return Role.USER.getId();
     }
 
     T content();
@@ -43,14 +43,14 @@ public sealed interface ChatMessage
       implements ChatMessage {
     @Override
     public String role() {
-      return Constants.ASSISTANT_MESSAGE_ROLE;
+      return Role.ASSISTANT.getId();
     }
   }
 
   record ToolMessage(String content, String toolCallId) implements ChatMessage {
     @Override
     public String role() {
-      return Constants.TOOL_MESSAGE_ROLE;
+      return Role.TOOL.getId();
     }
   }
 

@@ -279,7 +279,7 @@ class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
     UploadFileRequest uploadInputFileRequest =
         UploadFileRequest.newBuilder()
             .file(getTestResource("/batch-input-file.jsonl"))
-            .purpose("batch")
+            .purpose(Purpose.BATCH)
             .build();
 
     File inputFile = filesClient.uploadFile(uploadInputFileRequest);
@@ -358,7 +358,7 @@ class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
     Path jsonlFile = getTestResource("/mydata.jsonl");
 
     UploadFileRequest uploadFileRequest =
-        UploadFileRequest.newBuilder().file(jsonlFile).purpose("fine-tune").build();
+        UploadFileRequest.newBuilder().file(jsonlFile).purpose(Purpose.FINE_TUNE).build();
 
     File uploadedFile = filesClient.uploadFile(uploadFileRequest);
 

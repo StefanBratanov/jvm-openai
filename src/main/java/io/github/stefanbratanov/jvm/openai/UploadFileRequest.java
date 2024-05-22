@@ -29,6 +29,14 @@ public record UploadFileRequest(Path file, String purpose) {
       return this;
     }
 
+    /**
+     * @param purpose The intended purpose of the uploaded file.
+     */
+    public Builder purpose(Purpose purpose) {
+      this.purpose = purpose.getId();
+      return this;
+    }
+
     public UploadFileRequest build() {
       return new UploadFileRequest(file, purpose);
     }

@@ -58,7 +58,7 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
     UploadFileRequest uploadFileRequest =
         UploadFileRequest.newBuilder()
             .file(getTestResource("/mydata.jsonl"))
-            .purpose("assistants")
+            .purpose(Purpose.ASSISTANTS)
             .build();
     File file = openAI.filesClient().uploadFile(uploadFileRequest);
     // create thread
@@ -503,7 +503,7 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
     UploadFileRequest uploadFileRequest =
         UploadFileRequest.newBuilder()
             .file(getTestResource("/real-estate-agent-assistant.txt"))
-            .purpose("assistants")
+            .purpose(Purpose.ASSISTANTS)
             .build();
     return openAI.filesClient().uploadFile(uploadFileRequest);
   }
