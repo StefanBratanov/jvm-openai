@@ -294,7 +294,7 @@ assistantsClient.modifyAssistant(assistant.id(), modifyAssistantRequest);
 
 // Step 4: Create a thread
 CreateThreadRequest.Message message = CreateThreadRequest.Message.newBuilder()
-    .role("user")
+    .role(Role.USER)
     .content("How many shares of AAPL were outstanding at the end of of October 2023?")
     .build();
 CreateThreadRequest createThreadRequest = CreateThreadRequest.newBuilder()
