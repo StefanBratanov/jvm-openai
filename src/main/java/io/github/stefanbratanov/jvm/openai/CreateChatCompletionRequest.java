@@ -24,6 +24,7 @@ public record CreateChatCompletionRequest(
     Optional<Double> topP,
     Optional<List<Tool>> tools,
     Optional<Object> toolChoice,
+    Optional<Boolean> parallelToolCalls,
     Optional<String> user) {
 
   public static Builder newBuilder() {
@@ -66,6 +67,7 @@ public record CreateChatCompletionRequest(
     private Optional<Double> topP = Optional.empty();
     private final List<Tool> tools = new LinkedList<>();
     private Optional<Object> toolChoice = Optional.empty();
+    private Optional<Boolean> parallelToolCalls = Optional.empty();
     private Optional<String> user = Optional.empty();
 
     /**
@@ -272,6 +274,14 @@ public record CreateChatCompletionRequest(
     }
 
     /**
+     * @param parallelToolCalls Whether to enable parallel function calling during tool use.
+     */
+    public Builder parallelToolCalls(boolean parallelToolCalls) {
+      this.parallelToolCalls = Optional.of(parallelToolCalls);
+      return this;
+    }
+
+    /**
      * @param toolChoice Controls which (if any) function is called by the model. none means the
      *     model will not call a function and instead generates a message. auto means the model can
      *     pick between generating a message or calling a function. Specifying a particular function
@@ -314,6 +324,7 @@ public record CreateChatCompletionRequest(
           topP,
           tools.isEmpty() ? Optional.empty() : Optional.of(List.copyOf(tools)),
           toolChoice,
+          parallelToolCalls,
           user);
     }
   }

@@ -29,6 +29,7 @@ public record ThreadRun(
     int maxCompletionTokens,
     TruncationStrategy truncationStrategy,
     AssistantsToolChoice toolChoice,
+    boolean parallelToolCalls,
     AssistantsResponseFormat responseFormat)
     implements AssistantStreamEvent.Data {
 

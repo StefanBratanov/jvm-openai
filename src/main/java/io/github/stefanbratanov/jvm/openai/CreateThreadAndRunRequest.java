@@ -18,6 +18,7 @@ public record CreateThreadAndRunRequest(
     Optional<Integer> maxCompletionTokens,
     Optional<TruncationStrategy> truncationStrategy,
     Optional<AssistantsToolChoice> toolChoice,
+    Optional<Boolean> parallelToolCalls,
     Optional<AssistantsResponseFormat> responseFormat) {
 
   public static Builder newBuilder() {
@@ -40,6 +41,7 @@ public record CreateThreadAndRunRequest(
     private Optional<Integer> maxCompletionTokens = Optional.empty();
     private Optional<TruncationStrategy> truncationStrategy = Optional.empty();
     private Optional<AssistantsToolChoice> toolChoice = Optional.empty();
+    private Optional<Boolean> parallelToolCalls = Optional.empty();
     private Optional<AssistantsResponseFormat> responseFormat = Optional.empty();
 
     /**
@@ -176,6 +178,14 @@ public record CreateThreadAndRunRequest(
     }
 
     /**
+     * @param parallelToolCalls Whether to enable parallel function calling during tool use.
+     */
+    public Builder parallelToolCalls(boolean parallelToolCalls) {
+      this.parallelToolCalls = Optional.of(parallelToolCalls);
+      return this;
+    }
+
+    /**
      * <b>Important:</b> when using JSON mode, you must also instruct the model to produce JSON
      * yourself via a system or user message.
      *
@@ -201,6 +211,7 @@ public record CreateThreadAndRunRequest(
           maxCompletionTokens,
           truncationStrategy,
           toolChoice,
+          parallelToolCalls,
           responseFormat);
     }
   }

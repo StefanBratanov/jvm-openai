@@ -56,7 +56,7 @@ public class TestDataUtil {
         () ->
             builder.toolChoice(
                 ToolChoice.functionToolChoice(new ToolChoice.Function(randomString(5)))));
-    return builder.build();
+    return builder.parallelToolCalls(randomBoolean()).user(randomString(6)).build();
   }
 
   public ChatCompletion randomChatCompletion() {
@@ -488,6 +488,7 @@ public class TestDataUtil {
         .maxCompletionTokens(randomInt(256, 10_000))
         .truncationStrategy(randomTruncationStrategy())
         .toolChoice(randomAssistantsToolChoice())
+        .parallelToolCalls(randomBoolean())
         .responseFormat(randomAssistantsResponseFormat())
         .build();
   }
@@ -507,6 +508,7 @@ public class TestDataUtil {
         .maxCompletionTokens(randomInt(256, 10_000))
         .truncationStrategy(randomTruncationStrategy())
         .toolChoice(randomAssistantsToolChoice())
+        .parallelToolCalls(randomBoolean())
         .responseFormat(randomAssistantsResponseFormat())
         .build();
   }
@@ -549,6 +551,7 @@ public class TestDataUtil {
         randomInt(256, 10_000),
         randomTruncationStrategy(),
         randomAssistantsToolChoice(),
+        randomBoolean(),
         randomAssistantsResponseFormat());
   }
 
