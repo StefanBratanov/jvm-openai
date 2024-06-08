@@ -911,7 +911,8 @@ public class TestDataUtil {
   }
 
   private Tool randomTool() {
-    return oneOf(randomFunctionTool(), Tool.fileSearchTool(), Tool.codeInterpreterTool());
+    return oneOf(
+        randomFunctionTool(), Tool.fileSearchTool(randomInt(1, 50)), Tool.codeInterpreterTool());
   }
 
   private DeltaToolCall randomCodeInterpreterDeltaToolCall() {

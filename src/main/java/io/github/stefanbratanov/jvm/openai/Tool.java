@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+import java.util.Optional;
+
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     property = "type",
@@ -28,7 +30,9 @@ public sealed interface Tool
     }
   }
 
-  record FileSearchTool() implements Tool {
+  record FileSearchTool(Optional<FileSearch> fileSearch) implements Tool {
+
+    public record FileSearch(Optional<Integer> maxNumResults) {}
 
     @Override
     public String type() {
@@ -49,7 +53,15 @@ public sealed interface Tool
   }
 
   static FileSearchTool fileSearchTool() {
-    return new FileSearchTool();
+    return new FileSearchTool(Optional.empty());
+  }
+
+  /**
+   * @param maxNumResults The maximum number of results the file search tool should output.
+   */
+  static FileSearchTool fileSearchTool(int maxNumResults) {
+    return new FileSearchTool(
+        Optional.of(new FileSearchTool.FileSearch(Optional.of(maxNumResults))));
   }
 
   static FunctionTool functionTool(Function function) {
