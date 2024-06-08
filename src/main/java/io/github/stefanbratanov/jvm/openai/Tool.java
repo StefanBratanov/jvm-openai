@@ -3,7 +3,6 @@ package io.github.stefanbratanov.jvm.openai;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
 import java.util.Optional;
 
 @JsonTypeInfo(
