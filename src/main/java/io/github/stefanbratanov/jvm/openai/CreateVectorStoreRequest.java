@@ -8,6 +8,7 @@ public record CreateVectorStoreRequest(
     Optional<List<String>> fileIds,
     Optional<String> name,
     Optional<ExpiresAfter> expiresAfter,
+    Optional<ChunkingStrategy> chunkingStrategy,
     Optional<Map<String, String>> metadata) {
 
   public static Builder newBuilder() {
@@ -19,6 +20,7 @@ public record CreateVectorStoreRequest(
     private Optional<List<String>> fileIds = Optional.empty();
     private Optional<String> name = Optional.empty();
     private Optional<ExpiresAfter> expiresAfter = Optional.empty();
+    private Optional<ChunkingStrategy> chunkingStrategy = Optional.empty();
     private Optional<Map<String, String>> metadata = Optional.empty();
 
     /**
@@ -47,6 +49,15 @@ public record CreateVectorStoreRequest(
     }
 
     /**
+     * @param chunkingStrategy The chunking strategy used to chunk the file(s). If not set, will use
+     *     the `auto` strategy. Only applicable if `file_ids` is non-empty.
+     */
+    public Builder chunkingStrategy(ChunkingStrategy chunkingStrategy) {
+      this.chunkingStrategy = Optional.of(chunkingStrategy);
+      return this;
+    }
+
+    /**
      * @param metadata Set of 16 key-value pairs that can be attached to an object. This can be
      *     useful for storing additional information about the object in a structured format. Keys
      *     can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
@@ -57,7 +68,7 @@ public record CreateVectorStoreRequest(
     }
 
     public CreateVectorStoreRequest build() {
-      return new CreateVectorStoreRequest(fileIds, name, expiresAfter, metadata);
+      return new CreateVectorStoreRequest(fileIds, name, expiresAfter, chunkingStrategy, metadata);
     }
   }
 }

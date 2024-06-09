@@ -16,7 +16,8 @@ public record ToolResources(CodeInterpreter codeInterpreter, FileSearch fileSear
   public record FileSearch(
       Optional<String[]> vectorStoreIds, Optional<VectorStores[]> vectorStores) {
 
-    public record VectorStores(List<String> fileIds, Map<String, String> metadata) {}
+    public record VectorStores(
+        List<String> fileIds, ChunkingStrategy chunkingStrategy, Map<String, String> metadata) {}
   }
 
   public static ToolResources codeInterpreterToolResources(List<String> fileIds) {

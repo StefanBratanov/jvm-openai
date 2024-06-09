@@ -7,4 +7,5 @@ public record VectorStoreFile(
     long createdAt,
     String vectorStoreId,
     String status,
-    LastError lastError) {}
+    LastError lastError,
+    ChunkingStrategy chunkingStrategy) {}

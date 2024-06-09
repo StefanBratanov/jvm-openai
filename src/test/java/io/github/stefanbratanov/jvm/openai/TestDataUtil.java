@@ -606,6 +606,8 @@ public class TestDataUtil {
         .fileIds(listOf(randomInt(0, 20), () -> randomString(4)))
         .name(randomString(7))
         .expiresAfter(randomExpiresAfter())
+        .chunkingStrategy(
+            oneOf(ChunkingStrategy.autoChunkingStrategy(), randomStaticChunkingStrategy()))
         .metadata(randomMetadata())
         .build();
   }
@@ -630,7 +632,11 @@ public class TestDataUtil {
   }
 
   public CreateVectorStoreFileRequest randomCreateVectorStoreFileRequest() {
-    return CreateVectorStoreFileRequest.newBuilder().fileId(randomString(5)).build();
+    return CreateVectorStoreFileRequest.newBuilder()
+        .fileId(randomString(5))
+        .chunkingStrategy(
+            oneOf(ChunkingStrategy.autoChunkingStrategy(), randomStaticChunkingStrategy()))
+        .build();
   }
 
   public VectorStoreFile randomVectorStoreFile() {
@@ -642,12 +648,15 @@ public class TestDataUtil {
         oneOf("in_progress", "completed", "cancelled", "failed"),
         new LastError(
             oneOf("internal_error", "file_not_found", "parsing_error", "unhandled_mime_type"),
-            randomString(10)));
+            randomString(10)),
+        oneOf(randomStaticChunkingStrategy(), ChunkingStrategy.otherChunkingStrategy()));
   }
 
   public CreateVectorStoreFileBatchRequest randomCreateVectorStoreFileBatchRequest() {
     return CreateVectorStoreFileBatchRequest.newBuilder()
         .fileIds(listOf(randomInt(1, 20), () -> randomString(5)))
+        .chunkingStrategy(
+            oneOf(ChunkingStrategy.autoChunkingStrategy(), randomStaticChunkingStrategy()))
         .build();
   }
 
@@ -663,6 +672,12 @@ public class TestDataUtil {
             randomInt(0, 10),
             randomInt(0, 10),
             randomInt(0, 40)));
+  }
+
+  private ChunkingStrategy.StaticChunkingStrategy randomStaticChunkingStrategy() {
+    int randomMaxChunkSizeTokens = randomInt(100, 4096);
+    return ChunkingStrategy.staticChunkingStrategy(
+        randomMaxChunkSizeTokens, randomMaxChunkSizeTokens / 2);
   }
 
   private ExpiresAfter randomExpiresAfter() {
@@ -798,7 +813,9 @@ public class TestDataUtil {
             1,
             () ->
                 new VectorStores(
-                    listOf(randomInt(1, 10_000), () -> randomString(7)), randomMetadata()),
+                    listOf(randomInt(1, 10_000), () -> randomString(7)),
+                    oneOf(ChunkingStrategy.autoChunkingStrategy(), randomStaticChunkingStrategy()),
+                    randomMetadata()),
             VectorStores[]::new);
     if (includeVectorStores) {
       return oneOf(
