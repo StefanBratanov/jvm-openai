@@ -814,7 +814,10 @@ public class TestDataUtil {
             () ->
                 new VectorStores(
                     listOf(randomInt(1, 10_000), () -> randomString(7)),
-                    oneOf(ChunkingStrategy.autoChunkingStrategy(), randomStaticChunkingStrategy()),
+                    Optional.of(
+                        oneOf(
+                            ChunkingStrategy.autoChunkingStrategy(),
+                            randomStaticChunkingStrategy())),
                     randomMetadata()),
             VectorStores[]::new);
     if (includeVectorStores) {

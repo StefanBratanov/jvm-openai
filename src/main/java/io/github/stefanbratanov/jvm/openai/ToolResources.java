@@ -1,6 +1,7 @@
 package io.github.stefanbratanov.jvm.openai;
 
 import io.github.stefanbratanov.jvm.openai.ToolResources.FileSearch.VectorStores;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -17,7 +18,18 @@ public record ToolResources(CodeInterpreter codeInterpreter, FileSearch fileSear
       Optional<String[]> vectorStoreIds, Optional<VectorStores[]> vectorStores) {
 
     public record VectorStores(
-        List<String> fileIds, ChunkingStrategy chunkingStrategy, Map<String, String> metadata) {}
+        List<String> fileIds,
+        Optional<ChunkingStrategy> chunkingStrategy,
+        Map<String, String> metadata) {
+
+      public VectorStores(List<String> fileIds) {
+        this(fileIds, Optional.empty(), Collections.emptyMap());
+      }
+
+      public VectorStores(List<String> fileIds, ChunkingStrategy chunkingStrategy) {
+        this(fileIds, Optional.of(chunkingStrategy), Collections.emptyMap());
+      }
+    }
   }
 
   public static ToolResources codeInterpreterToolResources(List<String> fileIds) {
