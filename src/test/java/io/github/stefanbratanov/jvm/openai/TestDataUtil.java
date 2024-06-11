@@ -812,12 +812,9 @@ public class TestDataUtil {
         arrayOf(
             1,
             () ->
-                new VectorStores(
+                VectorStores.of(
                     listOf(randomInt(1, 10_000), () -> randomString(7)),
-                    Optional.of(
-                        oneOf(
-                            ChunkingStrategy.autoChunkingStrategy(),
-                            randomStaticChunkingStrategy())),
+                    oneOf(ChunkingStrategy.autoChunkingStrategy(), randomStaticChunkingStrategy()),
                     randomMetadata()),
             VectorStores[]::new);
     if (includeVectorStores) {

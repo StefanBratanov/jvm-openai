@@ -1,7 +1,6 @@
 package io.github.stefanbratanov.jvm.openai;
 
 import io.github.stefanbratanov.jvm.openai.ToolResources.FileSearch.VectorStores;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -20,14 +19,23 @@ public record ToolResources(CodeInterpreter codeInterpreter, FileSearch fileSear
     public record VectorStores(
         List<String> fileIds,
         Optional<ChunkingStrategy> chunkingStrategy,
-        Map<String, String> metadata) {
+        Optional<Map<String, String>> metadata) {
 
-      public VectorStores(List<String> fileIds) {
-        this(fileIds, Optional.empty(), Collections.emptyMap());
+      public static VectorStores of(List<String> fileIds) {
+        return new VectorStores(fileIds, Optional.empty(), Optional.empty());
       }
 
-      public VectorStores(List<String> fileIds, ChunkingStrategy chunkingStrategy) {
-        this(fileIds, Optional.of(chunkingStrategy), Collections.emptyMap());
+      public static VectorStores of(List<String> fileIds, ChunkingStrategy chunkingStrategy) {
+        return new VectorStores(fileIds, Optional.of(chunkingStrategy), Optional.empty());
+      }
+
+      public static VectorStores of(List<String> fileIds, Map<String, String> metadata) {
+        return new VectorStores(fileIds, Optional.empty(), Optional.of(metadata));
+      }
+
+      public static VectorStores of(
+          List<String> fileIds, ChunkingStrategy chunkingStrategy, Map<String, String> metadata) {
+        return new VectorStores(fileIds, Optional.of(chunkingStrategy), Optional.of(metadata));
       }
     }
   }
