@@ -1,6 +1,6 @@
 package io.github.stefanbratanov.jvm.openai;
 
-import io.github.stefanbratanov.jvm.openai.ToolResources.FileSearch.VectorStores;
+import io.github.stefanbratanov.jvm.openai.ToolResources.FileSearch.VectorStore;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -14,9 +14,9 @@ public record ToolResources(CodeInterpreter codeInterpreter, FileSearch fileSear
    * Either {@link #vectorStoreIds} or {@link #vectorStores} must be present, but not both of them.
    */
   public record FileSearch(
-      Optional<String[]> vectorStoreIds, Optional<VectorStores[]> vectorStores) {
+      Optional<String[]> vectorStoreIds, Optional<VectorStore[]> vectorStores) {
 
-    public record VectorStores(
+    public record VectorStore(
         Optional<List<String>> fileIds,
         Optional<ChunkingStrategy> chunkingStrategy,
         Optional<Map<String, String>> metadata) {
@@ -56,8 +56,8 @@ public record ToolResources(CodeInterpreter codeInterpreter, FileSearch fileSear
           return this;
         }
 
-        public VectorStores build() {
-          return new VectorStores(fileIds, chunkingStrategy, metadata);
+        public VectorStore build() {
+          return new VectorStore(fileIds, chunkingStrategy, metadata);
         }
       }
     }
@@ -71,7 +71,7 @@ public record ToolResources(CodeInterpreter codeInterpreter, FileSearch fileSear
     return new ToolResources(null, new FileSearch(Optional.of(vectorStoreIds), Optional.empty()));
   }
 
-  public static ToolResources fileSearchToolResources(VectorStores... vectorStores) {
+  public static ToolResources fileSearchToolResources(VectorStore... vectorStores) {
     return new ToolResources(null, new FileSearch(Optional.empty(), Optional.of(vectorStores)));
   }
 
@@ -83,7 +83,7 @@ public record ToolResources(CodeInterpreter codeInterpreter, FileSearch fileSear
   }
 
   public static ToolResources codeInterpreterAndFileSearchToolResources(
-      List<String> fileIds, VectorStores... vectorStores) {
+      List<String> fileIds, VectorStore... vectorStores) {
     return new ToolResources(
         new CodeInterpreter(fileIds), new FileSearch(Optional.empty(), Optional.of(vectorStores)));
   }

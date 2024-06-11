@@ -16,7 +16,7 @@ import io.github.stefanbratanov.jvm.openai.Tool.FunctionTool;
 import io.github.stefanbratanov.jvm.openai.ToolCall.CodeInterpreterToolCall.CodeInterpreter;
 import io.github.stefanbratanov.jvm.openai.ToolCall.CodeInterpreterToolCall.CodeInterpreter.Output.ImageOutput;
 import io.github.stefanbratanov.jvm.openai.ToolCall.FunctionToolCall;
-import io.github.stefanbratanov.jvm.openai.ToolResources.FileSearch.VectorStores;
+import io.github.stefanbratanov.jvm.openai.ToolResources.FileSearch.VectorStore;
 import java.util.*;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
@@ -612,13 +612,13 @@ public class TestDataUtil {
         .build();
   }
 
-  public VectorStore randomVectorStore() {
-    return new VectorStore(
+  public io.github.stefanbratanov.jvm.openai.VectorStore randomVectorStore() {
+    return new io.github.stefanbratanov.jvm.openai.VectorStore(
         randomString(5),
         randomLong(5, 10_000),
         randomString(7),
         randomLong(100, 100_000),
-        new VectorStore.FileCounts(
+        new io.github.stefanbratanov.jvm.openai.VectorStore.FileCounts(
             randomInt(0, 10),
             randomInt(0, 10),
             randomInt(0, 10),
@@ -808,11 +808,11 @@ public class TestDataUtil {
   private ToolResources randomToolResources(boolean includeVectorStores) {
     List<String> fileIds = listOf(randomInt(1, 20), () -> randomString(7));
     String[] vectorStoreIds = arrayOf(1, () -> randomString(7), String[]::new);
-    VectorStores[] vectorStores =
+    VectorStore[] vectorStores =
         arrayOf(
             1,
             () ->
-                VectorStores.newBuilder()
+                VectorStore.newBuilder()
                     .fileIds(listOf(randomInt(1, 10_000), () -> randomString(7)))
                     .chunkingStrategy(
                         oneOf(
@@ -820,7 +820,7 @@ public class TestDataUtil {
                             randomStaticChunkingStrategy()))
                     .metadata(randomMetadata())
                     .build(),
-            VectorStores[]::new);
+            VectorStore[]::new);
     if (includeVectorStores) {
       return oneOf(
           ToolResources.codeInterpreterToolResources(fileIds),
