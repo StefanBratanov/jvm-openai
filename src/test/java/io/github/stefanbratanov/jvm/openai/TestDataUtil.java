@@ -812,10 +812,14 @@ public class TestDataUtil {
         arrayOf(
             1,
             () ->
-                VectorStores.of(
-                    listOf(randomInt(1, 10_000), () -> randomString(7)),
-                    oneOf(ChunkingStrategy.autoChunkingStrategy(), randomStaticChunkingStrategy()),
-                    randomMetadata()),
+                VectorStores.newBuilder()
+                    .fileIds(listOf(randomInt(1, 10_000), () -> randomString(7)))
+                    .chunkingStrategy(
+                        oneOf(
+                            ChunkingStrategy.autoChunkingStrategy(),
+                            randomStaticChunkingStrategy()))
+                    .metadata(randomMetadata())
+                    .build(),
             VectorStores[]::new);
     if (includeVectorStores) {
       return oneOf(

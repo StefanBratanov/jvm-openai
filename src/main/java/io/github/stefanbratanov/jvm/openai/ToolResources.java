@@ -17,25 +17,48 @@ public record ToolResources(CodeInterpreter codeInterpreter, FileSearch fileSear
       Optional<String[]> vectorStoreIds, Optional<VectorStores[]> vectorStores) {
 
     public record VectorStores(
-        List<String> fileIds,
+        Optional<List<String>> fileIds,
         Optional<ChunkingStrategy> chunkingStrategy,
         Optional<Map<String, String>> metadata) {
 
-      public static VectorStores of(List<String> fileIds) {
-        return new VectorStores(fileIds, Optional.empty(), Optional.empty());
+      public static Builder newBuilder() {
+        return new Builder();
       }
 
-      public static VectorStores of(List<String> fileIds, ChunkingStrategy chunkingStrategy) {
-        return new VectorStores(fileIds, Optional.of(chunkingStrategy), Optional.empty());
-      }
+      public static class Builder {
+        private Optional<List<String>> fileIds = Optional.empty();
+        private Optional<ChunkingStrategy> chunkingStrategy = Optional.empty();
+        private Optional<Map<String, String>> metadata = Optional.empty();
 
-      public static VectorStores of(List<String> fileIds, Map<String, String> metadata) {
-        return new VectorStores(fileIds, Optional.empty(), Optional.of(metadata));
-      }
+        /**
+         * @param fileIds A list of file IDs to add to the vector store.
+         */
+        public Builder fileIds(List<String> fileIds) {
+          this.fileIds = Optional.of(fileIds);
+          return this;
+        }
 
-      public static VectorStores of(
-          List<String> fileIds, ChunkingStrategy chunkingStrategy, Map<String, String> metadata) {
-        return new VectorStores(fileIds, Optional.of(chunkingStrategy), Optional.of(metadata));
+        /**
+         * @param chunkingStrategy The chunking strategy used to chunk the file(s)
+         */
+        public Builder chunkingStrategy(ChunkingStrategy chunkingStrategy) {
+          this.chunkingStrategy = Optional.of(chunkingStrategy);
+          return this;
+        }
+
+        /**
+         * @param metadata Set of 16 key-value pairs that can be attached to a vector store. This
+         *     can be useful for storing additional information about the vector store in a
+         *     structured format.
+         */
+        public Builder metadata(Map<String, String> metadata) {
+          this.metadata = Optional.of(metadata);
+          return this;
+        }
+
+        public VectorStores build() {
+          return new VectorStores(fileIds, chunkingStrategy, metadata);
+        }
       }
     }
   }
