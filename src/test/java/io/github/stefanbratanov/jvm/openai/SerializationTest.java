@@ -231,11 +231,11 @@ class SerializationTest {
         .isEqualTo("{\"index\":0,\"logs\":\"foobar\",\"type\":\"logs\"}");
 
     Annotation annotation =
-        new Annotation.FileCitationAnnotation("foobar", new FileCitation("foobar", "foobar"), 0, 0);
+        new Annotation.FileCitationAnnotation("foobar", new FileCitation("foobar"), 0, 0);
 
     assertThat(objectMapper.writeValueAsString(annotation))
         .isEqualTo(
-            "{\"text\":\"foobar\",\"file_citation\":{\"file_id\":\"foobar\",\"quote\":\"foobar\"},\"start_index\":0,\"end_index\":0,\"type\":\"file_citation\"}");
+            "{\"text\":\"foobar\",\"file_citation\":{\"file_id\":\"foobar\"},\"start_index\":0,\"end_index\":0,\"type\":\"file_citation\"}");
 
     Delta.Content.TextContent.Text.Annotation.FilePathAnnotation deltaAnnotation =
         new Text.Annotation.FilePathAnnotation(0, "foobar", new FilePath("foobar"), 0, 0);

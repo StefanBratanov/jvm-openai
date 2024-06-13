@@ -34,7 +34,7 @@ public sealed interface ChunkingStrategy
     }
   }
 
-  record StaticChunkingStrategy(@JsonProperty("static") Static aStatic)
+  record StaticChunkingStrategy(@JsonProperty("static") Static staticVal)
       implements ChunkingStrategy {
 
     public record Static(int maxChunkSizeTokens, int chunkOverlapTokens) {}

@@ -104,7 +104,7 @@ public record ThreadMessage(
               return Constants.FILE_CITATION_ANNOTATION_TYPE;
             }
 
-            public record FileCitation(String fileId, String quote) {}
+            public record FileCitation(String fileId) {}
           }
 
           record FilePathAnnotation(String text, FilePath filePath, int startIndex, int endIndex)

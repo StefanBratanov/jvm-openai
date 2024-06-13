@@ -765,7 +765,7 @@ public class TestDataUtil {
     return oneOf(
         new FileCitationAnnotation(
             randomString(10, 100),
-            new FileCitationAnnotation.FileCitation(randomString(8), randomString(5, 20)),
+            new FileCitationAnnotation.FileCitation(randomString(8)),
             randomInt(0, 100),
             randomInt(0, 100)),
         new FilePathAnnotation(
