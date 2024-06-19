@@ -45,6 +45,7 @@ public class TestDataUtil {
             .presencePenalty(randomDouble(-2.0, 2.0))
             .responseFormat(oneOf(ResponseFormat.text(), ResponseFormat.json()))
             .seed(randomInt())
+            .serviceTier(oneOf("auto", "default"))
             .stop(arrayOf(randomInt(0, 4), () -> randomString(5), String[]::new))
             .stream(randomBoolean())
             .streamOptions(StreamOptions.withUsageIncluded())
@@ -64,6 +65,7 @@ public class TestDataUtil {
         randomString(10),
         randomLong(1, 100_000),
         randomString(10),
+        oneOf("scale", "default"),
         randomString(10),
         listOf(randomInt(1, 3), this::randomChatCompletionChoice),
         randomUsage());

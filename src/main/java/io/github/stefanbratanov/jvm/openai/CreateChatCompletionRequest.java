@@ -17,6 +17,7 @@ public record CreateChatCompletionRequest(
     Optional<Double> presencePenalty,
     Optional<ResponseFormat> responseFormat,
     Optional<Integer> seed,
+    Optional<String> serviceTier,
     Optional<List<String>> stop,
     Optional<Boolean> stream,
     Optional<StreamOptions> streamOptions,
@@ -60,6 +61,7 @@ public record CreateChatCompletionRequest(
     private Optional<Double> presencePenalty = Optional.empty();
     private Optional<ResponseFormat> responseFormat = Optional.empty();
     private Optional<Integer> seed = Optional.empty();
+    private Optional<String> serviceTier = Optional.empty();
     private final List<String> stop = new LinkedList<>();
     private Optional<Boolean> stream = Optional.empty();
     private Optional<StreamOptions> streamOptions = Optional.empty();
@@ -195,6 +197,20 @@ public record CreateChatCompletionRequest(
     }
 
     /**
+     * @param serviceTier Specifies the latency tier to use for processing the request. This
+     *     parameter is relevant for customers subscribed to the scale tier service:
+     *     <ul>
+     *       <li>If set to 'auto', the system will utilize scale tier credits until they are
+     *           exhausted.
+     *       <li>If set to 'default', the request will be processed in the shared cluster.
+     *     </ul>
+     */
+    public Builder serviceTier(String serviceTier) {
+      this.serviceTier = Optional.of(serviceTier);
+      return this;
+    }
+
+    /**
      * @param stop Up to 4 sequences where the API will stop generating further tokens.
      */
     public Builder stop(String... stop) {
@@ -317,6 +333,7 @@ public record CreateChatCompletionRequest(
           presencePenalty,
           responseFormat,
           seed,
+          serviceTier,
           stop.isEmpty() ? Optional.empty() : Optional.of(List.copyOf(stop)),
           stream,
           streamOptions,

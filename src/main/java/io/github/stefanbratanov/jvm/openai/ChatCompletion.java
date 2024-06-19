@@ -7,6 +7,7 @@ public record ChatCompletion(
     String id,
     long created,
     String model,
+    String serviceTier,
     String systemFingerprint,
     List<Choice> choices,
     Usage usage) {

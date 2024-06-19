@@ -11,6 +11,7 @@ public record ChatCompletionChunk(
     List<Choice> choices,
     long created,
     String model,
+    String serviceTier,
     String systemFingerprint,
     Usage usage) {
 
