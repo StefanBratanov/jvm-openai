@@ -202,7 +202,8 @@ public record CreateChatCompletionRequest(
      *     <ul>
      *       <li>If set to 'auto', the system will utilize scale tier credits until they are
      *           exhausted.
-     *       <li>If set to 'default', the request will be processed in the shared cluster.
+     *       <li>If set to 'default', the request will be processed using the default service tier
+     *           with a lower uptime SLA and no latency guarantee.
      *     </ul>
      */
     public Builder serviceTier(String serviceTier) {
