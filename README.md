@@ -53,6 +53,7 @@ ChatCompletion chatCompletion = chatClient.createChatCompletion(createChatComple
 | [Fine-tuning](https://platform.openai.com/docs/api-reference/fine-tuning) |   ✔️   |
 | [Batch](https://platform.openai.com/docs/api-reference/batch)             |   ✔️   |
 | [Files](https://platform.openai.com/docs/api-reference/files)             |   ✔️   |
+| [Uploads](https://platform.openai.com/docs/api-reference/uploads)         |   ✔️   |
 | [Images](https://platform.openai.com/docs/api-reference/images)           |   ✔️   |
 | [Models](https://platform.openai.com/docs/api-reference/models)           |   ✔️   |
 | [Moderations](https://platform.openai.com/docs/api-reference/moderations) |   ✔️   |
@@ -202,6 +203,28 @@ Batch batch = batchClient.createBatch(request);
 // check status of the batch
 Batch retrievedBatch = batchClient.retrieveBatch(batch.id());
 System.out.println(retrievedBatch.status());      
+```
+- Upload large file in multiple parts
+```java
+UploadsClient uploadsClient = openAI.uploadsClient();
+CreateUploadRequest createUploadRequest = CreateUploadRequest.newBuilder()
+    .filename("training_examples.jsonl")
+    .purpose(Purpose.FINE_TUNE)
+    .bytes(2147483648)
+    .mimeType("text/jsonl")
+    .build();
+Upload upload = uploadsClient.createUpload(createUploadRequest);
+
+UploadPart part1 = uploadsClient.addUploadPart(upload.id(), Paths.get("/tmp/part1.jsonl"));
+UploadPart part2 = uploadsClient.addUploadPart(upload.id(), Paths.get("/tmp/part2.jsonl"));
+
+CompleteUploadRequest completeUploadRequest = CompleteUploadRequest.newBuilder()
+    .partIds(List.of(part1.id(), part2.id()))
+    .build();
+
+Upload completedUpload = uploadsClient.completeUpload(upload.id(), completeUploadRequest);
+// the created usable File object
+File file = completedUpload.file();
 ```
 - Build AI Assistant
 ```java

@@ -14,6 +14,7 @@ enum Endpoint {
   FILES("files"),
   FINE_TUNING("fine_tuning/jobs"),
   BATCHES("batches"),
+  UPLOADS("uploads"),
   // Beta
   THREADS("threads"),
   ASSISTANTS("assistants"),

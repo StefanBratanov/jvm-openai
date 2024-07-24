@@ -170,6 +170,49 @@ class OpenApiSpecificationValidationTest {
   }
 
   @RepeatedTest(50)
+  void validateUploads() {
+    CreateUploadRequest createUploadRequest = testDataUtil.randomCreateUploadRequest();
+
+    Request request =
+        createRequestWithBody(
+            Method.POST, "/" + Endpoint.UPLOADS.getPath(), serializeObject(createUploadRequest));
+
+    Upload upload = testDataUtil.randomUpload();
+
+    Response response = createResponseWithBody(serializeObject(upload));
+
+    validate(
+        request,
+        response,
+        "Object has missing required properties ([\"object\",\"status\"])",
+        // spec issue
+        "Object has missing required properties ([\"step_number\"]");
+
+    UploadPart uploadPart = testDataUtil.randomUploadPart();
+
+    response = createResponseWithBody(serializeObject(uploadPart));
+
+    validate("/" + Endpoint.UPLOADS.getPath() + "/{upload_id}/parts", Method.POST, response);
+
+    CompleteUploadRequest completeUploadRequest = testDataUtil.randomCompleteUploadRequest();
+
+    request =
+        createRequestWithBody(
+            Method.POST,
+            "/" + Endpoint.UPLOADS.getPath() + "/{upload_id}/complete",
+            serializeObject(completeUploadRequest));
+
+    response = createResponseWithBody(serializeObject(upload));
+
+    validate(
+        request,
+        response,
+        "Object has missing required properties ([\"object\",\"status\"])",
+        // spec issue
+        "Object has missing required properties ([\"step_number\"]");
+  }
+
+  @RepeatedTest(50)
   void validateImages() {
     CreateImageRequest createImageRequest = testDataUtil.randomCreateImageRequest();
 

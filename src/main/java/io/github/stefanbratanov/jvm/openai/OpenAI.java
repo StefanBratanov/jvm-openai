@@ -20,6 +20,7 @@ public final class OpenAI {
   private final FineTuningClient fineTuningClient;
   private final BatchClient batchClient;
   private final FilesClient filesClient;
+  private final UploadsClient uploadsClient;
   private final ImagesClient imagesClient;
   private final ModelsClient modelsClient;
   private final ModerationsClient moderationsClient;
@@ -48,6 +49,7 @@ public final class OpenAI {
         new FineTuningClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
     batchClient = new BatchClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
     filesClient = new FilesClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
+    uploadsClient = new UploadsClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
     imagesClient = new ImagesClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
     modelsClient = new ModelsClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
     moderationsClient =
@@ -113,6 +115,14 @@ public final class OpenAI {
    */
   public FilesClient filesClient() {
     return filesClient;
+  }
+
+  /**
+   * @return a client based on <a
+   *     href="https://platform.openai.com/docs/api-reference/uploads">Uploads</a>
+   */
+  public UploadsClient uploadsClient() {
+    return uploadsClient;
   }
 
   /**

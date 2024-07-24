@@ -6,8 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.github.stefanbratanov.jvm.openai.ContentPart.TextContentPart;
 import io.github.stefanbratanov.jvm.openai.CreateChatCompletionRequest.StreamOptions;
+import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.http.HttpTimeoutException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
@@ -369,6 +371,48 @@ class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
     File retrievedFile = filesClient.retrieveFile(uploadedFile.id());
 
     assertThat(retrievedFile).isEqualTo(uploadedFile);
+  }
+
+  @Test
+  void testUploadsClient(@TempDir Path tempDir) throws IOException {
+    UploadsClient uploadsClient = openAI.uploadsClient();
+    FilesClient filesClient = openAI.filesClient();
+
+    CreateUploadRequest createUploadRequest =
+        CreateUploadRequest.newBuilder()
+            .filename("hello.txt")
+            .purpose(Purpose.BATCH)
+            .bytes(11)
+            .mimeType("text/plain")
+            .build();
+
+    Upload upload = uploadsClient.createUpload(createUploadRequest);
+
+    Path part1 = tempDir.resolve("part1.txt");
+    Path part2 = tempDir.resolve("part2.txt");
+
+    Files.writeString(part1, "Hello ");
+    Files.writeString(part2, "World");
+
+    UploadPart uploadPart = uploadsClient.addUploadPart(upload.id(), part1);
+    UploadPart uploadPart2 = uploadsClient.addUploadPart(upload.id(), part2);
+
+    CompleteUploadRequest completeUploadRequest =
+        CompleteUploadRequest.newBuilder()
+            .partIds(List.of(uploadPart.id(), uploadPart2.id()))
+            .build();
+
+    Upload completedUpload = uploadsClient.completeUpload(upload.id(), completeUploadRequest);
+
+    assertThat(completedUpload.status()).isEqualTo("completed");
+
+    File file = completedUpload.file();
+
+    assertThat(file).isNotNull();
+
+    byte[] retrievedContent = filesClient.retrieveFileContent(file.id());
+
+    assertThat(new String(retrievedContent)).isEqualTo("Hello World");
   }
 
   @Test // using mock server because fine-tuning models are costly

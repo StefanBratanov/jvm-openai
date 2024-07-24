@@ -237,14 +237,39 @@ public class TestDataUtil {
         randomInt(1, 1000),
         randomLong(1, 42_000),
         randomString(7),
-        oneOf(
-            "assistants",
-            "assistants_output",
-            "batch",
-            "batch_output",
-            "fine-tune",
-            "fine-tune-results",
-            "vision"));
+        randomFilePurpose());
+  }
+
+  public Upload randomUpload() {
+    return new Upload(
+        randomString(5),
+        randomInt(100, 999),
+        randomString(5),
+        randomInt(1, 100),
+        randomFilePurpose(),
+        oneOf("pending", "completed", "cancelled", "expired"),
+        randomInt(100, 999),
+        randomFile());
+  }
+
+  public CreateUploadRequest randomCreateUploadRequest() {
+    return CreateUploadRequest.newBuilder()
+        .filename(randomString(5))
+        .purpose(oneOf("assistants", "batch", "fine-tune", "vision"))
+        .bytes(randomInt(2, 100))
+        .mimeType(oneOf("text/plain", "application/pdf", "text/javascript"))
+        .build();
+  }
+
+  public UploadPart randomUploadPart() {
+    return new UploadPart(randomString(5), randomInt(100, 999), randomString(5));
+  }
+
+  public CompleteUploadRequest randomCompleteUploadRequest() {
+    return CompleteUploadRequest.newBuilder()
+        .partIds(listOf(randomInt(1, 5), () -> randomString(3, 7)))
+        .md5(randomString(32))
+        .build();
   }
 
   public CreateImageRequest randomCreateImageRequest() {
@@ -258,6 +283,17 @@ public class TestDataUtil {
         .style(oneOf("vivid", "natural"))
         .user(randomString(8))
         .build();
+  }
+
+  public String randomFilePurpose() {
+    return oneOf(
+        "assistants",
+        "assistants_output",
+        "batch",
+        "batch_output",
+        "fine-tune",
+        "fine-tune-results",
+        "vision");
   }
 
   public Images randomImages() {
