@@ -35,7 +35,7 @@ public final class OpenAI {
 
   private OpenAI(
       URI baseUrl,
-      String apiKey,
+      Optional<String> apiKey,
       Optional<String> organization,
       Optional<String> project,
       HttpClient httpClient,
@@ -217,15 +217,21 @@ public final class OpenAI {
   }
 
   private String[] createAuthenticationHeaders(
-      String apiKey, Optional<String> organization, Optional<String> project) {
+      Optional<String> apiKey, Optional<String> organization, Optional<String> project) {
     List<String> authHeaders = new ArrayList<>();
-    authHeaders.add(Constants.AUTHORIZATION_HEADER);
-    authHeaders.add("Bearer " + apiKey);
+
+    apiKey.ifPresent(
+        key -> {
+          authHeaders.add(Constants.AUTHORIZATION_HEADER);
+          authHeaders.add("Bearer " + key);
+        });
+
     organization.ifPresent(
         org -> {
           authHeaders.add(Constants.OPENAI_ORGANIZATION_HEADER);
           authHeaders.add(org);
         });
+
     project.ifPresent(
         prj -> {
           authHeaders.add(Constants.OPENAI_PROJECT_HEADER);
@@ -234,18 +240,22 @@ public final class OpenAI {
     return authHeaders.toArray(new String[] {});
   }
 
+  public static Builder newBuilder() {
+    return new Builder();
+  }
+
   /**
    * @param apiKey the API key used for authentication
    */
   public static Builder newBuilder(String apiKey) {
-    return new Builder(apiKey);
+    return newBuilder().apiKey(apiKey);
   }
 
   public static class Builder {
 
     private static final String DEFAULT_BASE_URL = "https://api.openai.com/v1/";
 
-    private final String apiKey;
+    private Optional<String> apiKey = Optional.empty();
 
     private String baseUrl = DEFAULT_BASE_URL;
 
@@ -254,8 +264,14 @@ public final class OpenAI {
     private Optional<HttpClient> httpClient = Optional.empty();
     private Optional<Duration> requestTimeout = Optional.empty();
 
-    public Builder(String apiKey) {
-      this.apiKey = apiKey;
+    public Builder() {}
+
+    /**
+     * @param apiKey the API key used for authentication
+     */
+    public Builder apiKey(String apiKey) {
+      this.apiKey = Optional.of(apiKey);
+      return this;
     }
 
     /**
