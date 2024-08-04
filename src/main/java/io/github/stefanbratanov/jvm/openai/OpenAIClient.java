@@ -39,8 +39,11 @@ abstract class OpenAIClient {
   }
 
   HttpRequest.Builder newHttpRequestBuilder(String... headers) {
-    HttpRequest.Builder httpRequestBuilder =
-        HttpRequest.newBuilder().headers(authenticationHeaders);
+    HttpRequest.Builder httpRequestBuilder = HttpRequest.newBuilder();
+
+    if (authenticationHeaders.length > 0) {
+      httpRequestBuilder.headers(authenticationHeaders);
+    }
     if (headers.length > 0) {
       httpRequestBuilder.headers(headers);
     }
