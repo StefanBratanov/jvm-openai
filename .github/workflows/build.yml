@@ -26,11 +26,11 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Run SonarQube analysis
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} 
         run: |
           if [ -n "$SONAR_TOKEN" ]; then
             ./gradlew jacocoTestReport sonar
           else
             echo "SONAR_TOKEN is not set. Skipping SonarQube analysis."
-          fi     
+          fi 
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
