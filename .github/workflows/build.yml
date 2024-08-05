@@ -21,8 +21,12 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
       - name: Build
-        run: ./gradlew spotlessCheck build jacocoTestReport sonar
+        run: ./gradlew spotlessCheck build
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: Run Sonar
+        if: secrets.SONAR_TOKEN != ''
+        run: ./gradlew jacocoTestReport sonar
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}          
