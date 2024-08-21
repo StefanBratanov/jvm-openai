@@ -9,10 +9,6 @@ public sealed interface AssistantsResponseFormat
    */
   record StringResponseFormat(String format) implements AssistantsResponseFormat {}
 
-  static AssistantsResponseFormat none() {
-    return new StringResponseFormat("none");
-  }
-
   static AssistantsResponseFormat auto() {
     return new StringResponseFormat("auto");
   }

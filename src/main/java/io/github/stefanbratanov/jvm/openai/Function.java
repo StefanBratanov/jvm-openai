@@ -1,37 +1,17 @@
 package io.github.stefanbratanov.jvm.openai;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import java.io.IOException;
-import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /** Function that the model may generate JSON inputs for. */
 public record Function(
-    String name, Optional<String> description, Optional<Map<String, Object>> parameters) {
+    String name,
+    Optional<String> description,
+    Optional<Map<String, Object>> parameters,
+    Optional<Boolean> strict) {
 
   public Function {
-    parameters = parameters.map(this::parametersWithoutJsonEscaping);
-  }
-
-  private Map<String, Object> parametersWithoutJsonEscaping(Map<String, Object> parameters) {
-    return parameters.entrySet().stream()
-        .map(
-            entry -> {
-              if (entry.getValue() instanceof String value) {
-                try {
-                  JsonNode node = ObjectMapperSingleton.getInstance().readTree(value);
-                  if (node != null && !node.isNull()) {
-                    return new AbstractMap.SimpleEntry<>(entry.getKey(), node);
-                  }
-                } catch (IOException ex) {
-                  return entry;
-                }
-              }
-              return entry;
-            })
-        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    parameters = parameters.map(Utils::mapWithoutJsonEscaping);
   }
 
   public static Builder newBuilder() {
@@ -43,6 +23,7 @@ public record Function(
     private String name;
     private Optional<String> description = Optional.empty();
     private Optional<Map<String, Object>> parameters = Optional.empty();
+    private Optional<Boolean> strict = Optional.empty();
 
     /**
      * @param name The name of the function to be called. Must be a-z, A-Z, 0-9, or contain
@@ -72,8 +53,18 @@ public record Function(
       return this;
     }
 
+    /**
+     * @param strict Whether to enable strict schema adherence when generating the function call. If
+     *     set to true, the model will follow the exact schema defined in the parameters field. Only
+     *     a subset of JSON Schema is supported when strict is true.
+     */
+    public Builder strict(boolean strict) {
+      this.strict = Optional.of(strict);
+      return this;
+    }
+
     public Function build() {
-      return new Function(name, description, parameters);
+      return new Function(name, description, parameters, strict);
     }
   }
 }

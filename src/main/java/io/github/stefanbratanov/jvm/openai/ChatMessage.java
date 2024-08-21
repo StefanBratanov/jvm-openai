@@ -39,7 +39,11 @@ public sealed interface ChatMessage
         implements UserMessage<List<ContentPart>> {}
   }
 
-  record AssistantMessage(String content, Optional<String> name, Optional<List<ToolCall>> toolCalls)
+  record AssistantMessage(
+      String content,
+      Optional<String> refusal,
+      Optional<String> name,
+      Optional<List<ToolCall>> toolCalls)
       implements ChatMessage {
     @Override
     public String role() {
@@ -67,11 +71,18 @@ public sealed interface ChatMessage
   }
 
   static AssistantMessage assistantMessage(String content) {
-    return new AssistantMessage(content, Optional.empty(), Optional.empty());
+    return new AssistantMessage(content, Optional.empty(), Optional.empty(), Optional.empty());
   }
 
   static AssistantMessage assistantMessage(String content, List<ToolCall> toolCalls) {
-    return new AssistantMessage(content, Optional.empty(), Optional.of(toolCalls));
+    return new AssistantMessage(
+        content, Optional.empty(), Optional.empty(), Optional.of(toolCalls));
+  }
+
+  static AssistantMessage assistantMessage(
+      String content, String refusal, List<ToolCall> toolCalls) {
+    return new AssistantMessage(
+        content, Optional.of(refusal), Optional.empty(), Optional.of(toolCalls));
   }
 
   static ToolMessage toolMessage(String content, String toolCallId) {

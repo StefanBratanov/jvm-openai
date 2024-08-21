@@ -134,7 +134,7 @@ class SerializationTest {
         objectMapper.readValue(
             getStringResource("/assistants-response-formats.json"), new TypeReference<>() {});
 
-    assertThat(choices).hasSize(4);
+    assertThat(choices).hasSize(5);
 
     assertThat(choices.get(0))
         .isInstanceOfSatisfying(
@@ -150,6 +150,28 @@ class SerializationTest {
     assertThat(choices.get(3))
         .isInstanceOfSatisfying(
             ResponseFormat.class, format -> assertThat(format.type()).isEqualTo("json_object"));
+    assertThat(choices.get(4))
+        .isInstanceOfSatisfying(
+            ResponseFormat.class,
+            format -> {
+              assertThat(format.type()).isEqualTo("json_schema");
+              assertThat(format.jsonSchema())
+                  .hasValueSatisfying(
+                      jsonSchema -> {
+                        assertThat(jsonSchema.name()).isEqualTo("math_response");
+                        assertThat(jsonSchema.strict()).hasValue(true);
+                        assertThat(jsonSchema.schema())
+                            .hasValueSatisfying(
+                                schema ->
+                                    assertThat(schema)
+                                        .isNotEmpty()
+                                        .containsKeys(
+                                            "type",
+                                            "properties",
+                                            "required",
+                                            "additionalProperties"));
+                      });
+            });
   }
 
   @Test

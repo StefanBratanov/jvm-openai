@@ -43,7 +43,11 @@ public class TestDataUtil {
             .maxTokens(randomInt(0, 10_000))
             .n(randomInt(1, 128))
             .presencePenalty(randomDouble(-2.0, 2.0))
-            .responseFormat(oneOf(ResponseFormat.text(), ResponseFormat.json()))
+            .responseFormat(
+                oneOf(
+                    ResponseFormat.text(),
+                    ResponseFormat.json(),
+                    ResponseFormat.jsonSchema(randomJsonSchema())))
             .seed(randomInt())
             .serviceTier(oneOf("auto", "default"))
             .stop(arrayOf(randomInt(0, 4), () -> randomString(5), String[]::new))
@@ -684,9 +688,7 @@ public class TestDataUtil {
         randomLong(900, 9999),
         randomString(5),
         oneOf("in_progress", "completed", "cancelled", "failed"),
-        new LastError(
-            oneOf("internal_error", "file_not_found", "parsing_error", "unhandled_mime_type"),
-            randomString(10)),
+        new LastError(oneOf("server_error", "unsupported_file", "invalid_file"), randomString(10)),
         oneOf(randomStaticChunkingStrategy(), ChunkingStrategy.otherChunkingStrategy()));
   }
 
@@ -751,10 +753,10 @@ public class TestDataUtil {
 
   private AssistantsResponseFormat randomAssistantsResponseFormat() {
     return oneOf(
-        AssistantsResponseFormat.none(),
         AssistantsResponseFormat.auto(),
         AssistantsResponseFormat.responseFormat(ResponseFormat.text()),
-        AssistantsResponseFormat.responseFormat(ResponseFormat.json()));
+        AssistantsResponseFormat.responseFormat(ResponseFormat.json()),
+        AssistantsResponseFormat.responseFormat(ResponseFormat.jsonSchema(randomJsonSchema())));
   }
 
   private StepDetails randomStepDetails() {
@@ -916,6 +918,7 @@ public class TestDataUtil {
         randomInt(0, 10),
         new ChatCompletion.Choice.Message(
             randomString(10),
+            randomString(10),
             listOf(randomInt(0, 3), () -> randomFunctionToolCall(false)),
             Role.ASSISTANT.getId()),
         randomLogprobs(),
@@ -923,11 +926,21 @@ public class TestDataUtil {
   }
 
   private Logprobs randomLogprobs() {
-    return new Logprobs(listOf(randomInt(1, 4), this::randomLogprobsContent));
+    return new Logprobs(
+        listOf(randomInt(1, 4), this::randomLogprobsContent),
+        listOf(randomInt(1, 4), this::randomLogprobsRefusal));
   }
 
   private Logprobs.Content randomLogprobsContent() {
     return new Logprobs.Content(
+        randomString(10),
+        randomDouble(0.0, 1.0),
+        randomBytes(randomInt(1, 10)),
+        listOf(randomInt(1, 5), this::randomTopLogprob));
+  }
+
+  private Logprobs.Refusal randomLogprobsRefusal() {
+    return new Logprobs.Refusal(
         randomString(10),
         randomDouble(0.0, 1.0),
         randomBytes(randomInt(1, 10)),
@@ -941,6 +954,12 @@ public class TestDataUtil {
 
   private String randomModel() {
     return oneOf(
+        "gpt-4o",
+        "gpt-4o-2024-08-06",
+        "gpt-4o-2024-05-13",
+        "gpt-4o-2024-08-06",
+        "gpt-4o-mini",
+        "gpt-4o-mini-2024-07-18",
         "gpt-4-turbo",
         "gpt-4-turbo-2024-04-09",
         "gpt-4-0125-preview",
@@ -1026,7 +1045,24 @@ public class TestDataUtil {
                     "{\"person_name\":{\"type\":\"string\", \"description\":\"the persons name, in lower case\"}}",
                     "required",
                     "[\"person_name\"]"))
+            .strict(randomBoolean())
             .build());
+  }
+
+  private JsonSchema randomJsonSchema() {
+    return JsonSchema.newBuilder()
+        .name(randomString(10))
+        .strict(randomBoolean())
+        .description(randomString(15))
+        .schema(
+            Map.of(
+                "type",
+                "object",
+                "properties",
+                "{\"person_name\":{\"type\":\"string\", \"description\":\"the persons name, in lower case\"}}",
+                "required",
+                "[\"person_name\"]"))
+        .build();
   }
 
   private int randomInt() {

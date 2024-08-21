@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import java.io.IOException;
+import java.util.Optional;
 
 class AssistantsResponseFormatDeserializer extends StdDeserializer<AssistantsResponseFormat> {
 
@@ -21,7 +22,12 @@ class AssistantsResponseFormatDeserializer extends StdDeserializer<AssistantsRes
       return new AssistantsResponseFormat.StringResponseFormat(node.asText());
     } else if (node.isObject()) {
       String type = node.get("type").asText();
-      return new ResponseFormat(type);
+      if (node.has("json_schema")) {
+        JsonSchema jsonSchema = p.getCodec().treeToValue(node.get("json_schema"), JsonSchema.class);
+        return new ResponseFormat(type, Optional.of(jsonSchema));
+      } else {
+        return new ResponseFormat(type, Optional.empty());
+      }
     }
     throw InvalidFormatException.from(
         p, "Expected String or Object", node, AssistantsResponseFormat.class);
