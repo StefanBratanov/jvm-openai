@@ -1,0 +1,6 @@
+problem_id,problem_text,answer
+1,"What is the derivative of 2x^2?", "4x"
+2,"Solve the equation: 2x + 3 = 7", "x = 2"
+3,"What is the integral of 3x?", "(3/2)x^2 + C"
+4,"Find the value of the determinant of the matrix [[1,2],[3,4]]", "-2"
+5,"Calculate the area of a circle with radius 5.", "78.54"

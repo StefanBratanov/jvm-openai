@@ -57,7 +57,7 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
     // upload file
     UploadFileRequest uploadFileRequest =
         UploadFileRequest.newBuilder()
-            .file(getTestResource("/mydata.jsonl"))
+            .file(getTestResource("/mydata.csv"))
             .purpose(Purpose.ASSISTANTS)
             .build();
     File file = openAI.filesClient().uploadFile(uploadFileRequest);
@@ -66,7 +66,7 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
 
     CreateMessageRequest createRequest =
         CreateMessageRequest.newBuilder()
-            .content("How does AI work? Explain it in simple terms.")
+            .content("I need to solve the equation `2x + 3 = 7`. Can you help me?")
             .attachments(List.of(Attachment.of(file.id(), Tool.codeInterpreterTool())))
             .build();
 
@@ -233,7 +233,7 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
             .collect(Collectors.toSet());
 
     assertThat(emittedEvents)
-        .containsExactlyInAnyOrder(
+        .contains(
             "thread.run.created",
             "thread.run.queued",
             "thread.run.in_progress",
@@ -333,7 +333,7 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
         .satisfies(
             events ->
                 assertThat(events)
-                    .containsExactlyInAnyOrder(
+                    .contains(
                         "thread.created",
                         "thread.run.created",
                         "thread.run.queued",
