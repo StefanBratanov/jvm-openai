@@ -32,10 +32,12 @@ public final class OpenAI {
   private final VectorStoresClient vectorStoresClient;
   private final VectorStoreFilesClient vectorStoreFilesClient;
   private final VectorStoreFileBatchesClient vectorStoreFileBatchesClient;
+  private final InvitesClient invitesClient;
 
   private OpenAI(
       URI baseUrl,
       Optional<String> apiKey,
+      Optional<String> adminKey,
       Optional<String> organization,
       Optional<String> project,
       HttpClient httpClient,
@@ -54,6 +56,7 @@ public final class OpenAI {
     modelsClient = new ModelsClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
     moderationsClient =
         new ModerationsClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
+    // Assistants
     assistantsClient =
         new AssistantsClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
     threadsClient = new ThreadsClient(baseUrl, authenticationHeaders, httpClient, requestTimeout);
@@ -67,6 +70,10 @@ public final class OpenAI {
     vectorStoreFileBatchesClient =
         new VectorStoreFileBatchesClient(
             baseUrl, authenticationHeaders, httpClient, requestTimeout);
+    // Administration
+    String[] adminAuthenticationHeaders = createAdminAuthenticationHeaders(adminKey);
+    invitesClient =
+        new InvitesClient(baseUrl, adminAuthenticationHeaders, httpClient, requestTimeout);
   }
 
   /**
@@ -216,6 +223,14 @@ public final class OpenAI {
     return vectorStoreFileBatchesClient;
   }
 
+  /**
+   * @return a client based on <a
+   *     href="https://platform.openai.com/docs/api-reference/invite">Invites</a>
+   */
+  public InvitesClient invitesClient() {
+    return invitesClient;
+  }
+
   private String[] createAuthenticationHeaders(
       Optional<String> apiKey, Optional<String> organization, Optional<String> project) {
     List<String> authHeaders = new ArrayList<>();
@@ -240,6 +255,16 @@ public final class OpenAI {
     return authHeaders.toArray(new String[] {});
   }
 
+  private String[] createAdminAuthenticationHeaders(Optional<String> adminKey) {
+    List<String> authHeaders = new ArrayList<>();
+    adminKey.ifPresent(
+        key -> {
+          authHeaders.add(Constants.AUTHORIZATION_HEADER);
+          authHeaders.add("Bearer " + key);
+        });
+    return authHeaders.toArray(new String[] {});
+  }
+
   public static Builder newBuilder() {
     return new Builder();
   }
@@ -256,6 +281,7 @@ public final class OpenAI {
     private static final String DEFAULT_BASE_URL = "https://api.openai.com/v1/";
 
     private Optional<String> apiKey = Optional.empty();
+    private Optional<String> adminKey = Optional.empty();
 
     private String baseUrl = DEFAULT_BASE_URL;
 
@@ -271,6 +297,14 @@ public final class OpenAI {
      */
     public Builder apiKey(String apiKey) {
       this.apiKey = Optional.of(apiKey);
+      return this;
+    }
+
+    /**
+     * @param adminKey the API key used for administration endpoints.
+     */
+    public Builder adminKey(String adminKey) {
+      this.adminKey = Optional.of(adminKey);
       return this;
     }
 
@@ -325,6 +359,7 @@ public final class OpenAI {
       return new OpenAI(
           URI.create(baseUrl),
           apiKey,
+          adminKey,
           organization,
           project,
           httpClient.orElseGet(HttpClient::newHttpClient),

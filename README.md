@@ -43,7 +43,7 @@ ChatCompletion chatCompletion = chatClient.createChatCompletion(createChatComple
 
 ## Supported APIs
 
-> **_NOTE:_** Legacy APIs are not supported
+#### Endpoints
 
 | API                                                                       | Status |
 |---------------------------------------------------------------------------|:------:|
@@ -58,7 +58,7 @@ ChatCompletion chatCompletion = chatClient.createChatCompletion(createChatComple
 | [Models](https://platform.openai.com/docs/api-reference/models)           |   ✔️   |
 | [Moderations](https://platform.openai.com/docs/api-reference/moderations) |   ✔️   |
 
-#### Beta APIs
+#### Assistants (Beta)
 
 | API                                                                                                    | Status |
 |--------------------------------------------------------------------------------------------------------|:------:|
@@ -70,6 +70,20 @@ ChatCompletion chatCompletion = chatClient.createChatCompletion(createChatComple
 | [Vector Stores](https://platform.openai.com/docs/api-reference/vector-stores)                          |   ✔️     |
 | [Vector Store Files](https://platform.openai.com/docs/api-reference/vector-stores-files)               |   ✔️     |
 | [Vector Store File Batches](https://platform.openai.com/docs/api-reference/vector-stores-file-batches) |   ✔️     |
+
+#### Administration
+
+| API                                                                              | Status |
+|----------------------------------------------------------------------------------|:------:|
+| [Invites](https://platform.openai.com/docs/api-reference/invite)                  |   ✔️   |
+| [Users](https://platform.openai.com/docs/api-reference/users)                     |        |
+| [Projects](https://platform.openai.com/docs/api-reference/projects)            |        |
+| [Project Users](https://platform.openai.com/docs/api-reference/project-users)      |        |
+| [Project Service Accounts](https://platform.openai.com/docs/api-reference/project-service-accounts) |        |
+| [Project API Keys](https://platform.openai.com/docs/api-reference/project-api-keys)         |        |
+| [Audit Logs](https://platform.openai.com/docs/api-reference/audit-logs)             |        |
+
+> **_NOTE:_** Legacy APIs are not supported
 
 ## More examples
 

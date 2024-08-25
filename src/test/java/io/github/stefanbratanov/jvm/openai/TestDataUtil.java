@@ -714,6 +714,24 @@ public class TestDataUtil {
             randomInt(0, 40)));
   }
 
+  public InviteRequest randomInviteRequest() {
+    return InviteRequest.newBuilder()
+        .email("user@example.com")
+        .role(oneOf("owner", "reader"))
+        .build();
+  }
+
+  public Invite randomInvite() {
+    return new Invite(
+        randomString(5),
+        "user@example.com",
+        oneOf("owner", "reader"),
+        oneOf("accepted", "expired", "pending"),
+        randomLong(10_000, 1_000_000),
+        randomLong(10_000, 1_000_000),
+        randomLong(10_000, 1_000_000));
+  }
+
   private ChunkingStrategy.StaticChunkingStrategy randomStaticChunkingStrategy() {
     int randomMaxChunkSizeTokens = randomInt(100, 4096);
     return ChunkingStrategy.staticChunkingStrategy(
@@ -957,7 +975,6 @@ public class TestDataUtil {
         "gpt-4o",
         "gpt-4o-2024-08-06",
         "gpt-4o-2024-05-13",
-        "gpt-4o-2024-08-06",
         "gpt-4o-mini",
         "gpt-4o-mini-2024-07-18",
         "gpt-4-turbo",

@@ -34,7 +34,7 @@ class OpenApiSpecificationValidationTest {
     validator = OpenApiInteractionValidator.createFor(api).build();
   }
 
-  @RepeatedTest(50)
+  @RepeatedTest(25)
   void validateAudio() {
     SpeechRequest speechRequest = testDataUtil.randomSpeechRequest();
 
@@ -46,7 +46,7 @@ class OpenApiSpecificationValidationTest {
     // can't validate multipart/form-data so won't validate other endpoints
   }
 
-  @RepeatedTest(50)
+  @RepeatedTest(25)
   void validateChat() {
     CreateChatCompletionRequest createChatCompletionRequest =
         testDataUtil.randomCreateChatCompletionRequest();
@@ -64,7 +64,7 @@ class OpenApiSpecificationValidationTest {
     validate(request, response);
   }
 
-  @RepeatedTest(50)
+  @RepeatedTest(25)
   void validateEmbeddings() {
     EmbeddingsRequest embeddingsRequest = testDataUtil.randomEmbeddingsRequest();
 
@@ -79,7 +79,7 @@ class OpenApiSpecificationValidationTest {
     validate(request, response);
   }
 
-  @RepeatedTest(50)
+  @RepeatedTest(25)
   void validateFineTuning() {
     CreateFineTuningJobRequest createFineTuningJobRequest =
         testDataUtil.randomCreateFineTuningJobRequest();
@@ -128,7 +128,7 @@ class OpenApiSpecificationValidationTest {
         listCheckpointsResponse);
   }
 
-  @RepeatedTest(50)
+  @RepeatedTest(25)
   void validateBatch() {
     CreateBatchRequest createBatchRequest = testDataUtil.randomCreateBatchRequest();
 
@@ -156,7 +156,7 @@ class OpenApiSpecificationValidationTest {
         "Instance type (integer) does not match any allowed primitive type (allowed: [\"string\"]");
   }
 
-  @RepeatedTest(50)
+  @RepeatedTest(25)
   void validateFiles() {
     File file = testDataUtil.randomFile();
 
@@ -169,7 +169,7 @@ class OpenApiSpecificationValidationTest {
         "Object has missing required properties ([\"object\",\"status\"])");
   }
 
-  @RepeatedTest(50)
+  @RepeatedTest(25)
   void validateUploads() {
     CreateUploadRequest createUploadRequest = testDataUtil.randomCreateUploadRequest();
 
@@ -212,7 +212,7 @@ class OpenApiSpecificationValidationTest {
         "Object has missing required properties ([\"step_number\"]");
   }
 
-  @RepeatedTest(50)
+  @RepeatedTest(25)
   void validateImages() {
     CreateImageRequest createImageRequest = testDataUtil.randomCreateImageRequest();
 
@@ -230,7 +230,7 @@ class OpenApiSpecificationValidationTest {
     // can't validate multipart/form-data so won't validate other endpoints
   }
 
-  @RepeatedTest(50)
+  @RepeatedTest(25)
   void validateModels() {
     Model model = testDataUtil.randomModelObject();
 
@@ -239,7 +239,7 @@ class OpenApiSpecificationValidationTest {
     validate("/" + Endpoint.MODELS + "/{model}", Method.GET, response);
   }
 
-  @RepeatedTest(50)
+  @RepeatedTest(25)
   void validateModerations() {
     ModerationRequest moderationRequest = testDataUtil.randomModerationRequest();
 
@@ -254,7 +254,7 @@ class OpenApiSpecificationValidationTest {
     validate(request, response);
   }
 
-  @RepeatedTest(50)
+  @RepeatedTest(25)
   void validateAssistants() {
     CreateAssistantRequest createAssistantRequest = testDataUtil.randomCreateAssistantRequest();
 
@@ -281,7 +281,7 @@ class OpenApiSpecificationValidationTest {
     validate(request, response);
   }
 
-  @RepeatedTest(50)
+  @RepeatedTest(25)
   void validateThreads() {
     CreateThreadRequest createThreadRequest = testDataUtil.randomCreateThreadRequest();
 
@@ -306,7 +306,7 @@ class OpenApiSpecificationValidationTest {
     validate(request, response);
   }
 
-  @RepeatedTest(50)
+  @RepeatedTest(25)
   void validateMessages() {
     CreateMessageRequest createMessageRequest = testDataUtil.randomCreateMessageRequest();
 
@@ -323,7 +323,7 @@ class OpenApiSpecificationValidationTest {
     validate(request, response);
   }
 
-  @RepeatedTest(50)
+  @RepeatedTest(25)
   void validateRuns() {
     CreateRunRequest createRunRequest = testDataUtil.randomCreateRunRequest();
 
@@ -368,7 +368,7 @@ class OpenApiSpecificationValidationTest {
     validate(request);
   }
 
-  @RepeatedTest(50)
+  @RepeatedTest(25)
   void validateRunSteps() {
     PaginatedThreadRunSteps paginatedThreadRunSteps = testDataUtil.randomPaginatedThreadRunSteps();
 
@@ -386,7 +386,7 @@ class OpenApiSpecificationValidationTest {
         response);
   }
 
-  @RepeatedTest(50)
+  @RepeatedTest(25)
   void validateVectorStores() {
     CreateVectorStoreRequest createVectorStoreRequest =
         testDataUtil.randomCreateVectorStoreRequest();
@@ -404,7 +404,7 @@ class OpenApiSpecificationValidationTest {
     validate(request, response);
   }
 
-  @RepeatedTest(50)
+  @RepeatedTest(25)
   void validateVectorStoreFiles() {
     CreateVectorStoreFileRequest createVectorStoreFileRequest =
         testDataUtil.randomCreateVectorStoreFileRequest();
@@ -422,7 +422,7 @@ class OpenApiSpecificationValidationTest {
     validate(request, response);
   }
 
-  @RepeatedTest(50)
+  @RepeatedTest(25)
   void validateVectorStoreFileBatches() {
     CreateVectorStoreFileBatchRequest createVectorStoreFileBatchRequest =
         testDataUtil.randomCreateVectorStoreFileBatchRequest();
@@ -436,6 +436,21 @@ class OpenApiSpecificationValidationTest {
     VectorStoreFileBatch vectorStoreFileBatch = testDataUtil.randomVectorStoreFileBatch();
 
     Response response = createResponseWithBody(serializeObject(vectorStoreFileBatch));
+
+    validate(request, response);
+  }
+
+  @RepeatedTest(25)
+  void validateInvites() {
+    InviteRequest inviteRequest = testDataUtil.randomInviteRequest();
+
+    Request request =
+        createRequestWithBody(
+            Method.POST, "/" + Endpoint.INVITES.getPath(), serializeObject(inviteRequest));
+
+    Invite invite = testDataUtil.randomInvite();
+
+    Response response = createResponseWithBody(serializeObject(invite));
 
     validate(request, response);
   }

@@ -18,7 +18,9 @@ enum Endpoint {
   // Beta
   THREADS("threads"),
   ASSISTANTS("assistants"),
-  VECTOR_STORES("vector_stores");
+  VECTOR_STORES("vector_stores"),
+  // Administration
+  INVITES("organization/invites");
 
   private final String path;
 

@@ -82,7 +82,7 @@ public final class BatchClient extends OpenAIClient {
    * @param limit A limit on the number of objects to be returned.
    * @throws OpenAIException in case of API errors
    */
-  public PaginatedBatches listBatches(Optional<String> after, Optional<String> limit) {
+  public PaginatedBatches listBatches(Optional<String> after, Optional<Integer> limit) {
     String queryParameters =
         createQueryParameters(
             Map.of(Constants.LIMIT_QUERY_PARAMETER, limit, Constants.AFTER_QUERY_PARAMETER, after));
