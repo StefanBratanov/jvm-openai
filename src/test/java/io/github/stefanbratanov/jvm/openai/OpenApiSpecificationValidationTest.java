@@ -455,6 +455,23 @@ class OpenApiSpecificationValidationTest {
     validate(request, response);
   }
 
+  @RepeatedTest(25)
+  void validateUsers() {
+    ModifyUserRequest modifyUserRequest = testDataUtil.randomModifyUserRequest();
+
+    Request request =
+        createRequestWithBody(
+            Method.POST,
+            "/" + Endpoint.USERS.getPath() + "/{user_id}",
+            serializeObject(modifyUserRequest));
+
+    User user = testDataUtil.randomUser();
+
+    Response response = createResponseWithBody(serializeObject(user));
+
+    validate(request, response);
+  }
+
   private void validate(Request request, Response response, String... reportMessagesToIgnore) {
     ValidationReport report = validator.validate(request, response);
     validateReport(report, reportMessagesToIgnore);

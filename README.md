@@ -12,13 +12,13 @@ Java. The only dependency used is [Jackson](https://github.com/FasterXML/jackson
 
 Java 17+ is a prerequisite
 
-#### Gradle
+### Gradle
 
 ```groovy
 implementation("io.github.stefanbratanov:jvm-openai:${version}")
 ```
 
-#### Maven
+### Maven
 
 ```xml
 <dependency>
@@ -43,7 +43,7 @@ ChatCompletion chatCompletion = chatClient.createChatCompletion(createChatComple
 
 ## Supported APIs
 
-#### Endpoints
+### Endpoints
 
 | API                                                                       | Status |
 |---------------------------------------------------------------------------|:------:|
@@ -58,7 +58,7 @@ ChatCompletion chatCompletion = chatClient.createChatCompletion(createChatComple
 | [Models](https://platform.openai.com/docs/api-reference/models)           |   ✔️   |
 | [Moderations](https://platform.openai.com/docs/api-reference/moderations) |   ✔️   |
 
-#### Assistants (Beta)
+### Assistants (Beta)
 
 | API                                                                                                    | Status |
 |--------------------------------------------------------------------------------------------------------|:------:|
@@ -71,12 +71,12 @@ ChatCompletion chatCompletion = chatClient.createChatCompletion(createChatComple
 | [Vector Store Files](https://platform.openai.com/docs/api-reference/vector-stores-files)               |   ✔️     |
 | [Vector Store File Batches](https://platform.openai.com/docs/api-reference/vector-stores-file-batches) |   ✔️     |
 
-#### Administration
+### Administration
 
 | API                                                                              | Status |
 |----------------------------------------------------------------------------------|:------:|
 | [Invites](https://platform.openai.com/docs/api-reference/invite)                  |   ✔️   |
-| [Users](https://platform.openai.com/docs/api-reference/users)                     |        |
+| [Users](https://platform.openai.com/docs/api-reference/users)                     |   ✔️     |
 | [Projects](https://platform.openai.com/docs/api-reference/projects)            |        |
 | [Project Users](https://platform.openai.com/docs/api-reference/project-users)      |        |
 | [Project Service Accounts](https://platform.openai.com/docs/api-reference/project-service-accounts) |        |

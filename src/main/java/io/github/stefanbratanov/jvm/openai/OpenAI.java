@@ -33,6 +33,7 @@ public final class OpenAI {
   private final VectorStoreFilesClient vectorStoreFilesClient;
   private final VectorStoreFileBatchesClient vectorStoreFileBatchesClient;
   private final InvitesClient invitesClient;
+  private final UsersClient usersClient;
 
   private OpenAI(
       URI baseUrl,
@@ -74,6 +75,7 @@ public final class OpenAI {
     String[] adminAuthenticationHeaders = createAdminAuthenticationHeaders(adminKey);
     invitesClient =
         new InvitesClient(baseUrl, adminAuthenticationHeaders, httpClient, requestTimeout);
+    usersClient = new UsersClient(baseUrl, adminAuthenticationHeaders, httpClient, requestTimeout);
   }
 
   /**
@@ -229,6 +231,14 @@ public final class OpenAI {
    */
   public InvitesClient invitesClient() {
     return invitesClient;
+  }
+
+  /**
+   * @return a client based on <a
+   *     href="https://platform.openai.com/docs/api-reference/users">Users</a>
+   */
+  public UsersClient usersClient() {
+    return usersClient;
   }
 
   private String[] createAuthenticationHeaders(

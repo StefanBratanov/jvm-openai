@@ -2,6 +2,7 @@ package io.github.stefanbratanov.jvm.openai;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.github.stefanbratanov.jvm.openai.UsersClient.PaginatedUsers;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -44,5 +45,26 @@ class OpenAIAdminIntegrationTest {
     // cleanup
     DeletionStatus deletionStatus = invitesClient.deleteInvite(invite.id());
     assertThat(deletionStatus.deleted()).isTrue();
+  }
+
+  @Test
+  void testUsersClient() {
+    UsersClient usersClient = openAI.usersClient();
+
+    PaginatedUsers paginatedUsers = usersClient.listUsers(Optional.empty(), Optional.empty());
+
+    assertThat(paginatedUsers.hasMore()).isFalse();
+    assertThat(paginatedUsers.firstId()).isNotBlank();
+    assertThat(paginatedUsers.lastId()).isNotBlank();
+
+    List<User> users = paginatedUsers.data();
+
+    assertThat(users).isNotEmpty();
+
+    User user = users.get(0);
+
+    User retrievedUser = usersClient.retrieveUser(user.id());
+
+    assertThat(retrievedUser).isEqualTo(user);
   }
 }

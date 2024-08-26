@@ -732,6 +732,19 @@ public class TestDataUtil {
         randomLong(10_000, 1_000_000));
   }
 
+  public ModifyUserRequest randomModifyUserRequest() {
+    return ModifyUserRequest.newBuilder().role(oneOf("owner", "reader")).build();
+  }
+
+  public User randomUser() {
+    return new User(
+        randomString(5),
+        randomString(7),
+        "user@example.com",
+        oneOf("owner", "reader"),
+        randomLong(10_000, 1_000_000));
+  }
+
   private ChunkingStrategy.StaticChunkingStrategy randomStaticChunkingStrategy() {
     int randomMaxChunkSizeTokens = randomInt(100, 4096);
     return ChunkingStrategy.staticChunkingStrategy(
