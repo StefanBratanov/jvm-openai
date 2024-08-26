@@ -21,7 +21,8 @@ enum Endpoint {
   VECTOR_STORES("vector_stores"),
   // Administration
   INVITES("organization/invites"),
-  USERS("organization/users");
+  USERS("organization/users"),
+  PROJECTS("organization/projects");
 
   private final String path;
 

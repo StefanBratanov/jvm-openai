@@ -24,6 +24,7 @@ jobs:
         run: ./gradlew spotlessCheck build
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_ADMIN_KEY: ${{ secrets.OPENAI_ADMIN_KEY }}
       - name: Run SonarQube analysis
         run: |
           if [ -n "$SONAR_TOKEN" ]; then

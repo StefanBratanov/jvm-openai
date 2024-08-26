@@ -67,4 +67,22 @@ class OpenAIAdminIntegrationTest {
 
     assertThat(retrievedUser).isEqualTo(user);
   }
+
+  @Test
+  void testProjectsClient() {
+    ProjectsClient projectsClient = openAI.projectsClient();
+
+    List<Project> projects =
+        projectsClient.listProjects(Optional.empty(), Optional.empty(), Optional.empty()).data();
+
+    assertThat(projects).isNotEmpty();
+
+    Project project = projects.get(0);
+
+    assertThat(project.name()).isNotBlank();
+
+    Project retrievedProject = projectsClient.retrieveProject(project.id());
+
+    assertThat(retrievedProject).isEqualTo(project);
+  }
 }

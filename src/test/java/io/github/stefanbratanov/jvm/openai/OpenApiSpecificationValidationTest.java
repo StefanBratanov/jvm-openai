@@ -472,6 +472,21 @@ class OpenApiSpecificationValidationTest {
     validate(request, response);
   }
 
+  @RepeatedTest(25)
+  void validateProjects() {
+    CreateProjectRequest createProjectRequest = testDataUtil.randomCreateProjectRequest();
+
+    Request request =
+        createRequestWithBody(
+            Method.POST, "/" + Endpoint.PROJECTS.getPath(), serializeObject(createProjectRequest));
+
+    Project project = testDataUtil.randomProject();
+
+    Response response = createResponseWithBody(serializeObject(project));
+
+    validate(request, response);
+  }
+
   private void validate(Request request, Response response, String... reportMessagesToIgnore) {
     ValidationReport report = validator.validate(request, response);
     validateReport(report, reportMessagesToIgnore);

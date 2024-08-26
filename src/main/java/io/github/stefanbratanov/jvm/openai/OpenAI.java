@@ -34,6 +34,7 @@ public final class OpenAI {
   private final VectorStoreFileBatchesClient vectorStoreFileBatchesClient;
   private final InvitesClient invitesClient;
   private final UsersClient usersClient;
+  private final ProjectsClient projectsClient;
 
   private OpenAI(
       URI baseUrl,
@@ -76,6 +77,8 @@ public final class OpenAI {
     invitesClient =
         new InvitesClient(baseUrl, adminAuthenticationHeaders, httpClient, requestTimeout);
     usersClient = new UsersClient(baseUrl, adminAuthenticationHeaders, httpClient, requestTimeout);
+    projectsClient =
+        new ProjectsClient(baseUrl, adminAuthenticationHeaders, httpClient, requestTimeout);
   }
 
   /**
@@ -239,6 +242,14 @@ public final class OpenAI {
    */
   public UsersClient usersClient() {
     return usersClient;
+  }
+
+  /**
+   * @return a client based on <a
+   *     href="https://platform.openai.com/docs/api-reference/projects">Projects</a>
+   */
+  public ProjectsClient projectsClient() {
+    return projectsClient;
   }
 
   private String[] createAuthenticationHeaders(

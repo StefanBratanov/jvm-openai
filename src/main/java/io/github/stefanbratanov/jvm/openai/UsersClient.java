@@ -54,12 +54,13 @@ public final class UsersClient extends OpenAIClient {
   /**
    * Modifies a user's role in the organization.
    *
+   * @param userId The ID of the user.
    * @throws OpenAIException in case of API errors
    */
-  public User modifyUser(ModifyUserRequest request) {
+  public User modifyUser(String userId, ModifyUserRequest request) {
     HttpRequest httpRequest =
         newHttpRequestBuilder(Constants.CONTENT_TYPE_HEADER, Constants.JSON_MEDIA_TYPE)
-            .uri(baseUrl.resolve(Endpoint.USERS.getPath()))
+            .uri(baseUrl.resolve(Endpoint.USERS.getPath() + "/" + userId))
             .POST(createBodyPublisher(request))
             .build();
     HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);

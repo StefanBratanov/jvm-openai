@@ -745,6 +745,19 @@ public class TestDataUtil {
         randomLong(10_000, 1_000_000));
   }
 
+  public CreateProjectRequest randomCreateProjectRequest() {
+    return CreateProjectRequest.newBuilder().name(randomString(7)).build();
+  }
+
+  public Project randomProject() {
+    return new Project(
+        randomString(5),
+        randomString(7),
+        randomLong(10_000, 1_000_000),
+        randomLong(11_111, 1_111_111),
+        oneOf("active", "archived"));
+  }
+
   private ChunkingStrategy.StaticChunkingStrategy randomStaticChunkingStrategy() {
     int randomMaxChunkSizeTokens = randomInt(100, 4096);
     return ChunkingStrategy.staticChunkingStrategy(
