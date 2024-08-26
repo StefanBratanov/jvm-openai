@@ -2,6 +2,7 @@ package io.github.stefanbratanov.jvm.openai;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.github.stefanbratanov.jvm.openai.ProjectServiceAccountsClient.ProjectServiceAccountCreateResponse;
 import io.github.stefanbratanov.jvm.openai.UsersClient.PaginatedUsers;
 import java.time.Instant;
 import java.util.List;
@@ -84,5 +85,66 @@ class OpenAIAdminIntegrationTest {
     Project retrievedProject = projectsClient.retrieveProject(project.id());
 
     assertThat(retrievedProject).isEqualTo(project);
+  }
+
+  @Test
+  void testProjectUsersClient() {
+    ProjectUsersClient projectUsersClient = openAI.projectUsersClient();
+
+    Project project = retrieveProject();
+
+    List<ProjectUser> projectUsers =
+        projectUsersClient
+            .listProjectUsers(project.id(), Optional.empty(), Optional.empty())
+            .data();
+
+    assertThat(projectUsers).isNotEmpty();
+
+    ProjectUser projectUser = projectUsers.get(0);
+
+    ProjectUser retrievedProjectUser =
+        projectUsersClient.retrieveProjectUser(project.id(), projectUser.id());
+
+    assertThat(retrievedProjectUser).isEqualTo(projectUser);
+  }
+
+  @Test
+  void testProjectServiceAccountsClient() {
+    ProjectServiceAccountsClient projectServiceAccountsClient =
+        openAI.projectServiceAccountsClient();
+
+    Project project = retrieveProject();
+
+    CreateProjectServiceAccountRequest createRequest =
+        CreateProjectServiceAccountRequest.newBuilder()
+            .name("foobar" + System.currentTimeMillis())
+            .build();
+
+    ProjectServiceAccountCreateResponse createResponse =
+        projectServiceAccountsClient.createProjectServiceAccount(project.id(), createRequest);
+
+    assertThat(createResponse.name()).isEqualTo(createRequest.name());
+    assertThat(createResponse.apiKey()).isNotNull();
+
+    ProjectServiceAccount retrievedProjectServiceAccount =
+        projectServiceAccountsClient.retrieveProjectServiceAccount(
+            project.id(), createResponse.id());
+
+    assertThat(retrievedProjectServiceAccount.id()).isEqualTo(createResponse.id());
+    assertThat(retrievedProjectServiceAccount.role()).isEqualTo(createResponse.role());
+
+    // cleanup
+    DeletionStatus deletionStatus =
+        projectServiceAccountsClient.deleteProjectServiceAccount(project.id(), createResponse.id());
+
+    assertThat(deletionStatus.deleted()).isTrue();
+  }
+
+  private Project retrieveProject() {
+    return openAI
+        .projectsClient()
+        .listProjects(Optional.empty(), Optional.empty(), Optional.empty())
+        .data()
+        .get(0);
   }
 }

@@ -12,6 +12,7 @@ import com.atlassian.oai.validator.model.SimpleResponse;
 import com.atlassian.oai.validator.report.ValidationReport;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.stefanbratanov.jvm.openai.ProjectServiceAccountsClient.ProjectServiceAccountCreateResponse;
 import io.github.stefanbratanov.jvm.openai.RunStepsClient.PaginatedThreadRunSteps;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.parser.OpenAPIV3Parser;
@@ -483,6 +484,44 @@ class OpenApiSpecificationValidationTest {
     Project project = testDataUtil.randomProject();
 
     Response response = createResponseWithBody(serializeObject(project));
+
+    validate(request, response);
+  }
+
+  @RepeatedTest(25)
+  void validateProjectUsers() {
+    CreateProjectUserRequest createProjectUserRequest =
+        testDataUtil.randomCreateProjectUserRequest();
+
+    Request request =
+        createRequestWithBody(
+            Method.POST,
+            "/" + Endpoint.PROJECTS.getPath() + "/{project_id}/users",
+            serializeObject(createProjectUserRequest));
+
+    ProjectUser projectUser = testDataUtil.randomProjectUser();
+
+    Response response = createResponseWithBody(serializeObject(projectUser));
+
+    validate(request, response);
+  }
+
+  @RepeatedTest(25)
+  void validateProjectServiceAccounts() {
+    CreateProjectServiceAccountRequest createProjectServiceAccountRequest =
+        testDataUtil.randomCreateProjectServiceAccountRequest();
+
+    Request request =
+        createRequestWithBody(
+            Method.POST,
+            "/" + Endpoint.PROJECTS.getPath() + "/{project_id}/service_accounts",
+            serializeObject(createProjectServiceAccountRequest));
+
+    ProjectServiceAccountCreateResponse projectServiceAccountCreateResponse =
+        testDataUtil.randomProjectServiceAccountCreateResponse();
+
+    Response response =
+        createResponseWithBody(serializeObject(projectServiceAccountCreateResponse));
 
     validate(request, response);
   }

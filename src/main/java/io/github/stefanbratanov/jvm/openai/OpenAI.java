@@ -35,6 +35,8 @@ public final class OpenAI {
   private final InvitesClient invitesClient;
   private final UsersClient usersClient;
   private final ProjectsClient projectsClient;
+  private final ProjectUsersClient projectUsersClient;
+  private final ProjectServiceAccountsClient projectServiceAccountsClient;
 
   private OpenAI(
       URI baseUrl,
@@ -79,6 +81,11 @@ public final class OpenAI {
     usersClient = new UsersClient(baseUrl, adminAuthenticationHeaders, httpClient, requestTimeout);
     projectsClient =
         new ProjectsClient(baseUrl, adminAuthenticationHeaders, httpClient, requestTimeout);
+    projectUsersClient =
+        new ProjectUsersClient(baseUrl, adminAuthenticationHeaders, httpClient, requestTimeout);
+    projectServiceAccountsClient =
+        new ProjectServiceAccountsClient(
+            baseUrl, adminAuthenticationHeaders, httpClient, requestTimeout);
   }
 
   /**
@@ -250,6 +257,23 @@ public final class OpenAI {
    */
   public ProjectsClient projectsClient() {
     return projectsClient;
+  }
+
+  /**
+   * @return a client based on <a
+   *     href="https://platform.openai.com/docs/api-reference/project-users">Project Users</a>
+   */
+  public ProjectUsersClient projectUsersClient() {
+    return projectUsersClient;
+  }
+
+  /**
+   * @return a client based on <a
+   *     href="https://platform.openai.com/docs/api-reference/project-service-accounts">Project
+   *     Service Accounts</a>
+   */
+  public ProjectServiceAccountsClient projectServiceAccountsClient() {
+    return projectServiceAccountsClient;
   }
 
   private String[] createAuthenticationHeaders(

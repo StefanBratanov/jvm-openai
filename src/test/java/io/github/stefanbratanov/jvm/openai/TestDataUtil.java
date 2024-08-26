@@ -2,6 +2,8 @@ package io.github.stefanbratanov.jvm.openai;
 
 import io.github.stefanbratanov.jvm.openai.CreateChatCompletionRequest.StreamOptions;
 import io.github.stefanbratanov.jvm.openai.FineTuningJobIntegration.Wandb;
+import io.github.stefanbratanov.jvm.openai.ProjectServiceAccountsClient.ApiKey;
+import io.github.stefanbratanov.jvm.openai.ProjectServiceAccountsClient.ProjectServiceAccountCreateResponse;
 import io.github.stefanbratanov.jvm.openai.RunStepsClient.PaginatedThreadRunSteps;
 import io.github.stefanbratanov.jvm.openai.ThreadMessage.Content.ImageFileContent;
 import io.github.stefanbratanov.jvm.openai.ThreadMessage.Content.ImageUrlContent;
@@ -756,6 +758,42 @@ public class TestDataUtil {
         randomLong(10_000, 1_000_000),
         randomLong(11_111, 1_111_111),
         oneOf("active", "archived"));
+  }
+
+  public CreateProjectUserRequest randomCreateProjectUserRequest() {
+    return CreateProjectUserRequest.newBuilder()
+        .userId(randomString(7))
+        .role(oneOf("owner", "member"))
+        .build();
+  }
+
+  public ProjectUser randomProjectUser() {
+    return new ProjectUser(
+        randomString(5),
+        randomString(7),
+        "user@example.com",
+        oneOf("owner", "member"),
+        randomLong(99_999, 1_111_111));
+  }
+
+  public CreateProjectServiceAccountRequest randomCreateProjectServiceAccountRequest() {
+    return CreateProjectServiceAccountRequest.newBuilder().name(randomString(7)).build();
+  }
+
+  public ProjectServiceAccountCreateResponse randomProjectServiceAccountCreateResponse() {
+    ProjectServiceAccount projectServiceAccount = randomProjectServiceAccount();
+    return new ProjectServiceAccountCreateResponse(
+        projectServiceAccount.id(),
+        projectServiceAccount.name(),
+        projectServiceAccount.role(),
+        projectServiceAccount.createdAt(),
+        new ApiKey(
+            randomString(5), randomString(7), randomString(12), randomLong(9999, 1_000_000)));
+  }
+
+  private ProjectServiceAccount randomProjectServiceAccount() {
+    return new ProjectServiceAccount(
+        randomString(5), randomString(7), "member", randomLong(10_000, 99_999));
   }
 
   private ChunkingStrategy.StaticChunkingStrategy randomStaticChunkingStrategy() {

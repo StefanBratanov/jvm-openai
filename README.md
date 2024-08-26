@@ -76,10 +76,10 @@ ChatCompletion chatCompletion = chatClient.createChatCompletion(createChatComple
 | API                                                                              | Status |
 |----------------------------------------------------------------------------------|:------:|
 | [Invites](https://platform.openai.com/docs/api-reference/invite)                  |   ✔️   |
-| [Users](https://platform.openai.com/docs/api-reference/users)                     |   ✔️     |
-| [Projects](https://platform.openai.com/docs/api-reference/projects)            |   ✔️     |
-| [Project Users](https://platform.openai.com/docs/api-reference/project-users)      |        |
-| [Project Service Accounts](https://platform.openai.com/docs/api-reference/project-service-accounts) |        |
+| [Users](https://platform.openai.com/docs/api-reference/users)                     |   ✔️   |
+| [Projects](https://platform.openai.com/docs/api-reference/projects)            |   ✔️   |
+| [Project Users](https://platform.openai.com/docs/api-reference/project-users)      |   ✔️   |
+| [Project Service Accounts](https://platform.openai.com/docs/api-reference/project-service-accounts) |   ✔️   |
 | [Project API Keys](https://platform.openai.com/docs/api-reference/project-api-keys)         |        |
 | [Audit Logs](https://platform.openai.com/docs/api-reference/audit-logs)             |        |
 
