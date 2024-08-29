@@ -80,7 +80,7 @@ ChatCompletion chatCompletion = chatClient.createChatCompletion(createChatComple
 | [Projects](https://platform.openai.com/docs/api-reference/projects)            |   ✔️   |
 | [Project Users](https://platform.openai.com/docs/api-reference/project-users)      |   ✔️   |
 | [Project Service Accounts](https://platform.openai.com/docs/api-reference/project-service-accounts) |   ✔️   |
-| [Project API Keys](https://platform.openai.com/docs/api-reference/project-api-keys)         |        |
+| [Project API Keys](https://platform.openai.com/docs/api-reference/project-api-keys)         |    ✔️    |
 | [Audit Logs](https://platform.openai.com/docs/api-reference/audit-logs)             |        |
 
 > **_NOTE:_** Legacy APIs are not supported

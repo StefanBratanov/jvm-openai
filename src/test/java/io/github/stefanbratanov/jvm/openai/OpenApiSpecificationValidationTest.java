@@ -12,6 +12,7 @@ import com.atlassian.oai.validator.model.SimpleResponse;
 import com.atlassian.oai.validator.report.ValidationReport;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.stefanbratanov.jvm.openai.ProjectApiKeysClient.PaginatedProjectApiKeys;
 import io.github.stefanbratanov.jvm.openai.ProjectServiceAccountsClient.ProjectServiceAccountCreateResponse;
 import io.github.stefanbratanov.jvm.openai.RunStepsClient.PaginatedThreadRunSteps;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -522,6 +523,20 @@ class OpenApiSpecificationValidationTest {
 
     Response response =
         createResponseWithBody(serializeObject(projectServiceAccountCreateResponse));
+
+    validate(request, response);
+  }
+
+  @RepeatedTest(25)
+  void validateProjectApiKeys() {
+    Request request =
+        new SimpleRequest.Builder(
+                Method.GET, "/" + Endpoint.PROJECTS.getPath() + "/{project_id}/api_keys")
+            .build();
+
+    PaginatedProjectApiKeys paginatedProjectApiKeys = testDataUtil.randomPaginatedProjectApiKeys();
+
+    Response response = createResponseWithBody(serializeObject(paginatedProjectApiKeys));
 
     validate(request, response);
   }

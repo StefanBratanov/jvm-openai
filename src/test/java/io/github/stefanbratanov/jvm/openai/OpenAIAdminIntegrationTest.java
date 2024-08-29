@@ -140,6 +140,27 @@ class OpenAIAdminIntegrationTest {
     assertThat(deletionStatus.deleted()).isTrue();
   }
 
+  @Test
+  void testProjectApiKeysClient() {
+    ProjectApiKeysClient projectApiKeysClient = openAI.projectApiKeysClient();
+
+    Project project = retrieveProject();
+
+    List<ProjectApiKey> projectApiKeys =
+        projectApiKeysClient
+            .listProjectApiKeys(project.id(), Optional.empty(), Optional.empty())
+            .data();
+
+    assertThat(projectApiKeys).isNotEmpty();
+
+    ProjectApiKey projectApiKey = projectApiKeys.get(0);
+
+    ProjectApiKey retrievedProjectApiKey =
+        projectApiKeysClient.retrieveProjectApiKey(project.id(), projectApiKey.id());
+
+    assertThat(retrievedProjectApiKey).isEqualTo(projectApiKey);
+  }
+
   private Project retrieveProject() {
     return openAI
         .projectsClient()

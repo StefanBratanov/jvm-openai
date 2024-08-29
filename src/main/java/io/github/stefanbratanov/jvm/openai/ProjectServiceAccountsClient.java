@@ -16,8 +16,8 @@ import java.util.Optional;
  * deleted from a project.
  *
  * <p>Based on <a
- * href="https://platform.openai.com/docs/api-reference/project-service-accounts/list">Project
- * Service Accounts</a>
+ * href="https://platform.openai.com/docs/api-reference/project-service-accounts">Project Service
+ * Accounts</a>
  */
 public final class ProjectServiceAccountsClient extends OpenAIClient {
 
@@ -37,6 +37,7 @@ public final class ProjectServiceAccountsClient extends OpenAIClient {
   /**
    * Returns a list of service accounts in the project.
    *
+   * @param projectId The ID of the project.
    * @param after A cursor for use in pagination. after is an object ID that defines your place in
    *     the list.
    * @param limit A limit on the number of objects to be returned.

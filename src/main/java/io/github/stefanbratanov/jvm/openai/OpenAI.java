@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * A class which when created using the {@link #newBuilder(String)} can be used to create clients
- * based on the endpoints defined at <a href="https://platform.openai.com/docs/api-reference">API
+ * A class which when created using the {@link OpenAI.Builder} can be used to create clients based
+ * on the endpoints defined at <a href="https://platform.openai.com/docs/api-reference">API
  * Reference - OpenAI API</a>
  */
 public final class OpenAI {
@@ -37,6 +37,7 @@ public final class OpenAI {
   private final ProjectsClient projectsClient;
   private final ProjectUsersClient projectUsersClient;
   private final ProjectServiceAccountsClient projectServiceAccountsClient;
+  private final ProjectApiKeysClient projectApiKeysClient;
 
   private OpenAI(
       URI baseUrl,
@@ -86,6 +87,8 @@ public final class OpenAI {
     projectServiceAccountsClient =
         new ProjectServiceAccountsClient(
             baseUrl, adminAuthenticationHeaders, httpClient, requestTimeout);
+    projectApiKeysClient =
+        new ProjectApiKeysClient(baseUrl, adminAuthenticationHeaders, httpClient, requestTimeout);
   }
 
   /**
@@ -274,6 +277,14 @@ public final class OpenAI {
    */
   public ProjectServiceAccountsClient projectServiceAccountsClient() {
     return projectServiceAccountsClient;
+  }
+
+  /**
+   * @return a client based on <a
+   *     href="https://platform.openai.com/docs/api-reference/project-api-keys">Project API Keys</a>
+   */
+  public ProjectApiKeysClient projectApiKeysClient() {
+    return projectApiKeysClient;
   }
 
   private String[] createAuthenticationHeaders(

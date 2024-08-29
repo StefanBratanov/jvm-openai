@@ -2,6 +2,8 @@ package io.github.stefanbratanov.jvm.openai;
 
 import io.github.stefanbratanov.jvm.openai.CreateChatCompletionRequest.StreamOptions;
 import io.github.stefanbratanov.jvm.openai.FineTuningJobIntegration.Wandb;
+import io.github.stefanbratanov.jvm.openai.ProjectApiKey.Owner;
+import io.github.stefanbratanov.jvm.openai.ProjectApiKeysClient.PaginatedProjectApiKeys;
 import io.github.stefanbratanov.jvm.openai.ProjectServiceAccountsClient.ApiKey;
 import io.github.stefanbratanov.jvm.openai.ProjectServiceAccountsClient.ProjectServiceAccountCreateResponse;
 import io.github.stefanbratanov.jvm.openai.RunStepsClient.PaginatedThreadRunSteps;
@@ -789,6 +791,24 @@ public class TestDataUtil {
         projectServiceAccount.createdAt(),
         new ApiKey(
             randomString(5), randomString(7), randomString(12), randomLong(9999, 1_000_000)));
+  }
+
+  public PaginatedProjectApiKeys randomPaginatedProjectApiKeys() {
+    return new PaginatedProjectApiKeys(
+        listOf(randomInt(1, 5), this::randomProjectApiKey),
+        randomString(5),
+        randomString(5),
+        randomBoolean());
+  }
+
+  private ProjectApiKey randomProjectApiKey() {
+    return new ProjectApiKey(
+        randomString(8),
+        randomString(5),
+        randomLong(10_000, 99_999),
+        randomString(6),
+        new Owner(
+            oneOf("user", "service_account"), randomProjectUser(), randomProjectServiceAccount()));
   }
 
   private ProjectServiceAccount randomProjectServiceAccount() {
