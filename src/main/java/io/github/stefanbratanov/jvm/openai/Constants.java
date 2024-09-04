@@ -44,8 +44,28 @@ class Constants {
 
   static final String LIMIT_QUERY_PARAMETER = "limit";
   static final String AFTER_QUERY_PARAMETER = "after";
+  static final String BEFORE_QUERY_PARAMETER = "before";
 
   static final String AUTO_CHUNKING_STRATEGY = "auto";
   static final String STATIC_CHUNKING_STRATEGY = "static";
   static final String OTHER_CHUNKING_STRATEGY = "other";
+
+  static final String API_KEY_CREATED_EVENT_TYPE = "api_key.created";
+  static final String API_KEY_UPDATED_EVENT_TYPE = "api_key.updated";
+  static final String API_KEY_DELETED_EVENT_TYPE = "api_key.deleted";
+  static final String INVITE_SENT_EVENT_TYPE = "invite.sent";
+  static final String INVITE_ACCEPTED_EVENT_TYPE = "invite.accepted";
+  static final String INVITE_DELETED_EVENT_TYPE = "invite.deleted";
+  static final String LOGIN_FAILED_EVENT_TYPE = "login.failed";
+  static final String LOGOUT_FAILED_EVENT_TYPE = "logout.failed";
+  static final String ORGANIZATION_UPDATED_EVENT_TYPE = "organization.updated";
+  static final String PROJECT_CREATED_EVENT_TYPE = "project.created";
+  static final String PROJECT_UPDATED_EVENT_TYPE = "project.updated";
+  static final String PROJECT_ARCHIVED_EVENT_TYPE = "project.archived";
+  static final String SERVICE_ACCOUNT_CREATED_EVENT_TYPE = "service_account.created";
+  static final String SERVICE_ACCOUNT_UPDATED_EVENT_TYPE = "service_account.updated";
+  static final String SERVICE_ACCOUNT_DELETED_EVENT_TYPE = "service_account.deleted";
+  static final String USER_ADDED_EVENT_TYPE = "user.added";
+  static final String USER_UPDATED_EVENT_TYPE = "user.updated";
+  static final String USER_DELETED_EVENT_TYPE = "user.deleted";
 }

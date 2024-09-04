@@ -1,0 +1,21 @@
+{
+  "id": "req_xxx_20240101",
+  "type": "api_key.created",
+  "effective_at": 1720804090,
+  "actor": {
+    "type": "session",
+    "session": {
+      "user": {
+        "id": "user-xxx",
+        "email": "user@example.com"
+      },
+      "ip_address": "127.0.0.1"
+    }
+  },
+  "api_key.created": {
+    "id": "key_xxxx",
+    "data": {
+      "scopes": ["resource.operation"]
+    }
+  }
+}

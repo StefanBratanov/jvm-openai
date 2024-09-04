@@ -1,5 +1,27 @@
 package io.github.stefanbratanov.jvm.openai;
 
+import io.github.stefanbratanov.jvm.openai.AuditLog.Actor;
+import io.github.stefanbratanov.jvm.openai.AuditLog.Actor.ApiKey.ServiceAccount;
+import io.github.stefanbratanov.jvm.openai.AuditLog.Actor.Session;
+import io.github.stefanbratanov.jvm.openai.AuditLogEvent.ApiKeyCreatedEvent;
+import io.github.stefanbratanov.jvm.openai.AuditLogEvent.ApiKeyDeletedEvent;
+import io.github.stefanbratanov.jvm.openai.AuditLogEvent.ApiKeyUpdatedEvent;
+import io.github.stefanbratanov.jvm.openai.AuditLogEvent.InviteAcceptedEvent;
+import io.github.stefanbratanov.jvm.openai.AuditLogEvent.InviteDeletedEvent;
+import io.github.stefanbratanov.jvm.openai.AuditLogEvent.InviteSentEvent;
+import io.github.stefanbratanov.jvm.openai.AuditLogEvent.LoginFailedEvent;
+import io.github.stefanbratanov.jvm.openai.AuditLogEvent.LogoutFailedEvent;
+import io.github.stefanbratanov.jvm.openai.AuditLogEvent.OrganizationUpdatedEvent;
+import io.github.stefanbratanov.jvm.openai.AuditLogEvent.ProjectArchivedEvent;
+import io.github.stefanbratanov.jvm.openai.AuditLogEvent.ProjectCreatedEvent;
+import io.github.stefanbratanov.jvm.openai.AuditLogEvent.ProjectUpdatedEvent;
+import io.github.stefanbratanov.jvm.openai.AuditLogEvent.ServiceAccountCreatedEvent;
+import io.github.stefanbratanov.jvm.openai.AuditLogEvent.ServiceAccountDeletedEvent;
+import io.github.stefanbratanov.jvm.openai.AuditLogEvent.ServiceAccountUpdatedEvent;
+import io.github.stefanbratanov.jvm.openai.AuditLogEvent.UserAddedEvent;
+import io.github.stefanbratanov.jvm.openai.AuditLogEvent.UserDeletedEvent;
+import io.github.stefanbratanov.jvm.openai.AuditLogEvent.UserUpdatedEvent;
+import io.github.stefanbratanov.jvm.openai.AuditLogsClient.PaginatedAuditLogs;
 import io.github.stefanbratanov.jvm.openai.CreateChatCompletionRequest.StreamOptions;
 import io.github.stefanbratanov.jvm.openai.FineTuningJobIntegration.Wandb;
 import io.github.stefanbratanov.jvm.openai.ProjectApiKey.Owner;
@@ -799,6 +821,120 @@ public class TestDataUtil {
         randomString(5),
         randomString(5),
         randomBoolean());
+  }
+
+  public PaginatedAuditLogs randomPaginatedAuditLogs() {
+    return new PaginatedAuditLogs(
+        listOf(randomInt(1, 10), this::randomAuditLog),
+        randomString(5),
+        randomString(5),
+        randomBoolean());
+  }
+
+  public AuditLog randomAuditLog() {
+    String type =
+        oneOf(
+            "api_key.created",
+            "api_key.updated",
+            "api_key.deleted",
+            "invite.sent",
+            "invite.accepted",
+            "invite.deleted",
+            "login.failed",
+            "logout.failed",
+            "organization.updated",
+            "project.created",
+            "project.updated",
+            "project.archived",
+            "service_account.created",
+            "service_account.updated",
+            "service_account.deleted",
+            "user.added",
+            "user.updated",
+            "user.deleted");
+    return new AuditLog(
+        randomString(5),
+        type,
+        randomLong(10_000, 99_999),
+        new AuditLog.Project(randomString(5), randomString(7)),
+        randomActor(),
+        randomAuditLogEvent(type));
+  }
+
+  private Actor randomActor() {
+    String type = oneOf("session", "api_key");
+    return new Actor(
+        type,
+        type.equals("session")
+            ? new Session(new Session.User(randomString(5), "user@example.com"), "127.0.0.1")
+            : null,
+        type.equals("api_key") ? randomApiKey() : null);
+  }
+
+  private Actor.ApiKey randomApiKey() {
+    String type = oneOf("user", "service_account");
+    return new Actor.ApiKey(
+        randomString(5),
+        type,
+        type.equals("user") ? new Actor.ApiKey.User(randomString(5), "user@example.com") : null,
+        type.equals("service_account") ? new ServiceAccount(randomString(5)) : null);
+  }
+
+  private AuditLogEvent randomAuditLogEvent(String type) {
+    return switch (type) {
+      case Constants.API_KEY_CREATED_EVENT_TYPE ->
+          new ApiKeyCreatedEvent(
+              randomString(5),
+              new ApiKeyCreatedEvent.Data(listOf(randomInt(1, 5), () -> randomString(6))));
+      case Constants.API_KEY_UPDATED_EVENT_TYPE ->
+          new ApiKeyUpdatedEvent(
+              randomString(5),
+              new ApiKeyUpdatedEvent.ChangesRequested(
+                  listOf(randomInt(1, 5), () -> randomString(6))));
+      case Constants.API_KEY_DELETED_EVENT_TYPE -> new ApiKeyDeletedEvent(randomString(5));
+      case Constants.INVITE_SENT_EVENT_TYPE ->
+          new InviteSentEvent(
+              randomString(5),
+              new InviteSentEvent.Data(randomString(5) + "@example.com", oneOf("owner", "member")));
+      case Constants.INVITE_ACCEPTED_EVENT_TYPE -> new InviteAcceptedEvent(randomString(5));
+      case Constants.INVITE_DELETED_EVENT_TYPE -> new InviteDeletedEvent(randomString(5));
+      case Constants.LOGIN_FAILED_EVENT_TYPE ->
+          new LoginFailedEvent(randomString(5), randomString(10));
+      case Constants.LOGOUT_FAILED_EVENT_TYPE ->
+          new LogoutFailedEvent(randomString(5), randomString(10));
+      case Constants.ORGANIZATION_UPDATED_EVENT_TYPE ->
+          new OrganizationUpdatedEvent(
+              randomString(5),
+              new OrganizationUpdatedEvent.ChangesRequested(
+                  randomString(5),
+                  randomString(10),
+                  randomString(5),
+                  new OrganizationUpdatedEvent.ChangesRequested.Settings(
+                      oneOf("ANY_ROLE", "OWNERS", "NONE"), oneOf("ANY_ROLE", "OWNERS"))));
+      case Constants.PROJECT_CREATED_EVENT_TYPE ->
+          new ProjectCreatedEvent(
+              randomString(5), new ProjectCreatedEvent.Data(randomString(10), randomString(10)));
+      case Constants.PROJECT_UPDATED_EVENT_TYPE ->
+          new ProjectUpdatedEvent(
+              randomString(5), new ProjectUpdatedEvent.ChangesRequested(randomString(10)));
+      case Constants.PROJECT_ARCHIVED_EVENT_TYPE -> new ProjectArchivedEvent(randomString(5));
+      case Constants.SERVICE_ACCOUNT_CREATED_EVENT_TYPE ->
+          new ServiceAccountCreatedEvent(
+              randomString(5), new ServiceAccountCreatedEvent.Data(oneOf("owner", "member")));
+      case Constants.SERVICE_ACCOUNT_UPDATED_EVENT_TYPE ->
+          new ServiceAccountUpdatedEvent(
+              randomString(5),
+              new ServiceAccountUpdatedEvent.ChangesRequested(oneOf("owner", "member")));
+      case Constants.SERVICE_ACCOUNT_DELETED_EVENT_TYPE ->
+          new ServiceAccountDeletedEvent(randomString(5));
+      case Constants.USER_ADDED_EVENT_TYPE ->
+          new UserAddedEvent(randomString(5), new UserAddedEvent.Data(oneOf("owner", "member")));
+      case Constants.USER_UPDATED_EVENT_TYPE ->
+          new UserUpdatedEvent(
+              randomString(5), new UserUpdatedEvent.ChangesRequested(oneOf("owner", "member")));
+      case Constants.USER_DELETED_EVENT_TYPE -> new UserDeletedEvent(randomString(5));
+      default -> throw new IllegalArgumentException("Unknown event type: " + type);
+    };
   }
 
   private ProjectApiKey randomProjectApiKey() {

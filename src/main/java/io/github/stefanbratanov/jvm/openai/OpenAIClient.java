@@ -54,7 +54,15 @@ abstract class OpenAIClient {
   String createQueryParameters(Map<String, Optional<?>> queryParameters) {
     return queryParameters.entrySet().stream()
         .filter(entry -> entry.getValue().isPresent())
-        .map(entry -> entry.getKey() + "=" + entry.getValue().get())
+        .flatMap(
+            entry -> {
+              Object value = entry.getValue().get();
+              if (value instanceof Collection<?> items) {
+                return items.stream().map(item -> entry.getKey() + "=" + item);
+              } else {
+                return Stream.of(entry.getKey() + "=" + value);
+              }
+            })
         .collect(Collectors.joining("&", "?", ""));
   }
 

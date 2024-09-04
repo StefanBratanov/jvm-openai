@@ -24,6 +24,8 @@ class ObjectMapperSingleton {
           AssistantsResponseFormat.class, new AssistantsResponseFormatSerializer());
       openAIModule.addDeserializer(
           AssistantsResponseFormat.class, new AssistantsResponseFormatDeserializer());
+      openAIModule.addSerializer(AuditLog.class, new AuditLogSerializer());
+      openAIModule.addDeserializer(AuditLog.class, new AuditLogDeserializer());
       instance =
           JsonMapper.builder()
               .addModule(new Jdk8Module())

@@ -22,7 +22,8 @@ enum Endpoint {
   // Administration
   INVITES("organization/invites"),
   USERS("organization/users"),
-  PROJECTS("organization/projects");
+  PROJECTS("organization/projects"),
+  AUDIT_LOGS("organization/audit_logs");
 
   private final String path;
 

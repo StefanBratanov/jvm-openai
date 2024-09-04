@@ -2,11 +2,15 @@ package io.github.stefanbratanov.jvm.openai;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.github.stefanbratanov.jvm.openai.AuditLogEvent.InviteDeletedEvent;
+import io.github.stefanbratanov.jvm.openai.AuditLogEvent.InviteSentEvent;
 import io.github.stefanbratanov.jvm.openai.ProjectServiceAccountsClient.ProjectServiceAccountCreateResponse;
 import io.github.stefanbratanov.jvm.openai.UsersClient.PaginatedUsers;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
@@ -159,6 +163,30 @@ class OpenAIAdminIntegrationTest {
         projectApiKeysClient.retrieveProjectApiKey(project.id(), projectApiKey.id());
 
     assertThat(retrievedProjectApiKey).isEqualTo(projectApiKey);
+  }
+
+  @Test
+  void testAuditLogsClient() {
+    AuditLogsClient auditLogsClient = openAI.auditLogsClient();
+
+    ListAuditLogsQueryParameters queryParameters =
+        ListAuditLogsQueryParameters.newBuilder()
+            .eventTypes(List.of("invite.sent", "invite.deleted"))
+            .build();
+
+    List<AuditLog> auditLogs = auditLogsClient.listAuditLogs(queryParameters).data();
+
+    assertThat(auditLogs.stream().map(AuditLog::type).collect(Collectors.toSet())).hasSize(2);
+
+    auditLogs.forEach(
+        auditLog -> {
+          switch (auditLog.type()) {
+            case "invite.sent" -> assertThat(auditLog.event()).isInstanceOf(InviteSentEvent.class);
+            case "invite.deleted" ->
+                assertThat(auditLog.event()).isInstanceOf(InviteDeletedEvent.class);
+            default -> Assertions.fail("Unexpected event type: " + auditLog.type());
+          }
+        });
   }
 
   private Project retrieveProject() {

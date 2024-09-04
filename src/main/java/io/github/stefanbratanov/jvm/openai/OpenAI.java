@@ -38,6 +38,7 @@ public final class OpenAI {
   private final ProjectUsersClient projectUsersClient;
   private final ProjectServiceAccountsClient projectServiceAccountsClient;
   private final ProjectApiKeysClient projectApiKeysClient;
+  private final AuditLogsClient auditLogsClient;
 
   private OpenAI(
       URI baseUrl,
@@ -89,6 +90,8 @@ public final class OpenAI {
             baseUrl, adminAuthenticationHeaders, httpClient, requestTimeout);
     projectApiKeysClient =
         new ProjectApiKeysClient(baseUrl, adminAuthenticationHeaders, httpClient, requestTimeout);
+    auditLogsClient =
+        new AuditLogsClient(baseUrl, adminAuthenticationHeaders, httpClient, requestTimeout);
   }
 
   /**
@@ -285,6 +288,14 @@ public final class OpenAI {
    */
   public ProjectApiKeysClient projectApiKeysClient() {
     return projectApiKeysClient;
+  }
+
+  /**
+   * @return a client based on <a
+   *     href="https://platform.openai.com/docs/api-reference/audit-logs">Audit Logs</a>
+   */
+  public AuditLogsClient auditLogsClient() {
+    return auditLogsClient;
   }
 
   private String[] createAuthenticationHeaders(

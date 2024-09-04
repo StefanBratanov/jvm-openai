@@ -266,4 +266,14 @@ class SerializationTest {
         .isEqualTo(
             "{\"index\":0,\"text\":\"foobar\",\"file_path\":{\"file_id\":\"foobar\"},\"start_index\":0,\"end_index\":0,\"type\":\"file_path\"}");
   }
+
+  @Test
+  void roundTripAuditLog() throws JsonProcessingException, JSONException {
+    String auditLogJson = getStringResource("/audit-log.json");
+
+    AuditLog auditLog = objectMapper.readValue(auditLogJson, AuditLog.class);
+
+    JSONAssert.assertEquals(
+        auditLogJson, objectMapper.writeValueAsString(auditLog), JSONCompareMode.STRICT);
+  }
 }

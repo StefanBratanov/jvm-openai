@@ -12,6 +12,7 @@ import com.atlassian.oai.validator.model.SimpleResponse;
 import com.atlassian.oai.validator.report.ValidationReport;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.stefanbratanov.jvm.openai.AuditLogsClient.PaginatedAuditLogs;
 import io.github.stefanbratanov.jvm.openai.ProjectApiKeysClient.PaginatedProjectApiKeys;
 import io.github.stefanbratanov.jvm.openai.ProjectServiceAccountsClient.ProjectServiceAccountCreateResponse;
 import io.github.stefanbratanov.jvm.openai.RunStepsClient.PaginatedThreadRunSteps;
@@ -537,6 +538,18 @@ class OpenApiSpecificationValidationTest {
     PaginatedProjectApiKeys paginatedProjectApiKeys = testDataUtil.randomPaginatedProjectApiKeys();
 
     Response response = createResponseWithBody(serializeObject(paginatedProjectApiKeys));
+
+    validate(request, response);
+  }
+
+  @RepeatedTest(50)
+  void validateAuditLogs() {
+    Request request =
+        new SimpleRequest.Builder(Method.GET, "/" + Endpoint.AUDIT_LOGS.getPath()).build();
+
+    PaginatedAuditLogs paginatedAuditLogs = testDataUtil.randomPaginatedAuditLogs();
+
+    Response response = createResponseWithBody(serializeObject(paginatedAuditLogs));
 
     validate(request, response);
   }
