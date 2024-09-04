@@ -38,9 +38,13 @@ import io.github.stefanbratanov.jvm.openai.ThreadMessage.Content.TextContent.Tex
 import io.github.stefanbratanov.jvm.openai.ThreadRunStep.StepDetails;
 import io.github.stefanbratanov.jvm.openai.ThreadRunStep.StepDetails.MessageCreationStepDetails;
 import io.github.stefanbratanov.jvm.openai.ThreadRunStep.StepDetails.ToolCallsStepDetails;
+import io.github.stefanbratanov.jvm.openai.Tool.FileSearchTool.FileSearch.RankingOptions;
 import io.github.stefanbratanov.jvm.openai.Tool.FunctionTool;
 import io.github.stefanbratanov.jvm.openai.ToolCall.CodeInterpreterToolCall.CodeInterpreter;
 import io.github.stefanbratanov.jvm.openai.ToolCall.CodeInterpreterToolCall.CodeInterpreter.Output.ImageOutput;
+import io.github.stefanbratanov.jvm.openai.ToolCall.FileSearchToolCall.FileSearch;
+import io.github.stefanbratanov.jvm.openai.ToolCall.FileSearchToolCall.FileSearch.Result;
+import io.github.stefanbratanov.jvm.openai.ToolCall.FileSearchToolCall.FileSearch.Result.Content;
 import io.github.stefanbratanov.jvm.openai.ToolCall.FunctionToolCall;
 import io.github.stefanbratanov.jvm.openai.ToolResources.FileSearch.VectorStore;
 import java.util.*;
@@ -1032,7 +1036,18 @@ public class TestDataUtil {
     return oneOf(
         randomFunctionToolCall(true),
         randomCodeInterpreterToolCall(),
-        ToolCall.fileSearchToolCall(randomString(5)));
+        ToolCall.fileSearchToolCall(
+            randomString(5),
+            new FileSearch(
+                new FileSearch.RankingOptions("default_2024_08_21", randomLong(0, 1)),
+                listOf(
+                    randomInt(1, 5),
+                    () ->
+                        new Result(
+                            randomString(5),
+                            randomString(6),
+                            randomLong(0, 1),
+                            List.of(new Content("text", randomString(10))))))));
   }
 
   private Usage randomUsage() {
@@ -1227,7 +1242,12 @@ public class TestDataUtil {
 
   private Tool randomTool() {
     return oneOf(
-        randomFunctionTool(), Tool.fileSearchTool(randomInt(1, 50)), Tool.codeInterpreterTool());
+        randomFunctionTool(),
+        Tool.fileSearchTool(randomInt(1, 50)),
+        Tool.fileSearchTool(
+            randomInt(1, 50),
+            new RankingOptions(oneOf("auto", "default_2024_08_21"), randomDouble(0, 1))),
+        Tool.codeInterpreterTool());
   }
 
   private DeltaToolCall randomCodeInterpreterDeltaToolCall() {

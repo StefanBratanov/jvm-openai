@@ -6,6 +6,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -32,10 +33,14 @@ public final class RunStepsClient extends OpenAIAssistantsClient {
   /**
    * Returns a list of run steps belonging to a run.
    *
+   * @param include A list of additional fields to include in the response.
    * @throws OpenAIException in case of API errors
    */
   public PaginatedThreadRunSteps listRunSteps(
-      String threadId, String runId, PaginationQueryParameters paginationQueryParameters) {
+      String threadId,
+      String runId,
+      PaginationQueryParameters paginationQueryParameters,
+      Optional<List<String>> include) {
     HttpRequest httpRequest =
         newHttpRequestBuilder()
             .uri(
@@ -47,7 +52,9 @@ public final class RunStepsClient extends OpenAIAssistantsClient {
                         + "/"
                         + runId
                         + STEPS_SEGMENT
-                        + createQueryParameters(paginationQueryParameters)))
+                        + createQueryParameters(
+                            paginationQueryParameters,
+                            Map.of(Constants.INCLUDE_QUERY_PARAMETER, include))))
             .GET()
             .build();
     HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
@@ -60,9 +67,11 @@ public final class RunStepsClient extends OpenAIAssistantsClient {
   /**
    * Retrieves a run step.
    *
+   * @param include A list of additional fields to include in the response.
    * @throws OpenAIException in case of API errors
    */
-  public ThreadRunStep retrieveRunStep(String threadId, String runId, String stepId) {
+  public ThreadRunStep retrieveRunStep(
+      String threadId, String runId, String stepId, Optional<List<String>> include) {
     HttpRequest httpRequest =
         newHttpRequestBuilder()
             .uri(
@@ -75,7 +84,9 @@ public final class RunStepsClient extends OpenAIAssistantsClient {
                         + runId
                         + STEPS_SEGMENT
                         + "/"
-                        + stepId))
+                        + stepId
+                        + createQueryParameters(
+                            Map.of(Constants.INCLUDE_QUERY_PARAMETER, include))))
             .GET()
             .build();
     HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);

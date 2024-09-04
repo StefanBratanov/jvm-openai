@@ -45,6 +45,7 @@ class Constants {
   static final String LIMIT_QUERY_PARAMETER = "limit";
   static final String AFTER_QUERY_PARAMETER = "after";
   static final String BEFORE_QUERY_PARAMETER = "before";
+  static final String INCLUDE_QUERY_PARAMETER = "include[]";
 
   static final String AUTO_CHUNKING_STRATEGY = "auto";
   static final String STATIC_CHUNKING_STRATEGY = "static";

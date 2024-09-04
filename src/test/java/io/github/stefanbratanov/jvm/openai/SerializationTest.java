@@ -17,6 +17,8 @@ import io.github.stefanbratanov.jvm.openai.ThreadRunStep.StepDetails;
 import io.github.stefanbratanov.jvm.openai.ThreadRunStepDelta.StepDetails.MessageCreationStepDetails;
 import io.github.stefanbratanov.jvm.openai.ThreadRunStepDelta.StepDetails.MessageCreationStepDetails.MessageCreation;
 import io.github.stefanbratanov.jvm.openai.ToolCall.CodeInterpreterToolCall.CodeInterpreter.Output;
+import io.github.stefanbratanov.jvm.openai.ToolCall.FileSearchToolCall.FileSearch;
+import io.github.stefanbratanov.jvm.openai.ToolCall.FileSearchToolCall.FileSearch.RankingOptions;
 import java.util.List;
 import java.util.Map;
 import org.json.JSONException;
@@ -203,10 +205,13 @@ class SerializationTest {
     assertThat(objectMapper.writeValueAsString(fileSearchTool))
         .isEqualTo("{\"type\":\"file_search\"}");
 
-    ToolCall.FileSearchToolCall fileSearchToolCall = ToolCall.fileSearchToolCall("foobar");
+    ToolCall.FileSearchToolCall fileSearchToolCall =
+        ToolCall.fileSearchToolCall(
+            "foobar", new FileSearch(new RankingOptions("default_2024_08_21", 0.0), List.of()));
 
     assertThat(objectMapper.writeValueAsString(fileSearchToolCall))
-        .isEqualTo("{\"id\":\"foobar\",\"file_search\":{},\"type\":\"file_search\"}");
+        .isEqualTo(
+            "{\"id\":\"foobar\",\"file_search\":{\"ranking_options\":{\"ranker\":\"default_2024_08_21\",\"score_threshold\":0.0},\"results\":[]},\"type\":\"file_search\"}");
 
     DeltaToolCall.FileSearchToolCall deltaFileSearchToolCall =
         DeltaToolCall.fileSearchToolCall(0, "foobar");

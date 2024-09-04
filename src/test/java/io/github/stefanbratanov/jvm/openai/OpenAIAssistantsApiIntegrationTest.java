@@ -192,7 +192,7 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
     CreateRunRequest createRunRequest =
         CreateRunRequest.newBuilder().assistantId(assistant.id()).build();
 
-    ThreadRun run = runsClient.createRun(threadId, createRunRequest);
+    ThreadRun run = runsClient.createRun(threadId, Optional.empty(), createRunRequest);
     String runId = run.id();
 
     assertThat(run.threadId()).isEqualTo(threadId);
@@ -224,7 +224,7 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
     // test with java.util.stream.Stream
     Set<String> emittedEvents =
         runsClient
-            .createRunAndStream(threadId, createRunStreamRequest)
+            .createRunAndStream(threadId, Optional.empty(), createRunStreamRequest)
             .map(
                 assistantStreamEvent -> {
                   assertThat(assistantStreamEvent.data()).isNotNull();
@@ -367,14 +367,18 @@ class OpenAIAssistantsApiIntegrationTest extends OpenAIIntegrationTestBase {
 
     // retrieve run steps
     List<ThreadRunStep> runSteps =
-        runStepsClient.listRunSteps(threadId, runId, PaginationQueryParameters.none()).data();
+        runStepsClient
+            .listRunSteps(threadId, runId, PaginationQueryParameters.none(), Optional.empty())
+            .data();
 
     assertThat(runSteps)
         .first()
         .satisfies(
             runStep ->
                 assertThat(runStep)
-                    .isEqualTo(runStepsClient.retrieveRunStep(threadId, runId, runStep.id())));
+                    .isEqualTo(
+                        runStepsClient.retrieveRunStep(
+                            threadId, runId, runStep.id(), Optional.empty())));
 
     // modify run
     ThreadRun modifiedRun =

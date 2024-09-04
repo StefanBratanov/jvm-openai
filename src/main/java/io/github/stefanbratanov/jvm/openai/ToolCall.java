@@ -5,10 +5,9 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.github.stefanbratanov.jvm.openai.ToolCall.CodeInterpreterToolCall.CodeInterpreter;
 import io.github.stefanbratanov.jvm.openai.ToolCall.CodeInterpreterToolCall.CodeInterpreter.Output.ImageOutput.Image;
+import io.github.stefanbratanov.jvm.openai.ToolCall.FileSearchToolCall.FileSearch;
 import io.github.stefanbratanov.jvm.openai.ToolCall.FunctionToolCall.Function;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
@@ -96,10 +95,20 @@ public sealed interface ToolCall
     }
   }
 
-  record FileSearchToolCall(String id, Map<String, Object> fileSearch) implements ToolCall {
+  record FileSearchToolCall(String id, FileSearch fileSearch) implements ToolCall {
     @Override
     public String type() {
       return Constants.FILE_SEARCH_TOOL_CALL_TYPE;
+    }
+
+    public record FileSearch(RankingOptions rankingOptions, List<Result> results) {
+
+      public record RankingOptions(String ranker, double scoreThreshold) {}
+
+      public record Result(String fileId, String fileName, double score, List<Content> content) {
+
+        public record Content(String type, String text) {}
+      }
     }
   }
 
@@ -123,8 +132,8 @@ public sealed interface ToolCall
     return new CodeInterpreterToolCall(id, codeInterpreter);
   }
 
-  static FileSearchToolCall fileSearchToolCall(String id) {
-    return new FileSearchToolCall(id, Collections.emptyMap());
+  static FileSearchToolCall fileSearchToolCall(String id, FileSearch fileSearch) {
+    return new FileSearchToolCall(id, fileSearch);
   }
 
   static FunctionToolCall functionToolCall(String id, Function function) {

@@ -7,6 +7,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Spliterator;
 import java.util.concurrent.CompletableFuture;
@@ -37,10 +38,12 @@ public final class RunsClient extends OpenAIAssistantsClient {
   /**
    * Create a run.
    *
+   * @param include A list of additional fields to include in the response.
    * @throws OpenAIException in case of API errors
    */
-  public ThreadRun createRun(String threadId, CreateRunRequest request) {
-    HttpRequest httpRequest = createRunPostRequest(threadId, request);
+  public ThreadRun createRun(
+      String threadId, Optional<List<String>> include, CreateRunRequest request) {
+    HttpRequest httpRequest = createRunPostRequest(threadId, include, request);
     HttpResponse<byte[]> httpResponse = sendHttpRequest(httpRequest);
     return deserializeResponse(httpResponse.body(), ThreadRun.class);
   }
@@ -48,26 +51,30 @@ public final class RunsClient extends OpenAIAssistantsClient {
   /**
    * Create a run and stream the result of executing it.
    *
+   * @param include A list of additional fields to include in the response.
    * @throws OpenAIException in case of API errors
    */
   public Stream<AssistantStreamEvent> createRunAndStream(
-      String threadId, CreateRunRequest request) {
+      String threadId, Optional<List<String>> include, CreateRunRequest request) {
     validateStreamRequest(request::stream);
-    HttpRequest httpRequest = createRunPostRequest(threadId, request);
+    HttpRequest httpRequest = createRunPostRequest(threadId, include, request);
     return getAssistantStreamEvents(httpRequest);
   }
 
   /**
-   * Same as {@link #createRunAndStream(String, CreateRunRequest)} but can pass a {@link
+   * Same as {@link #createRunAndStream(String, Optional, CreateRunRequest)} but can pass a {@link
    * AssistantStreamEventSubscriber} implementation instead of using a {@link
    * Stream<AssistantStreamEvent>}
    *
    * @throws OpenAIException in case of API errors
    */
   public void createRunAndStream(
-      String threadId, CreateRunRequest request, AssistantStreamEventSubscriber subscriber) {
+      String threadId,
+      Optional<List<String>> include,
+      CreateRunRequest request,
+      AssistantStreamEventSubscriber subscriber) {
     validateStreamRequest(request::stream);
-    HttpRequest httpRequest = createRunPostRequest(threadId, request);
+    HttpRequest httpRequest = createRunPostRequest(threadId, include, request);
     streamAndHandleAssistantEvents(httpRequest, subscriber);
   }
 
@@ -234,9 +241,16 @@ public final class RunsClient extends OpenAIAssistantsClient {
     return deserializeResponse(httpResponse.body(), ThreadRun.class);
   }
 
-  private HttpRequest createRunPostRequest(String threadId, CreateRunRequest request) {
+  private HttpRequest createRunPostRequest(
+      String threadId, Optional<List<String>> include, CreateRunRequest request) {
     return newHttpRequestBuilder()
-        .uri(baseUrl.resolve(Endpoint.THREADS.getPath() + "/" + threadId + RUNS_SEGMENT))
+        .uri(
+            baseUrl.resolve(
+                Endpoint.THREADS.getPath()
+                    + "/"
+                    + threadId
+                    + RUNS_SEGMENT
+                    + createQueryParameters(include)))
         .POST(createBodyPublisher(request))
         .build();
   }
@@ -246,6 +260,10 @@ public final class RunsClient extends OpenAIAssistantsClient {
         .uri(baseUrl.resolve(Endpoint.THREADS.getPath() + RUNS_SEGMENT))
         .POST(createBodyPublisher(request))
         .build();
+  }
+
+  private String createQueryParameters(Optional<List<String>> include) {
+    return createQueryParameters(Map.of(Constants.INCLUDE_QUERY_PARAMETER, include));
   }
 
   private HttpRequest createSubmitToolOutputsPostRequest(
