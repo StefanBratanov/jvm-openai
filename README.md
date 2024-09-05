@@ -414,3 +414,25 @@ runsClient.createRunAndStream(thread.id(), createRunRequest, new AssistantStream
 });
 // "createThreadAndRunAndStream" and "submitToolOutputsAndStream" methods are also available
 ```
+- List all the users in an organization.
+```java
+OpenAI openAI = OpenAI.newBuilder()
+    .adminKey(System.getenv("OPENAI_ADMIN_KEY"))     
+    .build();
+
+UsersClient usersClient = openAI.usersClient();
+List<User> users = usersClient.listUsers(Optional.empty(), Optional.empty()).data();
+``` 
+- List user actions and configuration changes within an organization
+```java
+OpenAI openAI = OpenAI.newBuilder()
+    .adminKey(System.getenv("OPENAI_ADMIN_KEY"))     
+    .build();
+
+AuditLogsClient auditLogsClient = openAI.auditLogsClient();
+ListAuditLogsQueryParameters queryParameters = ListAuditLogsQueryParameters.newBuilder()
+    .eventTypes(List.of("invite.sent", "invite.deleted"))
+    .build();
+List<AuditLog> auditLogs = auditLogsClient.listAuditLogs(queryParameters).data();
+```
+
