@@ -14,6 +14,10 @@ package io.github.stefanbratanov.jvm.openai;
  */
 public enum OpenAIModel {
 
+  // o1-preview and o1-mini https://platform.openai.com/docs/models/o1
+  o1_PREVIEW("o1-preview"),
+  o1_MINI("o1-mini"),
+
   // GPT-4o https://platform.openai.com/docs/models/gpt-4o
   GPT_4o("gpt-4o"),
 
