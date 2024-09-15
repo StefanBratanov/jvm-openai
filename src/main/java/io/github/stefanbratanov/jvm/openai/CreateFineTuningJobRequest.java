@@ -136,7 +136,7 @@ public record CreateFineTuningJobRequest(
     }
 
     /**
-     * @param suffix A string of up to 18 characters that will be added to your fine-tuned model
+     * @param suffix A string of up to 64 characters that will be added to your fine-tuned model
      *     name
      */
     public Builder suffix(String suffix) {

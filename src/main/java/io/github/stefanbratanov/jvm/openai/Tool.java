@@ -35,6 +35,12 @@ public sealed interface Tool
     public record FileSearch(
         Optional<Integer> maxNumResults, Optional<RankingOptions> rankingOptions) {
 
+      /**
+       * @param ranker The ranker to use for the file search. If not specified will use the `auto`
+       *     ranker.
+       * @param scoreThreshold The score threshold for the file search. All values must be a
+       *     floating point number between 0 and 1.
+       */
       public record RankingOptions(String ranker, Double scoreThreshold) {}
     }
 
@@ -70,8 +76,8 @@ public sealed interface Tool
 
   /**
    * @param maxNumResults The maximum number of results the file search tool should output.
-   * @param rankingOptions The score threshold for the file search. All values must be a floating
-   *     point number between 0 and 1.
+   * @param rankingOptions The ranking options for the file search. If not specified, the file
+   *     search tool will use the `auto` ranker and a score_threshold of 0.
    */
   static FileSearchTool fileSearchTool(int maxNumResults, RankingOptions rankingOptions) {
     return new FileSearchTool(

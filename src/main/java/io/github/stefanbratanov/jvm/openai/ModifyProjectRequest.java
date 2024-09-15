@@ -1,6 +1,9 @@
 package io.github.stefanbratanov.jvm.openai;
 
-public record ModifyProjectRequest(String name) {
+import java.util.Optional;
+
+public record ModifyProjectRequest(
+    String name, Optional<String> appUseCase, Optional<String> businessWebsite) {
 
   public static Builder newBuilder() {
     return new Builder();
@@ -10,6 +13,9 @@ public record ModifyProjectRequest(String name) {
 
     private String name;
 
+    private Optional<String> appUseCase = Optional.empty();
+    private Optional<String> businessWebsite = Optional.empty();
+
     /**
      * @param name The updated name of the project, this name appears in reports.
      */
@@ -18,8 +24,25 @@ public record ModifyProjectRequest(String name) {
       return this;
     }
 
+    /**
+     * @param appUseCase A description of your business, project, or use case.
+     */
+    public Builder appUseCase(String appUseCase) {
+      this.appUseCase = Optional.of(appUseCase);
+      return this;
+    }
+
+    /**
+     * @param businessWebsite Your business URL, or if you don't have one yet, a URL to your
+     *     LinkedIn or other social media.
+     */
+    public Builder businessWebsite(String businessWebsite) {
+      this.businessWebsite = Optional.of(businessWebsite);
+      return this;
+    }
+
     public ModifyProjectRequest build() {
-      return new ModifyProjectRequest(name);
+      return new ModifyProjectRequest(name, appUseCase, businessWebsite);
     }
   }
 }

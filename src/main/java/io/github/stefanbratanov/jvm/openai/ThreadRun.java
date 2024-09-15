@@ -46,4 +46,10 @@ public record ThreadRun(
 
   /** Details on why the run is incomplete. Will be `null` if the run is not incomplete. */
   public record IncompleteDetails(String reason) {}
+
+  /**
+   * Usage statistics related to the run. This value will be `null` if the run is not in a terminal
+   * state (i.e. `in_progress`, `queued`, etc.).
+   */
+  public record Usage(int completionTokens, int promptTokens, int totalTokens) {}
 }

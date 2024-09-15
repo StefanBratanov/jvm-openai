@@ -13,6 +13,7 @@ public record CreateChatCompletionRequest(
     Optional<Boolean> logprobs,
     Optional<Integer> topLogprobs,
     Optional<Integer> maxTokens,
+    Optional<Integer> maxCompletionTokens,
     Optional<Integer> n,
     Optional<Double> presencePenalty,
     Optional<ResponseFormat> responseFormat,
@@ -57,6 +58,7 @@ public record CreateChatCompletionRequest(
     private Optional<Boolean> logprobs = Optional.empty();
     private Optional<Integer> topLogprobs = Optional.empty();
     private Optional<Integer> maxTokens = Optional.empty();
+    private Optional<Integer> maxCompletionTokens = Optional.empty();
     private Optional<Integer> n = Optional.empty();
     private Optional<Double> presencePenalty = Optional.empty();
     private Optional<ResponseFormat> responseFormat = Optional.empty();
@@ -148,9 +150,20 @@ public record CreateChatCompletionRequest(
     /**
      * @param maxTokens The total length of input tokens and generated tokens is limited by the
      *     model's context length
+     * @deprecated This value is now deprecated in favor of `max_completion_tokens`
      */
+    @Deprecated
     public Builder maxTokens(int maxTokens) {
       this.maxTokens = Optional.of(maxTokens);
+      return this;
+    }
+
+    /**
+     * @param maxCompletionTokens An upper bound for the number of tokens that can be generated for
+     *     a completion, including visible output tokens and reasoning tokens
+     */
+    public Builder maxCompletionTokens(int maxCompletionTokens) {
+      this.maxCompletionTokens = Optional.of(maxCompletionTokens);
       return this;
     }
 
@@ -200,8 +213,11 @@ public record CreateChatCompletionRequest(
      * @param serviceTier Specifies the latency tier to use for processing the request. This
      *     parameter is relevant for customers subscribed to the scale tier service:
      *     <ul>
-     *       <li>If set to 'auto', the system will utilize scale tier credits until they are
-     *           exhausted.
+     *       <li>If set to 'auto', and the Project is Scale tier enabled, the system will utilize
+     *           scale tier credits until they are exhausted.
+     *       <Li>If set to 'auto', and the Project is not Scale tier enabled, the request will be
+     *           processed using the default service tier with a lower uptime SLA and no latency
+     *           guarantee.
      *       <li>If set to 'default', the request will be processed using the default service tier
      *           with a lower uptime SLA and no latency guarantee.
      *     </ul>
@@ -330,6 +346,7 @@ public record CreateChatCompletionRequest(
           logprobs,
           topLogprobs,
           maxTokens,
+          maxCompletionTokens,
           n,
           presencePenalty,
           responseFormat,

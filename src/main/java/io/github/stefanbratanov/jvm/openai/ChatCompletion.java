@@ -10,7 +10,7 @@ public record ChatCompletion(
     String serviceTier,
     String systemFingerprint,
     List<Choice> choices,
-    Usage usage) {
+    CompletionUsage usage) {
 
   public record Choice(int index, Message message, Logprobs logprobs, String finishReason) {
 

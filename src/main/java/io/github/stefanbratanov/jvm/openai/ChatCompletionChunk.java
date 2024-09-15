@@ -13,7 +13,7 @@ public record ChatCompletionChunk(
     String model,
     String serviceTier,
     String systemFingerprint,
-    Usage usage) {
+    CompletionUsage usage) {
 
   public record Choice(Delta delta, int index, Logprobs logprobs, String finishReason) {
 

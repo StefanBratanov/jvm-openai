@@ -22,6 +22,7 @@ import io.github.stefanbratanov.jvm.openai.AuditLogEvent.UserAddedEvent;
 import io.github.stefanbratanov.jvm.openai.AuditLogEvent.UserDeletedEvent;
 import io.github.stefanbratanov.jvm.openai.AuditLogEvent.UserUpdatedEvent;
 import io.github.stefanbratanov.jvm.openai.AuditLogsClient.PaginatedAuditLogs;
+import io.github.stefanbratanov.jvm.openai.CompletionUsage.CompletionTokensDetails;
 import io.github.stefanbratanov.jvm.openai.CreateChatCompletionRequest.StreamOptions;
 import io.github.stefanbratanov.jvm.openai.FineTuningJobIntegration.Wandb;
 import io.github.stefanbratanov.jvm.openai.ProjectApiKey.Owner;
@@ -70,7 +71,7 @@ public class TestDataUtil {
             .logitBias(randomLogitBias(randomInt(0, 6)))
             .logprobs(randomBoolean())
             .topLogprobs(randomInt(0, 20))
-            .maxTokens(randomInt(0, 10_000))
+            .maxCompletionTokens(randomInt(0, 10_000))
             .n(randomInt(1, 128))
             .presencePenalty(randomDouble(-2.0, 2.0))
             .responseFormat(
@@ -102,7 +103,7 @@ public class TestDataUtil {
         oneOf("scale", "default"),
         randomString(10),
         listOf(randomInt(1, 3), this::randomChatCompletionChoice),
-        randomUsage());
+        randomCompletionUsage());
   }
 
   public SpeechRequest randomSpeechRequest() {
@@ -146,7 +147,7 @@ public class TestDataUtil {
                 // satisfy exclusiveMinimum of 0
                 Optional.of(oneOf("auto", randomDouble(0 + EPSILON, 10_000))),
                 Optional.of(oneOf("auto", randomInt(1, 50)))))
-        .suffix(randomString(1, 40))
+        .suffix(randomString(1, 64))
         .validationFile(randomString(10))
         .integrations(listOf(randomInt(1, 5), this::randomIntegration))
         .seed(randomInt(0, 2147483646))
@@ -616,7 +617,7 @@ public class TestDataUtil {
         randomString(10, 200),
         listOf(randomInt(1, 20), this::randomTool),
         randomMetadata(),
-        randomUsage(),
+        new ThreadRun.Usage(randomInt(0, 100), randomInt(0, 100), randomInt(0, 100)),
         randomDouble(0, 2),
         randomDouble(0, 1),
         randomInt(256, 10_000),
@@ -651,7 +652,7 @@ public class TestDataUtil {
         randomLong(7, 888),
         randomLong(9, 345),
         randomMetadata(),
-        randomUsage());
+        new ThreadRunStep.Usage(randomInt(0, 100), randomInt(0, 100), randomInt(0, 100)));
   }
 
   public ThreadRunStepDelta randomThreadRunStepDelta() {
@@ -776,7 +777,11 @@ public class TestDataUtil {
   }
 
   public CreateProjectRequest randomCreateProjectRequest() {
-    return CreateProjectRequest.newBuilder().name(randomString(7)).build();
+    return CreateProjectRequest.newBuilder()
+        .name(randomString(7))
+        .appUseCase(randomString(12))
+        .businessWebsite("example.com")
+        .build();
   }
 
   public Project randomProject() {
@@ -785,7 +790,9 @@ public class TestDataUtil {
         randomString(7),
         randomLong(10_000, 1_000_000),
         randomLong(11_111, 1_111_111),
-        oneOf("active", "archived"));
+        oneOf("active", "archived"),
+        randomString(12),
+        "example.com");
   }
 
   public CreateProjectUserRequest randomCreateProjectUserRequest() {
@@ -1050,8 +1057,12 @@ public class TestDataUtil {
                             List.of(new Content("text", randomString(10))))))));
   }
 
-  private Usage randomUsage() {
-    return new Usage(randomInt(0, 100), randomInt(0, 100), randomInt(0, 100));
+  private CompletionUsage randomCompletionUsage() {
+    return new CompletionUsage(
+        randomInt(0, 100),
+        randomInt(0, 100),
+        randomInt(0, 100),
+        new CompletionTokensDetails(randomInt(0, 100)));
   }
 
   private Annotation randomThreadMessageAnnotation() {

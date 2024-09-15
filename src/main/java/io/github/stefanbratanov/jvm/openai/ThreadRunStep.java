@@ -59,4 +59,10 @@ public record ThreadRunStep(
       }
     }
   }
+
+  /**
+   * Usage statistics related to the run step. This value will be `null` while the run step's status
+   * is `in_progress`.
+   */
+  public record Usage(int completionTokens, int promptTokens, int totalTokens) {}
 }
