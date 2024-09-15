@@ -188,7 +188,7 @@ String translatedText = audioClient.createTranslation(request);
 ModelsClient modelsClient = openAI.modelsClient();
 List<Model> models = modelsClient.listModels();
 ```
-- Classifiy if text violates OpenAI's Content Policy
+- Classify if text violates OpenAI's Content Policy
 ```java
 ModerationsClient moderationsClient = openAI.moderationsClient();
 ModerationRequest request = ModerationRequest.newBuilder()
