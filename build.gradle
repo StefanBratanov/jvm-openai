@@ -34,7 +34,7 @@ java {
 }
 
 def jacksonVersion = "2.17.2"
-def junitVersion = "5.11.0"
+def junitVersion = "5.11.1"
 
 dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}")

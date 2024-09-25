@@ -226,7 +226,7 @@ class OpenAIIntegrationTest extends OpenAIIntegrationTestBase {
         TranslationRequest.newBuilder()
             .file(greeting)
             .model(OpenAIModel.WHISPER_1)
-            .responseFormat("json")
+            .responseFormat(AudioResponseFormat.JSON)
             .build();
 
     String translation = audioClient.createTranslation(translationRequest);

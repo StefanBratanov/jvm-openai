@@ -69,6 +69,14 @@ public record TranslationRequest(
     }
 
     /**
+     * @param responseFormat The {@link AudioResponseFormat} of the translation output
+     */
+    public Builder responseFormat(AudioResponseFormat responseFormat) {
+      this.responseFormat = Optional.of(responseFormat.getId());
+      return this;
+    }
+
+    /**
      * @param temperature The sampling temperature, between 0 and 1. Higher values like 0.8 will
      *     make the output more random, while lower values like 0.2 will make it more focused and
      *     deterministic. If set to 0, the model will use <a
