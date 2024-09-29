@@ -29,8 +29,6 @@ class ObjectMapperSingleton {
       instance =
           JsonMapper.builder()
               .addModule(new Jdk8Module())
-              // https://stackoverflow.com/questions/68394911/why-record-class-cant-be-properly-deserialized-with-jackson/68998917#68998917
-              .addModule(new RecordNamingStrategyPatchModule())
               .addModule(openAIModule)
               .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
               .serializationInclusion(JsonInclude.Include.NON_ABSENT)
