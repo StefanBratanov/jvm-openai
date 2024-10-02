@@ -25,6 +25,8 @@ import io.github.stefanbratanov.jvm.openai.AuditLogsClient.PaginatedAuditLogs;
 import io.github.stefanbratanov.jvm.openai.CompletionUsage.CompletionTokensDetails;
 import io.github.stefanbratanov.jvm.openai.CreateChatCompletionRequest.StreamOptions;
 import io.github.stefanbratanov.jvm.openai.FineTuningJobIntegration.Wandb;
+import io.github.stefanbratanov.jvm.openai.ModerationRequest.Builder.MultiModalInput;
+import io.github.stefanbratanov.jvm.openai.ModerationRequest.Builder.MultiModalInput.ImageUrlInput.ImageUrl;
 import io.github.stefanbratanov.jvm.openai.ProjectApiKey.Owner;
 import io.github.stefanbratanov.jvm.openai.ProjectApiKeysClient.PaginatedProjectApiKeys;
 import io.github.stefanbratanov.jvm.openai.ProjectServiceAccountsClient.ApiKey;
@@ -343,10 +345,18 @@ public class TestDataUtil {
     ModerationRequest.Builder builder = ModerationRequest.newBuilder();
     runOne(
         () -> builder.input(randomString(10)),
-        () -> builder.inputs(listOf(randomInt(1, 5), () -> randomString(10))));
+        () -> builder.inputs(listOf(randomInt(1, 5), () -> randomString(10))),
+        () -> builder.multiModalInput(randomMultiModalInput()),
+        () -> builder.multiModalInputs(listOf(randomInt(1, 5), this::randomMultiModalInput)));
     return builder
         .model(oneOf(OpenAIModel.TEXT_MODERATION_LATEST, OpenAIModel.TEXT_MODERATION_STABLE))
         .build();
+  }
+
+  public MultiModalInput randomMultiModalInput() {
+    return oneOf(
+        MultiModalInput.imageUrl(new ImageUrl("https://example.com/image.jpg")),
+        MultiModalInput.text(randomString(10)));
   }
 
   public Moderation randomModeration() {
@@ -369,6 +379,8 @@ public class TestDataUtil {
                         randomBoolean(),
                         randomBoolean(),
                         randomBoolean(),
+                        randomBoolean(),
+                        randomBoolean(),
                         randomBoolean()),
                     new Moderation.Result.CategoryScores(
                         randomDouble(),
@@ -381,7 +393,23 @@ public class TestDataUtil {
                         randomDouble(),
                         randomDouble(),
                         randomDouble(),
-                        randomDouble()))));
+                        randomDouble(),
+                        randomDouble(),
+                        randomDouble()),
+                    new Moderation.Result.CategoryAppliedInputTypes(
+                        List.of("text"),
+                        List.of("text"),
+                        List.of("text"),
+                        List.of("text"),
+                        List.of("text"),
+                        List.of("text"),
+                        List.of("text", "image"),
+                        List.of("text", "image"),
+                        List.of("text", "image"),
+                        List.of("text", "image"),
+                        List.of("text"),
+                        List.of("text", "image"),
+                        List.of("text", "image")))));
   }
 
   public CreateAssistantRequest randomCreateAssistantRequest() {

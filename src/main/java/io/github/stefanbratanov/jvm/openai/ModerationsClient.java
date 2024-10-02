@@ -8,7 +8,7 @@ import java.time.Duration;
 import java.util.Optional;
 
 /**
- * Given some input text, outputs if the model classifies it as potentially harmful across several
+ * Given text and/or image inputs, classifies if those inputs are potentially harmful across several
  * categories.
  *
  * <p>Based on <a href="https://platform.openai.com/docs/api-reference/moderations">Moderations</a>
@@ -27,7 +27,7 @@ public final class ModerationsClient extends OpenAIClient {
   }
 
   /**
-   * Classifies if text is potentially harmful.
+   * Classifies if text and/or image inputs are potentially harmful.
    *
    * @throws OpenAIException in case of API errors
    */

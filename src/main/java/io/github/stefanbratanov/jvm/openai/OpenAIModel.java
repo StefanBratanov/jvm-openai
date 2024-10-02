@@ -53,6 +53,7 @@ public enum OpenAIModel {
   TEXT_EMBEDDING_ADA_002("text-embedding-ada-002"),
 
   // Moderation (https://platform.openai.com/docs/models/moderation)
+  OMNI_MODERATION_LATEST("omni-moderation-latest"),
   TEXT_MODERATION_LATEST("text-moderation-latest"),
   TEXT_MODERATION_STABLE("text-moderation-stable");
 
