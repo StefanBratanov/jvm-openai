@@ -805,11 +805,7 @@ public class TestDataUtil {
   }
 
   public CreateProjectRequest randomCreateProjectRequest() {
-    return CreateProjectRequest.newBuilder()
-        .name(randomString(7))
-        .appUseCase(randomString(12))
-        .businessWebsite("example.com")
-        .build();
+    return CreateProjectRequest.newBuilder().name(randomString(7)).build();
   }
 
   public Project randomProject() {
@@ -818,9 +814,7 @@ public class TestDataUtil {
         randomString(7),
         randomLong(10_000, 1_000_000),
         randomLong(11_111, 1_111_111),
-        oneOf("active", "archived"),
-        randomString(12),
-        "example.com");
+        oneOf("active", "archived"));
   }
 
   public CreateProjectUserRequest randomCreateProjectUserRequest() {
