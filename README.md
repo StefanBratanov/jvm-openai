@@ -8,9 +8,11 @@
 A minimalistic unofficial [OpenAI API](https://platform.openai.com/docs/api-reference) client for the JVM, written in
 Java. The only dependency used is [Jackson](https://github.com/FasterXML/jackson) for JSON parsing.
 
-## Add dependency
+## Requirements
 
-Java 17+ is a prerequisite
+jvm-openai works on Java 17+. Android support is not yet available.
+
+## Add dependency
 
 ### Gradle
 
