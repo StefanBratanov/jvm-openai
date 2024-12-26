@@ -75,17 +75,20 @@ ChatCompletion chatCompletion = chatClient.createChatCompletion(createChatComple
 
 ### Administration
 
-| API                                                                              | Status |
-|----------------------------------------------------------------------------------|:------:|
-| [Invites](https://platform.openai.com/docs/api-reference/invite)                  |   ✔️   |
-| [Users](https://platform.openai.com/docs/api-reference/users)                     |   ✔️   |
-| [Projects](https://platform.openai.com/docs/api-reference/projects)            |   ✔️   |
-| [Project Users](https://platform.openai.com/docs/api-reference/project-users)      |   ✔️   |
+| API                                                                                                 | Status |
+|-----------------------------------------------------------------------------------------------------|:------:|
+| [Admin API Keys](https://platform.openai.com/docs/api-reference/admin-api-keys)                     |        |
+| [Invites](https://platform.openai.com/docs/api-reference/invite)                                    |   ✔️   |
+| [Users](https://platform.openai.com/docs/api-reference/users)                                       |   ✔️   |
+| [Projects](https://platform.openai.com/docs/api-reference/projects)                                 |   ✔️   |
+| [Project Users](https://platform.openai.com/docs/api-reference/project-users)                       |   ✔️   |
 | [Project Service Accounts](https://platform.openai.com/docs/api-reference/project-service-accounts) |   ✔️   |
-| [Project API Keys](https://platform.openai.com/docs/api-reference/project-api-keys)         |    ✔️    |
-| [Audit Logs](https://platform.openai.com/docs/api-reference/audit-logs)             |   ✔️     |
+| [Project API Keys](https://platform.openai.com/docs/api-reference/project-api-keys)                 |    ✔️    |
+| [Project rate limits](https://platform.openai.com/docs/api-reference/project-rate-limits)           |          |
+| [Audit Logs](https://platform.openai.com/docs/api-reference/audit-logs)                             |   ✔️     |
+| [Usage](https://platform.openai.com/docs/api-reference/usage)                                                                                           |          |
 
-> **_NOTE:_** Legacy APIs are not supported
+> **_NOTE:_** Realtime and Legacy APIs are not supported
 
 ## More examples
 
