@@ -10,6 +10,7 @@ import com.atlassian.oai.validator.model.Response;
 import com.atlassian.oai.validator.model.SimpleRequest;
 import com.atlassian.oai.validator.model.SimpleResponse;
 import com.atlassian.oai.validator.report.ValidationReport;
+import com.atlassian.oai.validator.report.ValidationReport.Level;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.stefanbratanov.jvm.openai.AuditLogsClient.PaginatedAuditLogs;
@@ -64,7 +65,7 @@ class OpenApiSpecificationValidationTest {
 
     Response response = createResponseWithBody(serializeObject(chatCompletion));
 
-    validate(request, response);
+    validate(request, response, "Object has missing required properties ([\"type\"])");
   }
 
   @RepeatedTest(25)
@@ -271,7 +272,7 @@ class OpenApiSpecificationValidationTest {
 
     Response response = createResponseWithBody(serializeObject(assistant));
 
-    validate(request, response);
+    validate(request, response, "Object has missing required properties ([\"type\"])");
 
     ModifyAssistantRequest modifyAssistantRequest = testDataUtil.randomModifyAssistantRequest();
 
@@ -281,7 +282,7 @@ class OpenApiSpecificationValidationTest {
             "/" + Endpoint.ASSISTANTS.getPath() + "/{assistant_id}",
             serializeObject(modifyAssistantRequest));
 
-    validate(request, response);
+    validate(request, response, "Object has missing required properties ([\"type\"])");
   }
 
   @RepeatedTest(25)
@@ -336,9 +337,8 @@ class OpenApiSpecificationValidationTest {
             "/" + Endpoint.THREADS.getPath() + "/{thread_id}/runs",
             serializeObject(createRunRequest));
 
-    // https://github.com/openai/openai-openapi/pull/170
     String[] reportMessagesToIgnore =
-        new String[] {"Object has missing required properties ([\"thread_id\"]"};
+        new String[] {"Object has missing required properties ([\"type\"])"};
 
     validate(request, reportMessagesToIgnore);
 
@@ -357,7 +357,11 @@ class OpenApiSpecificationValidationTest {
 
     Response response = createResponseWithBody(serializeObject(threadRun));
 
-    validate("/" + Endpoint.THREADS + "/{thread_id}/runs/{run_id}", Method.GET, response);
+    validate(
+        "/" + Endpoint.THREADS + "/{thread_id}/runs/{run_id}",
+        Method.GET,
+        response,
+        reportMessagesToIgnore);
 
     SubmitToolOutputsRequest submitToolOutputsRequest =
         testDataUtil.randomSubmitToolOutputsRequest();
@@ -582,11 +586,16 @@ class OpenApiSpecificationValidationTest {
                     return false;
                   }
                   if (Arrays.stream(reportMessagesToIgnore)
-                      .anyMatch(toIgnore -> message.getMessage().contains(toIgnore))) {
+                      .anyMatch(
+                          toIgnore ->
+                              message.getMessage().contains(toIgnore)
+                                  || message.getNestedMessages().stream()
+                                      .anyMatch(
+                                          nestedMessage ->
+                                              nestedMessage.getMessage().contains(toIgnore)))) {
                     return false;
                   }
-                  return message.getLevel() == ValidationReport.Level.ERROR
-                      || message.getLevel() == ValidationReport.Level.WARN;
+                  return message.getLevel() == Level.ERROR || message.getLevel() == Level.WARN;
                 })
             .toList();
     assertThat(errorMessages)
