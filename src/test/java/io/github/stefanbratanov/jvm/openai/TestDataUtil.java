@@ -1085,7 +1085,8 @@ public class TestDataUtil {
         randomInt(0, 100),
         randomInt(0, 100),
         randomInt(0, 100),
-        new CompletionTokensDetails(randomInt(0, 100), randomInt(0, 100), randomInt(0, 100), randomInt(0, 100)),
+        new CompletionTokensDetails(
+            randomInt(0, 100), randomInt(0, 100), randomInt(0, 100), randomInt(0, 100)),
         new PromptTokensDetails(randomInt(0, 100), randomInt(0, 100)));
   }
 
