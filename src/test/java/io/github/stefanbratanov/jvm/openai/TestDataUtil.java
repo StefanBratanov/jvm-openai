@@ -23,6 +23,7 @@ import io.github.stefanbratanov.jvm.openai.AuditLogEvent.UserDeletedEvent;
 import io.github.stefanbratanov.jvm.openai.AuditLogEvent.UserUpdatedEvent;
 import io.github.stefanbratanov.jvm.openai.AuditLogsClient.PaginatedAuditLogs;
 import io.github.stefanbratanov.jvm.openai.CompletionUsage.CompletionTokensDetails;
+import io.github.stefanbratanov.jvm.openai.CompletionUsage.PromptTokensDetails;
 import io.github.stefanbratanov.jvm.openai.CreateChatCompletionRequest.StreamOptions;
 import io.github.stefanbratanov.jvm.openai.FineTuningJobIntegration.Wandb;
 import io.github.stefanbratanov.jvm.openai.ModerationRequest.Builder.MultiModalInput;
@@ -1084,7 +1085,9 @@ public class TestDataUtil {
         randomInt(0, 100),
         randomInt(0, 100),
         randomInt(0, 100),
-        new CompletionTokensDetails(randomInt(0, 100)));
+        new CompletionTokensDetails(
+            randomInt(0, 100), randomInt(0, 100), randomInt(0, 100), randomInt(0, 100)),
+        new PromptTokensDetails(randomInt(0, 100), randomInt(0, 100)));
   }
 
   private Annotation randomThreadMessageAnnotation() {
