@@ -1,3 +1,8 @@
+> ⚠️ **Project Status Update:**
+Unfortunately, I’m no longer able to actively maintain this project due to time constraints. Thank you to everyone who has contributed and supported this project.
+If you'd like to continue using or adapting the code, feel free to fork the repository and make any modifications that suit your needs. For those seeking a maintained alternative, [openai-java](https://github.com/openai/openai-java) is a solid option worth exploring.
+
+
 # jvm-openai
 
 [![build](https://github.com/StefanBratanov/jvm-openai/actions/workflows/build.yml/badge.svg)](https://github.com/StefanBratanov/jvm-openai/actions/workflows/build.yml)
